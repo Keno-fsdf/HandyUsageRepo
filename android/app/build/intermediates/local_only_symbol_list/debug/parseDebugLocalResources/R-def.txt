@@ -1,0 +1,13 @@
+R_DEF: Internal format may change without notice
+local
+id btnBatteryOptimize
+id btnExport
+id btnStart
+id btnStop
+id btnUsageStats
+id countText
+id dataPreview
+id statusText
+layout activity_main
+string app_name
+xml file_paths
