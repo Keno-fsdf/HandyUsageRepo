@@ -1,7 +1,7 @@
 package com.batterypredictor.datacollector
 
 /**
- * Ein einzelner Datenpunkt mit allen 10 Features.
+ * Ein einzelner Datenpunkt mit 10 Features + System-Schätzung zum Vergleich.
  */
 data class BatteryDataPoint(
     val timestamp: Long,
@@ -15,11 +15,12 @@ data class BatteryDataPoint(
     val cpuUsage: Float,         // 0-100
     val temperature: Float,      // °C (z.B. 25.0 - 45.0)
     val hotspotOn: Int,          // 0/1
+    val systemEstimateMin: Float,// Native Android-Schätzung in Minuten (-1 = nicht verfügbar)
 ) {
     fun toCsvLine(): String {
         return "${batteryLevel.fmt()},${screenOn},${brightness.fmt()},${activeAppCategory}," +
                "${wifiOn},${mobileDataOn},${charging},${cpuUsage.fmt()}," +
-               "${temperature.fmt()},${hotspotOn}"
+               "${temperature.fmt()},${hotspotOn},${systemEstimateMin.fmt()}"
     }
 
     private fun Float.fmt(): String = String.format(java.util.Locale.US, "%.1f", this)
@@ -27,6 +28,7 @@ data class BatteryDataPoint(
     companion object {
         const val CSV_HEADER =
             "battery_level,screen_on,brightness,active_app_category," +
-            "wifi_on,mobile_data_on,charging,cpu_usage,temperature,hotspot_on"
+            "wifi_on,mobile_data_on,charging,cpu_usage,temperature,hotspot_on," +
+            "system_estimate_min"
     }
 }

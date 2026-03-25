@@ -125,6 +125,7 @@ class DataCollectorService : Service() {
             cpuUsage = getCpuUsage(),
             temperature = getBatteryTemperature(),
             hotspotOn = if (isHotspotOn()) 1 else 0,
+            systemEstimateMin = getSystemBatteryEstimate(),
         )
 
         logger.log(data, sessionId)
@@ -257,6 +258,26 @@ class DataCollectorService : Service() {
             method.invoke(wm) as Boolean
         } catch (e: Exception) {
             false
+        }
+    }
+
+    // ---- Native Akku-Schätzung (zum Vergleich, kein Feature) ----
+    private fun getSystemBatteryEstimate(): Float {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                // Android 12+ (API 31): PowerManager.getBatteryDischargePrediction()
+                val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+                val duration = pm.batteryDischargePrediction
+                if (duration != null) {
+                    duration.toMinutes().toFloat()
+                } else {
+                    -1f // Schätzung nicht verfügbar
+                }
+            } else {
+                -1f // Vor Android 12 nicht verfügbar
+            }
+        } catch (e: Exception) {
+            -1f
         }
     }
 
