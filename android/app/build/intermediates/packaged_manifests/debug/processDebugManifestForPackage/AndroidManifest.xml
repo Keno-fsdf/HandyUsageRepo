@@ -37,7 +37,6 @@
         android:debuggable="true"
         android:extractNativeLibs="false"
         android:label="Battery Collector"
-        android:testOnly="true"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar" >
         <activity
             android:name="com.batterypredictor.datacollector.MainActivity"

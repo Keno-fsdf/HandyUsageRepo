@@ -1,0 +1,97 @@
+@startuml
+!theme plain
+skinparam backgroundColor white
+skinparam defaultFontSize 12
+skinparam ArrowThickness 2
+skinparam RoundCorner 10
+skinparam nodesep 20
+skinparam ranksep 50
+skinparam PackagePadding 15
+
+top to bottom direction
+
+title Gesamtarchitektur: Akkuvorhersage mit TinyML\n
+
+' ============================================================
+'  ANDROID APP (oben)
+' ============================================================
+package "Android Smartphone" as phone #E3F2FD {
+
+    [UI Layer\n(Kotlin / XML)\n---\nTinyML-Karte | Google-API-Karte\nStatus | Start/Stopp | Export] as ui #BBDEFB
+
+    [ForegroundService\n(alle 30s)\n---\n10 Feature-Extraktoren\nHandler-Intervall] as service #C8E6C9
+
+    [Inferenz-Modul\n---\nTFLite Interpreter\nScaler (Kotlin)\nRingpuffer (w=10)] as inferenz #FFF9C4
+
+    [Android System APIs\n---\nBatteryManager | PowerManager\nUsageStatsManager\nConnectivityManager | /proc/stat] as apis #E0E0E0
+
+    database "App Storage" as storage {
+        [battery_data.csv]
+        [battery_model.tflite]
+    }
+}
+
+' ============================================================
+'  PYTHON PIPELINE (unten)
+' ============================================================
+package "Entwicklungsrechner (PC/Laptop)" as pc #FFF3E0 {
+
+    [run_pipeline.py\n(Orchestrator)] as orch #FF8A65
+
+    [Phase 1: Datenvorbereitung\n(generate_data.py)\n---\nCSV laden | Entlade-Segmente\nTarget-Extrapolation\nSliding Window | StandardScaler] as phase1 #FFCCBC
+
+    [Phase 2: Modelltraining\n(train_real_data.py)\n---\nTrain/Val/Test Split (70/15/15)\nConv1D Modell | Adam, MSE\nEarly Stopping | Evaluation] as phase2 #FFCCBC
+
+    [Phase 3: TFLite-Konvertierung\n(convert_tflite.py)\n---\nDynamic Range | Float16 | INT8\nValidierung & Benchmark\nBest-Model Selektion] as phase3 #FFCCBC
+
+    database "Dateisystem" as fs {
+        [data/\n*.csv, *.npy] as fdata
+        [model/\n*.keras, *.tflite\n*.joblib, *.json] as fmodel
+        [plots/\n*.png] as fplots
+    }
+}
+
+' ============================================================
+'  ANDROID INTERNE VERBINDUNGEN
+' ============================================================
+ui --> service : Start/Stopp
+service --> apis : liest Sensordaten
+service --> storage : schreibt CSV
+service --> inferenz : aktuelle Features
+inferenz --> ui : Vorhersage anzeigen
+storage --> inferenz : lädt .tflite
+
+' ============================================================
+'  PYTHON INTERNE VERBINDUNGEN
+' ============================================================
+orch --> phase1
+orch --> phase2
+orch --> phase3
+phase1 --> phase2 : npy-Dateien
+phase2 --> phase3 : .keras Modell
+phase1 ..> fdata : speichert
+phase2 ..> fmodel : speichert
+phase2 ..> fplots : speichert
+phase3 ..> fmodel : speichert .tflite
+
+' ============================================================
+'  ZWISCHEN DEN SYSTEMEN
+' ============================================================
+storage -[#2196F3,bold,dashed]down-> fdata : **CSV Export**\n(manuell via Share Intent)
+fmodel -[#4CAF50,bold,dashed]up-> storage : **.tflite + Scaler**\n(in assets/ einbetten)
+
+' ============================================================
+'  LEGENDE
+' ============================================================
+legend bottom right
+  |= Farbe |= Bedeutung |
+  |<#E3F2FD> | Android Smartphone |
+  |<#FFF3E0> | Entwicklungsrechner |
+  |<#C8E6C9> | Datensammlung |
+  |<#FFF9C4> | ML-Inferenz |
+  |<#FFCCBC> | Pipeline-Phasen |
+  |<#2196F3> | Datenfluss (CSV) |
+  |<#4CAF50> | Modell-Deployment |
+endlegend
+
+@enduml

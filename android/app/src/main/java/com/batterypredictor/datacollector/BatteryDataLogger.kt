@@ -41,7 +41,12 @@ class BatteryDataLogger(private val context: Context) {
         count++
     }
 
-    fun getCount(): Int = count
+    fun getCount(): Int {
+        // Immer aus Datei lesen, da andere Instanzen (Service) schreiben können
+        return if (csvFile.exists()) {
+            (csvFile.readLines().size - 1).coerceAtLeast(0)
+        } else 0
+    }
 
     fun getFile(): File = csvFile
 

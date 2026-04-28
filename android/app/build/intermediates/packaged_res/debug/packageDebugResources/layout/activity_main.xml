@@ -23,10 +23,57 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sammelt alle 5 min Akkudaten für TinyML Training"
+            android:text="Sammelt alle 30s Akkudaten für TinyML Training"
             android:textSize="13sp"
             android:textColor="#666"
             android:layout_marginBottom="24dp" />
+
+        <!-- Prediction Box -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="#E8F5E9"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚡ TinyML Vorhersage"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#2E7D32"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/predictionText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sammle Daten... (0/10)"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#1B5E20" />
+
+            <TextView
+                android:id="@+id/predictionDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="12sp"
+                android:textColor="#4CAF50"
+                android:layout_marginBottom="8dp" />
+
+            <Button
+                android:id="@+id/btnRefresh"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:text="🔄  Jetzt aktualisieren"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:backgroundTint="#43A047"
+                style="@style/Widget.Material3.Button.TonalButton" />
+        </LinearLayout>
 
         <!-- Status -->
         <TextView

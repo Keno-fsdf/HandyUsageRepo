@@ -1,0 +1,17 @@
+# Basis-Abhängigkeiten für das Projekt
+# Optional: Für Training mit GPU statt 'tensorflow' 'tensorflow-gpu' verwenden falls gewünscht.
+
+numpy
+scikit-learn
+joblib
+matplotlib
+pandas
+
+# TensorFlow (für Training). Wenn du nur Inferenz mit TFLite brauchst, kann "tflite-runtime" genügen.
+tensorflow
+# Optional (kleinere Laufzeit für Inferenz außerhalb TF): tflite-runtime
+# tflite-runtime
+
+# Entwicklung / Utility
+flake8
+black

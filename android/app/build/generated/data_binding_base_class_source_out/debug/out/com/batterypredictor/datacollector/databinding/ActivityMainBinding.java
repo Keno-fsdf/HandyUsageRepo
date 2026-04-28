@@ -27,6 +27,9 @@ public final class ActivityMainBinding implements ViewBinding {
   public final Button btnExport;
 
   @NonNull
+  public final Button btnRefresh;
+
+  @NonNull
   public final Button btnStart;
 
   @NonNull
@@ -42,20 +45,30 @@ public final class ActivityMainBinding implements ViewBinding {
   public final TextView dataPreview;
 
   @NonNull
+  public final TextView predictionDetail;
+
+  @NonNull
+  public final TextView predictionText;
+
+  @NonNull
   public final TextView statusText;
 
   private ActivityMainBinding(@NonNull ScrollView rootView, @NonNull Button btnBatteryOptimize,
-      @NonNull Button btnExport, @NonNull Button btnStart, @NonNull Button btnStop,
-      @NonNull Button btnUsageStats, @NonNull TextView countText, @NonNull TextView dataPreview,
-      @NonNull TextView statusText) {
+      @NonNull Button btnExport, @NonNull Button btnRefresh, @NonNull Button btnStart,
+      @NonNull Button btnStop, @NonNull Button btnUsageStats, @NonNull TextView countText,
+      @NonNull TextView dataPreview, @NonNull TextView predictionDetail,
+      @NonNull TextView predictionText, @NonNull TextView statusText) {
     this.rootView = rootView;
     this.btnBatteryOptimize = btnBatteryOptimize;
     this.btnExport = btnExport;
+    this.btnRefresh = btnRefresh;
     this.btnStart = btnStart;
     this.btnStop = btnStop;
     this.btnUsageStats = btnUsageStats;
     this.countText = countText;
     this.dataPreview = dataPreview;
+    this.predictionDetail = predictionDetail;
+    this.predictionText = predictionText;
     this.statusText = statusText;
   }
 
@@ -98,6 +111,12 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btnRefresh;
+      Button btnRefresh = ViewBindings.findChildViewById(rootView, id);
+      if (btnRefresh == null) {
+        break missingId;
+      }
+
       id = R.id.btnStart;
       Button btnStart = ViewBindings.findChildViewById(rootView, id);
       if (btnStart == null) {
@@ -128,14 +147,27 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.predictionDetail;
+      TextView predictionDetail = ViewBindings.findChildViewById(rootView, id);
+      if (predictionDetail == null) {
+        break missingId;
+      }
+
+      id = R.id.predictionText;
+      TextView predictionText = ViewBindings.findChildViewById(rootView, id);
+      if (predictionText == null) {
+        break missingId;
+      }
+
       id = R.id.statusText;
       TextView statusText = ViewBindings.findChildViewById(rootView, id);
       if (statusText == null) {
         break missingId;
       }
 
-      return new ActivityMainBinding((ScrollView) rootView, btnBatteryOptimize, btnExport, btnStart,
-          btnStop, btnUsageStats, countText, dataPreview, statusText);
+      return new ActivityMainBinding((ScrollView) rootView, btnBatteryOptimize, btnExport,
+          btnRefresh, btnStart, btnStop, btnUsageStats, countText, dataPreview, predictionDetail,
+          predictionText, statusText);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

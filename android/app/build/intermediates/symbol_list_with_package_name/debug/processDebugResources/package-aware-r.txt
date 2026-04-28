@@ -3178,6 +3178,7 @@ id bounceEnd
 id bounceStart
 id btnBatteryOptimize
 id btnExport
+id btnRefresh
 id btnStart
 id btnStop
 id btnUsageStats
@@ -3437,6 +3438,8 @@ id percent
 id pin
 id position
 id postLayout
+id predictionDetail
+id predictionText
 id pressed
 id progress_circular
 id progress_horizontal

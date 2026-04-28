@@ -68,6 +68,7 @@ class DataCollectorService : Service() {
 
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var logger: BatteryDataLogger
+    private var predictor: BatteryPredictor? = null
     private var sessionId = ""
 
     private val collectRunnable = object : Runnable {
@@ -80,10 +81,33 @@ class DataCollectorService : Service() {
     override fun onCreate() {
         super.onCreate()
         logger = BatteryDataLogger(this)
+        try {
+            predictor = BatteryPredictor(this)
+        } catch (e: Exception) {
+            android.util.Log.e("BatteryCollector", "Predictor init failed: ${e.message}")
+            predictor = null
+        }
         createNotificationChannel()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Prüfen ob User explizit gestoppt hat — nur bei System-Restart relevant (intent == null)
+        // Nicht bei explizitem Start durch User oder Refresh
+        if (intent == null) {
+            val enabled = getSharedPreferences("battery_collector", MODE_PRIVATE)
+                .getBoolean("service_enabled", false)
+            if (!enabled) {
+                stopSelf()
+                return START_NOT_STICKY
+            }
+        }
+
+        if (intent?.action == "REFRESH") {
+            // Sofort neue Messung auslösen (ohne Session-Reset)
+            handler.post { collectAndLog() }
+            return START_STICKY
+        }
+
         // Neue Session bei jedem Service-Start
         sessionId = java.util.UUID.randomUUID().toString().take(8)
 
@@ -94,7 +118,7 @@ class DataCollectorService : Service() {
         getSharedPreferences("battery_collector", MODE_PRIVATE)
             .edit().putBoolean("service_enabled", true).apply()
 
-        // Sofort erste Messung, dann alle 5 min
+        // Sofort erste Messung, dann alle 30s
         handler.removeCallbacks(collectRunnable)
         handler.post(collectRunnable)
 
@@ -103,9 +127,27 @@ class DataCollectorService : Service() {
 
     override fun onDestroy() {
         handler.removeCallbacks(collectRunnable)
-        getSharedPreferences("battery_collector", MODE_PRIVATE)
-            .edit().putBoolean("service_enabled", false).apply()
+        try { predictor?.close() } catch (_: Exception) {}
+        // Nur als deaktiviert markieren wenn User explizit stoppt (nicht bei Wegwischen)
+        // service_enabled wird beim Stop-Button in onStartCommand nicht gesetzt,
+        // sondern nur hier — aber onTaskRemoved startet uns eh neu
         super.onDestroy()
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        // App wurde weggewischt → Service per AlarmManager in 1s neu starten
+        val restartIntent = Intent(this, DataCollectorService::class.java)
+        val pendingIntent = PendingIntent.getService(
+            this, 99, restartIntent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarm.setExactAndAllowWhileIdle(
+            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            SystemClock.elapsedRealtime() + 1000,
+            pendingIntent
+        )
+        super.onTaskRemoved(rootIntent)
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -130,11 +172,41 @@ class DataCollectorService : Service() {
 
         logger.log(data, sessionId)
 
-        // Notification aktualisieren mit letztem Datenpunkt
+        // TinyML-Vorhersage (fail-safe — Datensammlung läuft weiter auch wenn Prediction crasht)
+        var prediction = -1f
+        var bufferSize = 0
+        try {
+            predictor?.let {
+                prediction = it.addDataAndPredict(data)
+                bufferSize = it.getBufferSize()
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("BatteryCollector", "Prediction failed: ${e.message}")
+        }
+
+        // Prediction per Broadcast an MainActivity senden
+        val broadcastIntent = Intent("com.batterypredictor.PREDICTION_UPDATE").apply {
+            putExtra("prediction", prediction)
+            putExtra("buffer_size", bufferSize)
+            putExtra("battery_level", data.batteryLevel)
+            putExtra("system_estimate", data.systemEstimateMin)
+        }
+        sendBroadcast(broadcastIntent)
+
+        // Notification mit Vorhersage
+        val predText = if (prediction >= 0f) {
+            val hours = prediction.toInt()
+            val mins = ((prediction - hours) * 60).toInt()
+            "\u26a1 ${hours}h ${mins}min verbleibend"
+        } else if (predictor != null) {
+            "Sammle Daten... ($bufferSize/10)"
+        } else {
+            "Modell nicht geladen"
+        }
+
         val nm = getSystemService(NotificationManager::class.java)
         nm.notify(NOTIFICATION_ID, buildNotification(
-            "Akku: ${data.batteryLevel}% | ${data.temperature}°C | CPU: ${data.cpuUsage}% | " +
-            "${logger.getCount()} Messungen"
+            "$predText | Akku: ${data.batteryLevel}% | ${logger.getCount()} Messungen"
         ))
     }
 

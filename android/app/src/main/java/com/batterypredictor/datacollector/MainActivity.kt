@@ -2,8 +2,10 @@ package com.batterypredictor.datacollector
 
 import android.Manifest
 import android.app.AppOpsManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -25,9 +27,39 @@ class MainActivity : AppCompatActivity() {
     private lateinit var statusText: TextView
     private lateinit var dataPreview: TextView
     private lateinit var countText: TextView
+    private lateinit var predictionText: TextView
+    private lateinit var predictionDetail: TextView
     private lateinit var logger: BatteryDataLogger
 
     private val uiTimer = Timer()
+
+    // Empfängt Vorhersagen vom Service
+    private val predictionReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val prediction = intent.getFloatExtra("prediction", -1f)
+            val bufferSize = intent.getIntExtra("buffer_size", 0)
+            val batteryLevel = intent.getFloatExtra("battery_level", -1f)
+            val systemEstimate = intent.getFloatExtra("system_estimate", -1f)
+
+            if (prediction >= 0f) {
+                val hours = prediction.toInt()
+                val mins = ((prediction - hours) * 60).toInt()
+                predictionText.text = "Noch ${hours}h ${mins}min"
+
+                // Detail-Zeile mit Vergleich
+                val detail = StringBuilder("Akku: ${batteryLevel.toInt()}%")
+                if (systemEstimate > 0f) {
+                    val sysH = (systemEstimate / 60f).toInt()
+                    val sysM = (systemEstimate % 60f).toInt()
+                    detail.append(" | Android sagt: ${sysH}h ${sysM}min")
+                }
+                predictionDetail.text = detail.toString()
+            } else {
+                predictionText.text = "Sammle Daten... ($bufferSize/10)"
+                predictionDetail.text = "Braucht 10 Messungen (${10 - bufferSize} übrig à 30s)"
+            }
+        }
+    }
 
     // Permission-Launcher für Notification (Android 13+)
     private val notificationPermLauncher = registerForActivityResult(
@@ -44,6 +76,8 @@ class MainActivity : AppCompatActivity() {
         statusText = findViewById(R.id.statusText)
         dataPreview = findViewById(R.id.dataPreview)
         countText = findViewById(R.id.countText)
+        predictionText = findViewById(R.id.predictionText)
+        predictionDetail = findViewById(R.id.predictionDetail)
         logger = BatteryDataLogger(this)
 
         // ---- Buttons ----
@@ -53,6 +87,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnStop).setOnClickListener {
+            // Explizit deaktivieren, damit onTaskRemoved nicht neu startet
+            getSharedPreferences("battery_collector", MODE_PRIVATE)
+                .edit().putBoolean("service_enabled", false).apply()
             stopService(Intent(this, DataCollectorService::class.java))
             statusText.text = "Status: Gestoppt"
         }
@@ -70,6 +107,13 @@ class MainActivity : AppCompatActivity() {
             requestBatteryOptimizationExemption()
         }
 
+        findViewById<Button>(R.id.btnRefresh).setOnClickListener {
+            val refreshIntent = Intent(this, DataCollectorService::class.java).apply {
+                action = "REFRESH"
+            }
+            ContextCompat.startForegroundService(this, refreshIntent)
+        }
+
         // UI alle 10s aktualisieren
         uiTimer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
@@ -81,6 +125,26 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         uiTimer.cancel()
         super.onDestroy()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val filter = IntentFilter("com.batterypredictor.PREDICTION_UPDATE")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(predictionReceiver, filter, RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(predictionReceiver, filter)
+        }
+
+        // Status korrekt anzeigen beim Öffnen
+        val serviceEnabled = getSharedPreferences("battery_collector", MODE_PRIVATE)
+            .getBoolean("service_enabled", false)
+        statusText.text = if (serviceEnabled) "Status: Läuft ✓" else "Status: Gestoppt"
+    }
+
+    override fun onPause() {
+        try { unregisterReceiver(predictionReceiver) } catch (_: Exception) {}
+        super.onPause()
     }
 
     private fun checkAndStart() {
