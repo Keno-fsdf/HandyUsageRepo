@@ -1,5 +1,21 @@
 # TinyML Battery Prediction — Erkenntnisse & Zusammenfassung
+\textbf{Zum Target-Problem:} Ein grundsätzliches Problem bei der 
+Akkuvorhersage ist das Fehlen einer echten Ground Truth. Nutzer 
+entladen ihr Gerät praktisch nie bis 0\,\%, sodass die tatsächliche 
+Restlaufzeit nie direkt gemessen werden kann. Die in diesem Projekt 
+verwendete Extrapolation über die Drain-Rate 
+(Gleichung~\ref{eq:target}) ist ein pragmatischer Ansatz, der 
+jedoch dazu führt, dass das Modell systematisch höhere Werte 
+vorhersagt als die rein gemessene Restzeit bis zum Segment-Ende.
 
+Der faire Vergleich (Abbildung~\ref{fig:fair_comparison}) zeigt 
+daher erwartungsgemäß einen Vorteil für die Google-API, die Zugriff 
+auf tiefere Systeminformationen hat und auf deutlich größeren 
+Datensätzen trainiert wurde. Die Ergebnisse mit Extrapolation 
+(Abbildung~\ref{fig:error_distribution}) zeigen hingegen, dass das 
+TinyML-Modell die extrapolierte Restlaufzeit konsistenter 
+vorhersagen kann als die Google-API -- was nahelegt, dass das 
+Modell die Entladedynamik grundsätzlich erfasst hat.
 ## 1. Projektübersicht
 
 ### Was wurde gebaut
