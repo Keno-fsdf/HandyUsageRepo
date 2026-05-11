@@ -15,8 +15,12 @@ import java.io.BufferedReader
 import java.io.FileReader
 
 /**
- * Foreground Service der alle 5 Minuten die 8 Battery-Features sammelt
- * und in eine CSV-Datei schreibt.
+ * Foreground Service der alle 30 Sekunden die 10 Battery-Features sammelt
+ * und in eine CSV-Datei schreibt. Loggt zusätzlich:
+ *   - system_estimate_min   (Google API: PowerManager.batteryDischargePrediction)
+ *   - system_personalized   (isBatteryDischargePredictionPersonalized, 0/1/-1=unknown)
+ *   - own_prediction_h      (TinyML-Vorhersage, -1 wenn Buffer noch nicht voll)
+ *   - linear_baseline_h     (Naive Linear: charge_counter / current_avg)
  *
  * Läuft auch wenn die App geschlossen ist (Foreground Notification).
  */
@@ -155,41 +159,70 @@ class DataCollectorService : Service() {
     // ========== Datensammlung ==========
 
     private fun collectAndLog() {
-        val data = BatteryDataPoint(
-            timestamp = System.currentTimeMillis(),
-            batteryLevel = getBatteryLevel(),
-            screenOn = if (isScreenOn()) 1 else 0,
-            brightness = getScreenBrightness(),
-            activeAppCategory = getActiveAppCategory(),
-            wifiOn = if (isWifiConnected()) 1 else 0,
-            mobileDataOn = if (isMobileDataActive()) 1 else 0,
-            charging = if (isCharging()) 1 else 0,
-            cpuUsage = getCpuUsage(),
-            temperature = getBatteryTemperature(),
-            hotspotOn = if (isHotspotOn()) 1 else 0,
-            systemEstimateMin = getSystemBatteryEstimate(),
+        val now = System.currentTimeMillis()
+
+        // 1) Roh-Features sammeln
+        val batteryLevel = getBatteryLevel()
+        val screenOn = if (isScreenOn()) 1 else 0
+        val brightness = getScreenBrightness()
+        val activeAppCategory = getActiveAppCategory()
+        val wifiOn = if (isWifiConnected()) 1 else 0
+        val mobileDataOn = if (isMobileDataActive()) 1 else 0
+        val charging = if (isCharging()) 1 else 0
+        val cpuUsage = getCpuUsage()
+        val temperature = getBatteryTemperature()
+        val hotspotOn = if (isHotspotOn()) 1 else 0
+
+        // 2) TinyML-Vorhersage (fail-safe)
+        val features = floatArrayOf(
+            batteryLevel, screenOn.toFloat(), brightness, activeAppCategory.toFloat(),
+            wifiOn.toFloat(), mobileDataOn.toFloat(), charging.toFloat(),
+            cpuUsage, temperature, hotspotOn.toFloat()
         )
-
-        logger.log(data, sessionId)
-
-        // TinyML-Vorhersage (fail-safe — Datensammlung läuft weiter auch wenn Prediction crasht)
         var prediction = -1f
         var bufferSize = 0
         try {
             predictor?.let {
-                prediction = it.addDataAndPredict(data)
+                prediction = it.addDataAndPredict(features)
                 bufferSize = it.getBufferSize()
             }
         } catch (e: Exception) {
             android.util.Log.e("BatteryCollector", "Prediction failed: ${e.message}")
         }
 
-        // Prediction per Broadcast an MainActivity senden
+        // 3) Vergleichswerte: Google API (+Personalized-Flag) und Linear-Baseline
+        val systemEstimateMin = getSystemBatteryEstimate()
+        val systemPersonalized = getSystemPredictionPersonalized()
+        val linearBaselineH = getLinearBaselineHours()
+
+        // 4) Vollstaendigen DataPoint erst jetzt bauen (mit allen Vergleichswerten)
+        val data = BatteryDataPoint(
+            timestamp = now,
+            batteryLevel = batteryLevel,
+            screenOn = screenOn,
+            brightness = brightness,
+            activeAppCategory = activeAppCategory,
+            wifiOn = wifiOn,
+            mobileDataOn = mobileDataOn,
+            charging = charging,
+            cpuUsage = cpuUsage,
+            temperature = temperature,
+            hotspotOn = hotspotOn,
+            systemEstimateMin = systemEstimateMin,
+            systemPersonalized = systemPersonalized,
+            ownPredictionH = prediction,
+            linearBaselineH = linearBaselineH,
+        )
+
+        logger.log(data, sessionId)
+
+        // 5) Prediction per Broadcast an MainActivity senden
         val broadcastIntent = Intent("com.batterypredictor.PREDICTION_UPDATE").apply {
             putExtra("prediction", prediction)
             putExtra("buffer_size", bufferSize)
             putExtra("battery_level", data.batteryLevel)
             putExtra("system_estimate", data.systemEstimateMin)
+            putExtra("linear_baseline", linearBaselineH)
         }
         sendBroadcast(broadcastIntent)
 
@@ -353,6 +386,50 @@ class DataCollectorService : Service() {
         }
     }
 
+    /**
+     * Ist die Google-Schätzung gerätespezifisch eingelernt?
+     * 1 = ja, 0 = nein, -1 = unbekannt/Fehler/<API 31.
+     * Wichtig fürs Paper: ein nicht-personalisierter Wert ist eher ein
+     * generischer Fallback und sollte fair gewichtet werden.
+     */
+    private fun getSystemPredictionPersonalized(): Int {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+                if (pm.isBatteryDischargePredictionPersonalized) 1 else 0
+            } else {
+                -1
+            }
+        } catch (e: Exception) {
+            -1
+        }
+    }
+
+    /**
+     * Naive lineare Baseline aus BatteryManager:
+     *     restzeit_h = charge_counter [µAh] / |current_average| [µA]
+     *
+     * Das ist konzeptuell dieselbe Berechnung, die die MIUI/Stock-Settings-App
+     * macht. Liefert -1f wenn die Werte nicht lesbar sind (manche Hersteller
+     * blockieren CURRENT_AVERAGE oder geben Long.MIN_VALUE zurück).
+     */
+    private fun getLinearBaselineHours(): Float {
+        return try {
+            val bm = getSystemService(Context.BATTERY_SERVICE) as BatteryManager
+            val chargeCounter = bm.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
+            val currentAvg = bm.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_AVERAGE)
+            // Long.MIN_VALUE oder 0 = nicht verfügbar
+            if (chargeCounter <= 0 || currentAvg == Long.MIN_VALUE || currentAvg == 0L) {
+                return -1f
+            }
+            // current_avg ist negativ beim Entladen, positiv beim Laden -> abs
+            val absCurrent = Math.abs(currentAvg).toFloat()
+            chargeCounter.toFloat() / absCurrent
+        } catch (e: Exception) {
+            -1f
+        }
+    }
+
     // ---- Feature 8: CPU Usage (%) ----
     // /proc/stat ist seit Android 8 für Apps gesperrt.
     // Wir messen stattdessen die CPU-Frequenz über alle Kerne —
@@ -421,7 +498,7 @@ class DataCollectorService : Service() {
             "Battery Data Collector",
             NotificationManager.IMPORTANCE_LOW // kein Sound
         ).apply {
-            description = "Sammelt Akkudaten alle 5 Minuten"
+            description = "Sammelt Akkudaten alle 30 Sekunden"
         }
         val nm = getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(channel)

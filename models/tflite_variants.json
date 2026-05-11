@@ -1,0 +1,27 @@
+{
+  "dynamic_range": {
+    "size_kb": 15.9922,
+    "mae_h_extrap": 4.967,
+    "avg_inference_ms": 0.003713,
+    "p50_inference_ms": 0.0034,
+    "p95_inference_ms": 0.0038,
+    "n_runs": 200
+  },
+  "float16": {
+    "size_kb": 17.8008,
+    "mae_h_extrap": 4.9679,
+    "avg_inference_ms": 0.003116,
+    "p50_inference_ms": 0.0031,
+    "p95_inference_ms": 0.0034,
+    "n_runs": 200
+  },
+  "int8_full": {
+    "size_kb": 14.3516,
+    "mae_h_extrap": 4.6606,
+    "avg_inference_ms": 0.003966,
+    "p50_inference_ms": 0.0039,
+    "p95_inference_ms": 0.0042,
+    "n_runs": 200
+  },
+  "_deploy_variant": "int8_full"
+}

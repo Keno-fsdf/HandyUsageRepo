@@ -1,0 +1,187 @@
+{
+  "_method": "permutation_importance, scoring=neg_MAE, n_repeats=5",
+  "by_feature_aggregated": [
+    {
+      "feature": "hotspot_on",
+      "total_importance_mae_h": 0.0923
+    },
+    {
+      "feature": "brightness",
+      "total_importance_mae_h": 0.0307
+    },
+    {
+      "feature": "mobile_data_on",
+      "total_importance_mae_h": 0.003
+    },
+    {
+      "feature": "wifi_on",
+      "total_importance_mae_h": 0.0017
+    },
+    {
+      "feature": "charging",
+      "total_importance_mae_h": 0.0
+    },
+    {
+      "feature": "screen_on",
+      "total_importance_mae_h": -0.0531
+    },
+    {
+      "feature": "active_app_category",
+      "total_importance_mae_h": -0.1467
+    },
+    {
+      "feature": "cpu_usage",
+      "total_importance_mae_h": -0.1956
+    },
+    {
+      "feature": "temperature",
+      "total_importance_mae_h": -0.6173
+    },
+    {
+      "feature": "battery_level",
+      "total_importance_mae_h": -7.1914
+    }
+  ],
+  "top_individual": [
+    {
+      "name": "hotspot_on@t-0",
+      "feature": "hotspot_on",
+      "time_offset_steps": 0,
+      "importance_mae_h": 0.041,
+      "std": 0.0004
+    },
+    {
+      "name": "brightness@t-6",
+      "feature": "brightness",
+      "time_offset_steps": 6,
+      "importance_mae_h": 0.0407,
+      "std": 0.0184
+    },
+    {
+      "name": "brightness@t-8",
+      "feature": "brightness",
+      "time_offset_steps": 8,
+      "importance_mae_h": 0.0394,
+      "std": 0.0162
+    },
+    {
+      "name": "brightness@t-7",
+      "feature": "brightness",
+      "time_offset_steps": 7,
+      "importance_mae_h": 0.0334,
+      "std": 0.0062
+    },
+    {
+      "name": "hotspot_on@t-1",
+      "feature": "hotspot_on",
+      "time_offset_steps": 1,
+      "importance_mae_h": 0.0149,
+      "std": 0.0004
+    },
+    {
+      "name": "brightness@t-5",
+      "feature": "brightness",
+      "time_offset_steps": 5,
+      "importance_mae_h": 0.0109,
+      "std": 0.0089
+    },
+    {
+      "name": "hotspot_on@t-7",
+      "feature": "hotspot_on",
+      "time_offset_steps": 7,
+      "importance_mae_h": 0.009,
+      "std": 0.0009
+    },
+    {
+      "name": "hotspot_on@t-2",
+      "feature": "hotspot_on",
+      "time_offset_steps": 2,
+      "importance_mae_h": 0.0074,
+      "std": 0.0006
+    },
+    {
+      "name": "hotspot_on@t-6",
+      "feature": "hotspot_on",
+      "time_offset_steps": 6,
+      "importance_mae_h": 0.0059,
+      "std": 0.0005
+    },
+    {
+      "name": "hotspot_on@t-5",
+      "feature": "hotspot_on",
+      "time_offset_steps": 5,
+      "importance_mae_h": 0.0058,
+      "std": 0.0009
+    },
+    {
+      "name": "hotspot_on@t-9",
+      "feature": "hotspot_on",
+      "time_offset_steps": 9,
+      "importance_mae_h": 0.0053,
+      "std": 0.0024
+    },
+    {
+      "name": "hotspot_on@t-3",
+      "feature": "hotspot_on",
+      "time_offset_steps": 3,
+      "importance_mae_h": 0.0026,
+      "std": 0.0003
+    },
+    {
+      "name": "mobile_data_on@t-9",
+      "feature": "mobile_data_on",
+      "time_offset_steps": 9,
+      "importance_mae_h": 0.0009,
+      "std": 0.0003
+    },
+    {
+      "name": "mobile_data_on@t-5",
+      "feature": "mobile_data_on",
+      "time_offset_steps": 5,
+      "importance_mae_h": 0.0009,
+      "std": 0.0002
+    },
+    {
+      "name": "hotspot_on@t-4",
+      "feature": "hotspot_on",
+      "time_offset_steps": 4,
+      "importance_mae_h": 0.0009,
+      "std": 0.0015
+    },
+    {
+      "name": "wifi_on@t-6",
+      "feature": "wifi_on",
+      "time_offset_steps": 6,
+      "importance_mae_h": 0.0008,
+      "std": 0.0004
+    },
+    {
+      "name": "wifi_on@t-9",
+      "feature": "wifi_on",
+      "time_offset_steps": 9,
+      "importance_mae_h": 0.0007,
+      "std": 0.0002
+    },
+    {
+      "name": "screen_on@t-9",
+      "feature": "screen_on",
+      "time_offset_steps": 9,
+      "importance_mae_h": 0.0006,
+      "std": 0.0023
+    },
+    {
+      "name": "mobile_data_on@t-4",
+      "feature": "mobile_data_on",
+      "time_offset_steps": 4,
+      "importance_mae_h": 0.0004,
+      "std": 0.0001
+    },
+    {
+      "name": "mobile_data_on@t-2",
+      "feature": "mobile_data_on",
+      "time_offset_steps": 2,
+      "importance_mae_h": 0.0004,
+      "std": 0.0002
+    }
+  ]
+}

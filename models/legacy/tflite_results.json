@@ -1,0 +1,27 @@
+{
+  "dynamic_range": {
+    "mae": 0.495,
+    "rmse": 0.8902,
+    "accuracy_1h": 88.4,
+    "avg_inference_ms": 0.0036,
+    "p95_inference_ms": 0.0027,
+    "size_kb": 15.2422
+  },
+  "float16": {
+    "mae": 0.4931,
+    "rmse": 0.8858,
+    "accuracy_1h": 88.6,
+    "avg_inference_ms": 0.0019,
+    "p95_inference_ms": 0.0022,
+    "size_kb": 17.4258
+  },
+  "int8_full": {
+    "mae": 0.5067,
+    "rmse": 0.927,
+    "accuracy_1h": 88.0,
+    "avg_inference_ms": 0.0037,
+    "p95_inference_ms": 0.004,
+    "size_kb": 13.8281
+  },
+  "best_model": "int8_full"
+}

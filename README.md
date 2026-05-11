@@ -1,127 +1,125 @@
-# handyUsage — Projektübersicht
+# handyUsage — TinyML für Akkulaufzeit-Vorhersage auf Android
 
-Dieses Repository enthält Skripte und ein Android-Beispielprojekt zur Erstellung, Auswertung und Nutzung von Batterie/Vorhersagemodellen (TensorFlow/TFLite). Diese README beschreibt die komplette Ordnerstruktur, den Zweck wichtiger Dateien und Nutzungsbeispiele, so dass auch eine andere KI das Projekt verstehen und verarbeiten kann.
+**6-Wege-Vergleich auf Multi-Device-Daten** (4 Geräte, 2 Hersteller, 66.001 Messungen).
+Geräte: Xiaomi 2107113SG, Google Pixel 7 Pro, 8 Pro, 9 Pro XL.
 
-**Kurz:** Python-Skripte erzeugen Trainings- und Evaluierungsdaten, trainieren Modelle und konvertieren sie zu TFLite. Das `android/`-Projekt bindet das Modell in eine Android-App ein.
+Sechs Methoden zur Akku-Restzeit-Vorhersage im Vergleich:
 
-**Projektstruktur (vollständig)**
+| Methode | Wer berechnet | Datenzugang | Rolle |
+|---|---|---|---|
+| **TinyML Conv1D** | App, TFLite | 10 öffentliche Sensor-/System-Features | Hauptmodell |
+| **Random Forest** | Pipeline | gleiche Features (flach) | Sanity (anderes Paradigma) |
+| **Mean Predictor** | Pipeline | — | Floor (zeigt: was ohne Features?) |
+| **Linear Baseline** | App / Pipeline | `BatteryManager` (charge / current_avg) | Baseline 1 |
+| **Exponential Fit** | Pipeline | `b(t) = a + c·exp(-k·t)` aus letzten 10 Punkten | Baseline 2 |
+| **Google API** | System | `PowerManager.getBatteryDischargePrediction()` | State of the Art |
 
-- `convert_tflite.py` — Skript zur Konvertierung/Kalibrierung von Keras/TensorFlow-Modellen nach TFLite.
-- `generate_data.py` — Erzeugt synthetische oder verarbeitete Datensätze zur Modell-Trainingsvorbereitung.
-- `run_pipeline.py` — Wrapper/Orchestrator, der Datenvorbereitung, Training und Evaluation in Reihenfolge ausführt.
-- `train_model.py` — Trainingsskript für das Batterie-Vorhersagemodell (Keras/TensorFlow).
-- `train_real_data.py` — Variante des Trainings, die reale Messdaten verwendet.
+Forschungsfrage und vollständiger Befund: siehe [ERKENNTNISSE.md](ERKENNTNISSE.md).
+Auto-generierter Ergebnis-Report: [reports/REPORT.md](reports/REPORT.md).
+Lit-Review für die Paper-Einleitung: [reports/RELATED_WORK.md](reports/RELATED_WORK.md).
 
-- `android/` — Android-App-Quellcode (Gradle/Kotlin)
-  - `build.gradle.kts`, `gradle.properties`, `settings.gradle.kts`, `gradlew.bat`, `local.properties` — Build- und Konfigurationsdateien.
-  - `app/` — Android-App-Modul
-    - `build.gradle.kts` — Modul-Build-Skript
-    - `build/` — automatisch erzeugte Build-Artefakte (nicht versionieren)
-    - `src/` — Quellcode der App (Activitys, Layouts, Ressourcen)
+---
 
-- `data/` — Eingabedaten und vorbereitete Datensätze
-  - `battery_data.csv` — (synthetische) oder Rohdaten
-  - `real_battery_data.csv` — Messdaten aus realer Aufnahme
-  - `X_sequences.npy`, `y_sequences.npy` — vorberechnete Sequenzen für Training/Evaluation
+## Projektstruktur (forschungsorientiert)
 
-- `model/` — Trainierte Modelle und zugehörige Artefakte
-  - `battery_model.keras` / `battery_model_real.keras` — Keras-Modelldateien
-  - `battery_model.tflite` / `battery_model_real.tflite` — TFLite-Modelle
-  - `battery_model_float16.tflite`, `battery_model_int8.tflite`, `battery_model_dynamic.tflite` — weitere TFLite-Varianten
-  - `scaler.joblib`, `scaler_real.joblib` — Feature-Scaler für Vor-/Nachverarbeitung
-  - `metrics.json`, `metrics_real.json` — Evaluationsmetriken
-  - `tflite_results.json` — Ergebnisse der TFLite-Evaluation
+```
+handyUsage/
+├── configs/                 # default.yaml — eine Wahrheit für alle Hyperparameter
+├── data/
+│   ├── raw/                 # real_battery_data.csv (read-only)
+│   ├── processed/           # train.npz / val.npz / test.npz / predictions_*.npz
+│   └── legacy/              # alte Skripte/Daten/ERKENNTNISSE_v1
+├── methods/                 # Die SECHS Vergleichsmethoden
+│   ├── tinyml/              # Conv1D + TFLite + Predict + Scaler-Export für Android
+│   ├── random_forest/       # Sanity-Modell, gleiche Features, anderes Paradigma
+│   ├── mean_predictor/      # gibt train mean zurück (Floor-Baseline)
+│   ├── linear_baseline/     # battery / drain_rate aus letzten N Punkten
+│   ├── exponential_fit/     # b(t) = a + c·exp(-k·t), per Segment
+│   └── google_api/          # extrahiert system_estimate_min aus CSV
+├── evaluation/
+│   ├── accuracy.py          # MAE, RMSE, ME, Acc±t, C-Index + Bootstrap-CI
+│   ├── significance.py      # Permutationstests zwischen Methodenpaaren
+│   ├── data_diagnostics.py  # Pearson, Spearman, Mutual Information (modell-unabhängig)
+│   ├── feature_importance.py# Permutation Importance auf RF
+│   ├── per_segment_analysis.py  # Per-Bucket-MAE/C-Idx (Battery-Level, Segmentlänge)
+│   ├── three_way_compare.py # 6-Wege-Vergleich + Plots + accuracy.json
+│   ├── efficiency.py        # TFLite-Latenz, Modellgröße (MLPerf-Tiny-Stil)
+│   └── report_generator.py  # erzeugt reports/REPORT.md aus allen JSON-Artefakten
+├── models/                  # *.keras, *_dynamic_range.tflite, *_float16.tflite, *_int8_full.tflite, scaler.joblib, random_forest.joblib
+├── reports/
+│   ├── REPORT.md            # auto-generiert, paper-ready
+│   ├── RELATED_WORK.md      # Lit-Review, BibTeX-Stubs, Story-Struktur
+│   ├── accuracy.json
+│   ├── significance.json
+│   ├── data_diagnostics.json
+│   ├── feature_importance.json
+│   ├── per_segment_analysis.json
+│   ├── efficiency.json
+│   ├── main_table.csv       # Hauptergebnisse zum LaTeX/Word-Import
+│   └── figures/             # Cumulative Error, Scatter, Histogramme, Trainings-Kurven
+├── android/                 # Kotlin: Datensammlung + On-Device-Inferenz
+├── run_pipeline.py          # Orchestrator
+├── ERKENNTNISSE.md          # methodische Notizen + Hauptergebnisse
+├── architektur_gesamt.puml  # Pipeline-Diagramm (für Paper)
+├── requirements.txt
+└── README.md
+```
 
-- `plots/` — Generierte Visualisierungen (Loss, Metriken, Vorhersagen)
-- `ERKENNTNISSE.md` — Erkenntnisse und Notizen zum Projekt
+---
 
-
-Beschreibung wichtiger Skripte
-
-- `generate_data.py`:
-  - Liest Rohdaten (`data/*.csv`), erstellt Sequenzen oder Fenster und speichert `X_sequences.npy` / `y_sequences.npy`.
-  - Parameter: Fenstergröße, Schrittweite, Normalisierung (ggf. als CLI-Argumente implementiert).
-
-- `train_model.py` / `train_real_data.py`:
-  - Laden der Sequenzen, Train/Test-Split, Erstellung eines Keras-Modells (z.B. LSTM/GRU/Dense), Training mit Checkpoints.
-  - Am Ende Speichern des Modells unter `model/*.keras` und Erzeugen eines TFLite-Modells via `convert_tflite.py`.
-
-- `convert_tflite.py`:
-  - Nimmt ein Keras-Modell oder gespeicherte Gewichtedatei und konvertiert sie in verschiedene TFLite-Formate (float32, float16, int8/quantized).
-  - Bei Quantisierung werden `scaler.joblib` oder Kalibrierdaten verwendet.
-
-- `run_pipeline.py`:
-  - Kombiniert `generate_data.py`, `train_model.py`, ggf. Evaluation-Skripte und erzeugt `model/`-Artefakte automatisiert.
-
-Android-spezifische Hinweise
-
-- Die Android-App im Verzeichnis `android/app` nutzt TFLite-Modelle aus `model/` (kopieren/Einbinden erforderlich).
-- Auf Windows wird die App mit `gradlew.bat assembleDebug` gebaut, alternativ mit Android Studio öffnen und `Run`.
-- `local.properties` enthält den SDK-Pfad; zum Bauen sicherstellen, dass Android SDK installiert und `local.properties` korrekt ist.
-
-Umgebung & Abhängigkeiten (Python)
-
-- Empfohlene Python-Version: 3.8–3.11
-- Typische Abhängigkeiten (nicht abschließend):
-  - `tensorflow` oder `tensorflow-cpu` (zum Trainieren)
-  - `numpy`
-  - `scikit-learn` (für Scaler und Metriken)
-  - `joblib` (zum Speichern von Scaler)
-  - `matplotlib` (zum Erzeugen von Plots)
-  - `tflite-runtime` (optional, für TFLite-Inferenz außerhalb von TensorFlow)
-
-Beispiel: virtuelle Umgebung und Installation
+## Pipeline ausführen
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install --upgrade pip
-pip install tensorflow numpy scikit-learn joblib matplotlib
-# optional: pip install tflite-runtime
-```
+pip install -r requirements.txt
 
-Wichtige Befehle (Beispielablauf)
-
-```powershell
-# Daten erzeugen
-python generate_data.py
-
-# Training (synthetisch)
-python train_model.py
-
-# Training mit realen Daten
-python train_real_data.py
-
-# Pipeline komplett
+# Komplette Pipeline (merge → data → train → tflite → train_rf → predict → evaluate → report)
 python run_pipeline.py
 
-# Modell konvertieren
-python convert_tflite.py
-
-# Android Debug-APK bauen (Windows)
-cd android
-gradlew.bat assembleDebug
+# Einzelne Stages:
+python run_pipeline.py --stage merge       # 4 CSVs zu data/raw/combined.csv konsolidieren
+python run_pipeline.py --stage data        # Segmente, Sliding-Window, Train/Val/Test
+python run_pipeline.py --stage train       # Conv1D
+python run_pipeline.py --stage tflite      # 3 TFLite-Varianten + Latenz-Benchmark
+python run_pipeline.py --stage train_rf    # Random Forest Sanity-Modell
+python run_pipeline.py --stage predict     # alle 6 Methoden
+python run_pipeline.py --stage evaluate    # Accuracy, Significance, Per-Device, Diagnostics
+python run_pipeline.py --stage report      # reports/REPORT.md zusammenstellen
 ```
 
-Hinweise für eine andere KI/Automatisierung
+Ergebnis nach vollem Lauf:
+- [reports/REPORT.md](reports/REPORT.md) — alle Tabellen + Bootstrap-CI + Permutationstests
+- [reports/main_table.csv](reports/main_table.csv) — kompakter CSV-Import für Paper-Tabellen
+- [reports/figures/](reports/figures/) — alle Plots fürs Paper
 
-- Dateipfade: Verwende projektrelative Pfade, z. B. `data/`, `model/`, `android/app/`.
-- Determinismus: Verwende feste Zufalls-Seeds (falls vorhanden) und dokumentiere alle Hyperparameter in Config-Dateien oder Kopfzeilen der Skripte.
-- Schnittstellen: Die Skripte sollten klar definierte Ein-/Ausgaben haben (Input-Dateien, Output-Pfade). Falls CLI-Argumente fehlen, erweitere die Skripte mit `argparse`.
-- Tests: Eine KI kann einfache Prüfschritte implementieren: Existenz der Eingabedateien, Formate (`.npy`, `.csv`), und erfolgreiche Erzeugung von `model/*.tflite`.
+---
 
-Dateibeschreibungen (Kurzreferenz)
+## Methodische Hinweise (paper-relevant)
 
-- `X_sequences.npy`, `y_sequences.npy` — NumPy-Arrays: Inputs (3D: samples, timesteps, features), Targets (labels/values pro Sample).
-- `scaler.joblib` — scikit-learn Objekt zur Normalisierung; bei Inferenz vor dem Modell anwenden und nachher invertieren falls nötig.
-- `metrics.json` — JSON mit Schlüsseln wie `loss`, `val_loss`, `mae`, `rmse` etc.
+1. **Kein Sequenz-Level-Leakage.** Train/Val/Test wird auf **Segment-Ebene** gesplittet. Sliding-Window-Sequenzen aus demselben Entladesegment landen nie in Train UND Test. Auf identischer Datenbasis: MAE 0.53 h (Random-Split, geleakt) → 9.96 h (Segment-Split, sauber). Diese Größenordnung-Differenz ist im Paper als methodischer Beitrag wert (Hidden Leaks in Time Series Forecasting, Polonis 2025).
+2. **Zwei Targets pro Sample.** `y_extrap` (Trainings-Target mit Drain-Rate-Extrapolation) und `y_real` (gemessene Restzeit ohne Extrapolation). Endergebnisse werden gegen `y_extrap` auf Common-Subset berichtet (das gemeinsame Approximations-Target aller 6 Methoden).
+3. **Common-Subset-Tabelle.** Der faire Vergleich nur dort, wo alle 6 Methoden gültige Werte haben (Google API undefiniert wenn ladend, Exp-Fit undefiniert am Segment-Anfang etc.).
+4. **Concordance-Index (Harrell 1982)** zusätzlich zu MAE — Bias-robust und auch bei zensierten Targets aussagekräftig (Li et al. 2018).
+5. **Bootstrap 95%-CI** für MAE/RMSE/C-Index (1.000 Resamples) und **Permutationstests** für paarweise Methoden-Vergleiche.
+6. **Modell-unabhängige Daten-Diagnose** (Pearson, Spearman, Mutual Information) ergänzt die Random-Forest-Permutation-Importance — beide Sichten zusammen erlauben die Aussage, dass das Daten-Limit modell-unabhängig ist.
+7. **MLPerf-Tiny-konform**. TFLite-Effizienz wird in Größe + Latenz (avg, p50, p95) für alle Quantisierungen gemessen.
 
-Entwicklungsempfehlungen
+## Android-App
 
-- Git: Ignoriere große Dateien wie `android/build/` und `model/*.tflite` im Repo (oder verwende ein Releases-Asset/Storage), stattdessen nur Quellcode und kleine Checkpoints versionieren.
-- Konfiguration: Ergänze ein `requirements.txt` oder `pyproject.toml` für reproduzierbare Abhängigkeiten.
-- Automatisierung: Füge ein `Makefile` oder PowerShell-Skripte hinzu, die häufige Abläufe kapseln.
+```powershell
+cd android
+./gradlew.bat assembleDebug
+```
 
-Abschluss
+Wichtige Code-Stellen:
+- `DataCollectorService.kt` — alle 30 s ein Datenpunkt (10 Features + Google-Schätzung + Personalized-Flag + eigene Vorhersage + lineare Baseline) wird in `filesDir/battery_data.csv` geschrieben.
+- `BatteryPredictor.kt` — TFLite-Interpreter mit StandardScaler. Nach jedem Re-Training die Scaler-Werte neu setzen via:
+  ```powershell
+  python -m methods.tinyml.export_scaler_for_android
+  ```
+- Wenn das CSV-Schema sich ändert (neue Spalte in `BatteryDataPoint.CSV_HEADER`), parkt der Logger die alte CSV automatisch unter `battery_data_legacy_<timestamp>.csv`.
 
-Diese README wurde automatisch erstellt, ohne andere Dateien zu verändern. Wenn du möchtest, kann ich optional ein `requirements.txt` generieren oder die Skripte um einheitliche CLI-Argumente erweitern.
+## Daten exportieren vom Phone
+
+CSV via Share-Intent (Mail / Drive / USB) ans Notebook holen, nach `data/raw/real_battery_data.csv` legen, dann `python run_pipeline.py`.

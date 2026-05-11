@@ -1,0 +1,674 @@
+{
+  "_meta": {
+    "n": 13901,
+    "feature_names": [
+      "battery_level",
+      "screen_on",
+      "brightness",
+      "active_app_category",
+      "wifi_on",
+      "mobile_data_on",
+      "charging",
+      "cpu_usage",
+      "temperature",
+      "hotspot_on"
+    ],
+    "split": "train"
+  },
+  "current_vs_y_extrap": [
+    {
+      "feature": "battery_level",
+      "pearson_r": 0.432182252407074,
+      "pearson_p": 0.0,
+      "spearman_r": 0.5771345019863129,
+      "mi_nat": 1.7190060856540863,
+      "constant": false
+    },
+    {
+      "feature": "screen_on",
+      "pearson_r": -0.3446184992790222,
+      "pearson_p": 0.0,
+      "spearman_r": -0.2542032647391729,
+      "mi_nat": 0.15477661715974067,
+      "constant": false
+    },
+    {
+      "feature": "brightness",
+      "pearson_r": -0.024370305240154266,
+      "pearson_p": 0.004059649538248777,
+      "spearman_r": 0.07873472184711729,
+      "mi_nat": 1.1389521053562266,
+      "constant": false
+    },
+    {
+      "feature": "active_app_category",
+      "pearson_r": -0.10025383532047272,
+      "pearson_p": 2.1784086454653947e-32,
+      "spearman_r": -0.05524018918977506,
+      "mi_nat": 0.2881173007684925,
+      "constant": false
+    },
+    {
+      "feature": "wifi_on",
+      "pearson_r": 0.5050321221351624,
+      "pearson_p": 0.0,
+      "spearman_r": 0.38928130959259827,
+      "mi_nat": 0.2412118398175932,
+      "constant": false
+    },
+    {
+      "feature": "mobile_data_on",
+      "pearson_r": -0.5026819705963135,
+      "pearson_p": 0.0,
+      "spearman_r": -0.3881873592242816,
+      "mi_nat": 0.2413343977746525,
+      "constant": false
+    },
+    {
+      "feature": "charging",
+      "pearson_r": 0.0,
+      "pearson_p": NaN,
+      "spearman_r": 0.0,
+      "mi_nat": 0.001582619955401876,
+      "constant": true
+    },
+    {
+      "feature": "cpu_usage",
+      "pearson_r": -0.05362197384238243,
+      "pearson_p": 2.51350912305881e-10,
+      "spearman_r": 0.015640884873013964,
+      "mi_nat": 0.3130572569410104,
+      "constant": false
+    },
+    {
+      "feature": "temperature",
+      "pearson_r": -0.237776979804039,
+      "pearson_p": 0.0,
+      "spearman_r": -0.2640880272482789,
+      "mi_nat": 2.0739349636142284,
+      "constant": false
+    },
+    {
+      "feature": "hotspot_on",
+      "pearson_r": 0.5281592011451721,
+      "pearson_p": 0.0,
+      "spearman_r": 0.35837093616197524,
+      "mi_nat": 0.22501320194139762,
+      "constant": false
+    }
+  ],
+  "current_vs_y_real": [
+    {
+      "feature": "battery_level",
+      "pearson_r": 0.2182067483663559,
+      "pearson_p": 0.0,
+      "spearman_r": 0.16313615415173435,
+      "mi_nat": 0.6534185749492263,
+      "constant": false
+    },
+    {
+      "feature": "screen_on",
+      "pearson_r": -0.18206381797790527,
+      "pearson_p": 0.0,
+      "spearman_r": -0.008114713847481263,
+      "mi_nat": 0.036175876948442154,
+      "constant": false
+    },
+    {
+      "feature": "brightness",
+      "pearson_r": -0.026677945628762245,
+      "pearson_p": 0.001657034968957305,
+      "spearman_r": -0.23831339040053165,
+      "mi_nat": 0.35384822191587917,
+      "constant": false
+    },
+    {
+      "feature": "active_app_category",
+      "pearson_r": -0.15242119133472443,
+      "pearson_p": 0.0,
+      "spearman_r": 0.004004888611636411,
+      "mi_nat": 0.05469587592595282,
+      "constant": false
+    },
+    {
+      "feature": "wifi_on",
+      "pearson_r": 0.42171892523765564,
+      "pearson_p": 0.0,
+      "spearman_r": 0.2314039263765748,
+      "mi_nat": 0.04230230674814717,
+      "constant": false
+    },
+    {
+      "feature": "mobile_data_on",
+      "pearson_r": -0.41873493790626526,
+      "pearson_p": 0.0,
+      "spearman_r": -0.22738052147379248,
+      "mi_nat": 0.04192821876688435,
+      "constant": false
+    },
+    {
+      "feature": "charging",
+      "pearson_r": 0.0,
+      "pearson_p": NaN,
+      "spearman_r": 0.0,
+      "mi_nat": 0.003884612617800265,
+      "constant": true
+    },
+    {
+      "feature": "cpu_usage",
+      "pearson_r": -0.20424699783325195,
+      "pearson_p": 0.0,
+      "spearman_r": -0.1818104179965997,
+      "mi_nat": 0.08954639258661778,
+      "constant": false
+    },
+    {
+      "feature": "temperature",
+      "pearson_r": -0.12065389007329941,
+      "pearson_p": 0.0,
+      "spearman_r": 0.051084968261205885,
+      "mi_nat": 0.9297463104740018,
+      "constant": false
+    },
+    {
+      "feature": "hotspot_on",
+      "pearson_r": 0.47459957003593445,
+      "pearson_p": 0.0,
+      "spearman_r": 0.285903989354043,
+      "mi_nat": 0.055870540822474224,
+      "constant": false
+    }
+  ],
+  "mean_vs_y_extrap": [
+    {
+      "feature": "battery_level",
+      "pearson_r": 0.4247996509075165,
+      "pearson_p": 0.0,
+      "spearman_r": 0.5650729036463122,
+      "mi_nat": 1.6065592122797865,
+      "constant": false
+    },
+    {
+      "feature": "screen_on",
+      "pearson_r": -0.4090154469013214,
+      "pearson_p": 0.0,
+      "spearman_r": -0.28434029380945264,
+      "mi_nat": 0.35261937920931063,
+      "constant": false
+    },
+    {
+      "feature": "brightness",
+      "pearson_r": -0.03132161498069763,
+      "pearson_p": 0.00022121085203252733,
+      "spearman_r": 0.0766780372267058,
+      "mi_nat": 1.2207973498723566,
+      "constant": false
+    },
+    {
+      "feature": "active_app_category",
+      "pearson_r": -0.11900747567415237,
+      "pearson_p": 5.605193857299268e-45,
+      "spearman_r": -0.04433745724482385,
+      "mi_nat": 0.6403050533373822,
+      "constant": false
+    },
+    {
+      "feature": "wifi_on",
+      "pearson_r": 0.5067659616470337,
+      "pearson_p": 0.0,
+      "spearman_r": 0.3895064052158328,
+      "mi_nat": 0.24197144077667376,
+      "constant": false
+    },
+    {
+      "feature": "mobile_data_on",
+      "pearson_r": -0.5060781240463257,
+      "pearson_p": 0.0,
+      "spearman_r": -0.3886123956262747,
+      "mi_nat": 0.24282205808958812,
+      "constant": false
+    },
+    {
+      "feature": "charging",
+      "pearson_r": 0.0,
+      "pearson_p": NaN,
+      "spearman_r": 0.0,
+      "mi_nat": 0.001582619955401876,
+      "constant": true
+    },
+    {
+      "feature": "cpu_usage",
+      "pearson_r": -0.08276066929101944,
+      "pearson_p": 1.461865027844707e-22,
+      "spearman_r": 0.01820472308449072,
+      "mi_nat": 0.4784089020824345,
+      "constant": false
+    },
+    {
+      "feature": "temperature",
+      "pearson_r": -0.2262953519821167,
+      "pearson_p": 0.0,
+      "spearman_r": -0.2612020237084553,
+      "mi_nat": 1.0961799915783184,
+      "constant": false
+    },
+    {
+      "feature": "hotspot_on",
+      "pearson_r": 0.5285012125968933,
+      "pearson_p": 0.0,
+      "spearman_r": 0.35994340248081397,
+      "mi_nat": 0.22566461891855027,
+      "constant": false
+    }
+  ],
+  "mean_vs_y_real": [
+    {
+      "feature": "battery_level",
+      "pearson_r": 0.21401019394397736,
+      "pearson_p": 0.0,
+      "spearman_r": 0.15825655449377868,
+      "mi_nat": 0.9045673398104075,
+      "constant": false
+    },
+    {
+      "feature": "screen_on",
+      "pearson_r": -0.247794970870018,
+      "pearson_p": 0.0,
+      "spearman_r": 0.0290134266612994,
+      "mi_nat": 0.10115675336333352,
+      "constant": false
+    },
+    {
+      "feature": "brightness",
+      "pearson_r": -0.029598407447338104,
+      "pearson_p": 0.00048271167906932533,
+      "spearman_r": -0.25227883065758133,
+      "mi_nat": 0.4061502775326584,
+      "constant": false
+    },
+    {
+      "feature": "active_app_category",
+      "pearson_r": -0.21286725997924805,
+      "pearson_p": 0.0,
+      "spearman_r": -0.046638603592652414,
+      "mi_nat": 0.1341112579116288,
+      "constant": false
+    },
+    {
+      "feature": "wifi_on",
+      "pearson_r": 0.42367491126060486,
+      "pearson_p": 0.0,
+      "spearman_r": 0.2317978182326625,
+      "mi_nat": 0.04229924237330818,
+      "constant": false
+    },
+    {
+      "feature": "mobile_data_on",
+      "pearson_r": -0.42262572050094604,
+      "pearson_p": 0.0,
+      "spearman_r": -0.22816575771865555,
+      "mi_nat": 0.0430569896179529,
+      "constant": false
+    },
+    {
+      "feature": "charging",
+      "pearson_r": 0.0,
+      "pearson_p": NaN,
+      "spearman_r": 0.0,
+      "mi_nat": 0.003884612617800265,
+      "constant": true
+    },
+    {
+      "feature": "cpu_usage",
+      "pearson_r": -0.3335682153701782,
+      "pearson_p": 0.0,
+      "spearman_r": -0.2402360183782972,
+      "mi_nat": 0.2847832301568616,
+      "constant": false
+    },
+    {
+      "feature": "temperature",
+      "pearson_r": -0.11348292976617813,
+      "pearson_p": 4.488358981232389e-41,
+      "spearman_r": 0.05162809980149609,
+      "mi_nat": 0.6084203993275192,
+      "constant": false
+    },
+    {
+      "feature": "hotspot_on",
+      "pearson_r": 0.4731941223144531,
+      "pearson_p": 0.0,
+      "spearman_r": 0.2824387732152421,
+      "mi_nat": 0.056060036245755285,
+      "constant": false
+    }
+  ],
+  "std_vs_y_extrap": [
+    {
+      "feature": "battery_level",
+      "pearson_r": -0.02933640033006668,
+      "pearson_p": 0.0005416324129328132,
+      "spearman_r": -0.18567820161435875,
+      "mi_nat": 0.3975861935947158,
+      "constant": false
+    },
+    {
+      "feature": "screen_on",
+      "pearson_r": 0.0028898590244352818,
+      "pearson_p": 0.7333346009254456,
+      "spearman_r": 0.20236576006399865,
+      "mi_nat": 0.12227067290528781,
+      "constant": false
+    },
+    {
+      "feature": "brightness",
+      "pearson_r": -0.0069688186049461365,
+      "pearson_p": 0.41131505370140076,
+      "spearman_r": -0.031361800832658826,
+      "mi_nat": 0.5187491674623277,
+      "constant": false
+    },
+    {
+      "feature": "active_app_category",
+      "pearson_r": -0.03674408793449402,
+      "pearson_p": 1.4689268937218003e-05,
+      "spearman_r": -0.006027010356589226,
+      "mi_nat": 0.47055444928584356,
+      "constant": false
+    },
+    {
+      "feature": "wifi_on",
+      "pearson_r": -0.008626659400761127,
+      "pearson_p": 0.30913588404655457,
+      "spearman_r": 0.3890341282291884,
+      "mi_nat": 0.0015469194270640862,
+      "constant": false
+    },
+    {
+      "feature": "mobile_data_on",
+      "pearson_r": -0.01191781647503376,
+      "pearson_p": 0.16000181436538696,
+      "spearman_r": 0.3877206668261496,
+      "mi_nat": 0.005021431751508154,
+      "constant": false
+    },
+    {
+      "feature": "charging",
+      "pearson_r": 0.0,
+      "pearson_p": NaN,
+      "spearman_r": 0.0,
+      "mi_nat": 0.001582619955401876,
+      "constant": true
+    },
+    {
+      "feature": "cpu_usage",
+      "pearson_r": -0.2474917769432068,
+      "pearson_p": 0.0,
+      "spearman_r": -0.22929289100615238,
+      "mi_nat": 0.47819873283217884,
+      "constant": false
+    },
+    {
+      "feature": "temperature",
+      "pearson_r": -0.03736736997961998,
+      "pearson_p": 1.0488663974683732e-05,
+      "spearman_r": -0.023313118631139967,
+      "mi_nat": 0.3933962863539904,
+      "constant": false
+    },
+    {
+      "feature": "hotspot_on",
+      "pearson_r": 0.01946852169930935,
+      "pearson_p": 0.02171013131737709,
+      "spearman_r": -0.3537707928685118,
+      "mi_nat": 0.0016537517896019205,
+      "constant": false
+    }
+  ],
+  "std_vs_y_real": [
+    {
+      "feature": "battery_level",
+      "pearson_r": -0.12046070396900177,
+      "pearson_p": 0.0,
+      "spearman_r": -0.18895020393730175,
+      "mi_nat": 0.08268602330134689,
+      "constant": false
+    },
+    {
+      "feature": "screen_on",
+      "pearson_r": -0.17727245390415192,
+      "pearson_p": 0.0,
+      "spearman_r": -0.1232414736611848,
+      "mi_nat": 0.052953876952358314,
+      "constant": false
+    },
+    {
+      "feature": "brightness",
+      "pearson_r": -0.040515560656785965,
+      "pearson_p": 1.766814420989249e-06,
+      "spearman_r": -0.16876484841727932,
+      "mi_nat": 0.1856626989399759,
+      "constant": false
+    },
+    {
+      "feature": "active_app_category",
+      "pearson_r": -0.22641678154468536,
+      "pearson_p": 0.0,
+      "spearman_r": -0.22435990714106505,
+      "mi_nat": 0.13105543688961951,
+      "constant": false
+    },
+    {
+      "feature": "wifi_on",
+      "pearson_r": -0.018114496022462845,
+      "pearson_p": 0.032702092081308365,
+      "spearman_r": 0.23099683986108138,
+      "mi_nat": 0.003961592154881233,
+      "constant": false
+    },
+    {
+      "feature": "mobile_data_on",
+      "pearson_r": -0.025869522243738174,
+      "pearson_p": 0.002286025322973728,
+      "spearman_r": 0.22657047184976936,
+      "mi_nat": 0.005232822061836839,
+      "constant": false
+    },
+    {
+      "feature": "charging",
+      "pearson_r": 0.0,
+      "pearson_p": NaN,
+      "spearman_r": 0.0,
+      "mi_nat": 0.003884612617800265,
+      "constant": true
+    },
+    {
+      "feature": "cpu_usage",
+      "pearson_r": -0.12240270525217056,
+      "pearson_p": 0.0,
+      "spearman_r": -0.08934677415470836,
+      "mi_nat": 0.3078781232407053,
+      "constant": false
+    },
+    {
+      "feature": "temperature",
+      "pearson_r": -0.1905982941389084,
+      "pearson_p": 0.0,
+      "spearman_r": -0.19591761461069057,
+      "mi_nat": 0.15802847135886555,
+      "constant": false
+    },
+    {
+      "feature": "hotspot_on",
+      "pearson_r": -0.01674826815724373,
+      "pearson_p": 0.04831032454967499,
+      "spearman_r": -0.2869538269266648,
+      "mi_nat": 0.004378659792576789,
+      "constant": false
+    }
+  ],
+  "trend_vs_y_extrap": [
+    {
+      "feature": "battery_level",
+      "pearson_r": 0.09615658223628998,
+      "pearson_p": 6.433751792107001e-30,
+      "spearman_r": 0.15357286649658458,
+      "mi_nat": 0.4521267467807779,
+      "constant": false
+    },
+    {
+      "feature": "screen_on",
+      "pearson_r": -0.011769335716962814,
+      "pearson_p": 0.16527333855628967,
+      "spearman_r": 0.0018228495894302447,
+      "mi_nat": 0.08015642784758792,
+      "constant": false
+    },
+    {
+      "feature": "brightness",
+      "pearson_r": 0.006217018701136112,
+      "pearson_p": 0.4635941982269287,
+      "spearman_r": 0.005078978524375941,
+      "mi_nat": 0.5603064181309998,
+      "constant": false
+    },
+    {
+      "feature": "active_app_category",
+      "pearson_r": -0.01291610300540924,
+      "pearson_p": 0.12781734764575958,
+      "spearman_r": -0.004489440687333227,
+      "mi_nat": 0.2432209481067198,
+      "constant": false
+    },
+    {
+      "feature": "wifi_on",
+      "pearson_r": -0.008757585659623146,
+      "pearson_p": 0.3018525242805481,
+      "spearman_r": 0.002101592828981147,
+      "mi_nat": 0.004363237596422209,
+      "constant": false
+    },
+    {
+      "feature": "mobile_data_on",
+      "pearson_r": 0.012067626230418682,
+      "pearson_p": 0.15481357276439667,
+      "spearman_r": -0.002765235663930761,
+      "mi_nat": 0.006540855360060438,
+      "constant": false
+    },
+    {
+      "feature": "charging",
+      "pearson_r": 0.0,
+      "pearson_p": NaN,
+      "spearman_r": 0.0,
+      "mi_nat": 0.001582619955401876,
+      "constant": true
+    },
+    {
+      "feature": "cpu_usage",
+      "pearson_r": -0.0034066112712025642,
+      "pearson_p": 0.687965989112854,
+      "spearman_r": 0.0008309608981731649,
+      "mi_nat": 0.05229583749397193,
+      "constant": false
+    },
+    {
+      "feature": "temperature",
+      "pearson_r": -0.050052568316459656,
+      "pearson_p": 3.537438786338498e-09,
+      "spearman_r": -0.021009372902073626,
+      "mi_nat": 0.9850637048014921,
+      "constant": false
+    },
+    {
+      "feature": "hotspot_on",
+      "pearson_r": -0.019762447103857994,
+      "pearson_p": 0.01980329491198063,
+      "spearman_r": -0.031096103418221045,
+      "mi_nat": 0.005682948469860394,
+      "constant": false
+    }
+  ],
+  "trend_vs_y_real": [
+    {
+      "feature": "battery_level",
+      "pearson_r": 0.06396205723285675,
+      "pearson_p": 4.4082955601848495e-14,
+      "spearman_r": 0.10176426178646085,
+      "mi_nat": 0.10608179271061013,
+      "constant": false
+    },
+    {
+      "feature": "screen_on",
+      "pearson_r": 0.030410917475819588,
+      "pearson_p": 0.00033575494308024645,
+      "spearman_r": 0.07234018775033846,
+      "mi_nat": 0.03629111997668333,
+      "constant": false
+    },
+    {
+      "feature": "brightness",
+      "pearson_r": -0.002528992947191,
+      "pearson_p": 0.7655870914459229,
+      "spearman_r": 0.04347151133663069,
+      "mi_nat": 0.20152544619828072,
+      "constant": false
+    },
+    {
+      "feature": "active_app_category",
+      "pearson_r": 0.018695173785090446,
+      "pearson_p": 0.02751060761511326,
+      "spearman_r": 0.05990066019782666,
+      "mi_nat": 0.05717888978860941,
+      "constant": false
+    },
+    {
+      "feature": "wifi_on",
+      "pearson_r": -0.018388500437140465,
+      "pearson_p": 0.030155669897794724,
+      "spearman_r": -0.0331680963515363,
+      "mi_nat": 0.00502703193109777,
+      "constant": false
+    },
+    {
+      "feature": "mobile_data_on",
+      "pearson_r": 0.02614440955221653,
+      "pearson_p": 0.002051055431365967,
+      "spearman_r": 0.04984502706457895,
+      "mi_nat": 0.005583089052448753,
+      "constant": false
+    },
+    {
+      "feature": "charging",
+      "pearson_r": 0.0,
+      "pearson_p": NaN,
+      "spearman_r": 0.0,
+      "mi_nat": 0.003884612617800265,
+      "constant": true
+    },
+    {
+      "feature": "cpu_usage",
+      "pearson_r": 0.0035621554125100374,
+      "pearson_p": 0.6745166778564453,
+      "spearman_r": 0.009751320362907663,
+      "mi_nat": 0.017049583784220168,
+      "constant": false
+    },
+    {
+      "feature": "temperature",
+      "pearson_r": -0.03455778956413269,
+      "pearson_p": 4.5954249799251556e-05,
+      "spearman_r": -0.06501116193851801,
+      "mi_nat": 0.3453097546113826,
+      "constant": false
+    },
+    {
+      "feature": "hotspot_on",
+      "pearson_r": 0.017000935971736908,
+      "pearson_p": 0.04502563923597336,
+      "spearman_r": 0.0265940997349345,
+      "mi_nat": 0.005282939547607057,
+      "constant": false
+    }
+  ]
+}

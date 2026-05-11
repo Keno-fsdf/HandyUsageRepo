@@ -1,0 +1,24 @@
+{
+  "_meta": {
+    "source_csv": "data\\raw\\combined.csv",
+    "n_total_sequences": 20842,
+    "n_segments": 553
+  },
+  "random_shuffle_leaky": {
+    "n_train": 14589,
+    "n_val": 3126,
+    "n_test": 3127,
+    "test_mae_h": 3.9973068237304688,
+    "test_rmse_h": 7.007923126220703,
+    "epochs_run": 144
+  },
+  "segment_level_clean": {
+    "n_train": 13901,
+    "n_val": 3056,
+    "n_test": 3885,
+    "test_mae_h": 4.967447757720947,
+    "test_rmse_h": 9.033625602722168,
+    "epochs_run": 21
+  },
+  "inflation_factor": 1.2426986410528023
+}

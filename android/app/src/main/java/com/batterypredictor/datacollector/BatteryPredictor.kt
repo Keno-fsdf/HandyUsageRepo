@@ -22,16 +22,21 @@ class BatteryPredictor(context: Context) {
         const val SEQUENCE_LENGTH = 10
         const val NUM_FEATURES = 10
 
-        // StandardScaler Parameter aus dem Training (scaler_real.joblib)
-        // Reihenfolge: battery_level, screen_on, brightness, active_app_category,
-        //              wifi_on, mobile_data_on, charging, cpu_usage, temperature, hotspot_on
+        // StandardScaler-Parameter aus dem Training.
+        // WICHTIG: Nach jedem Re-Training neu generieren mit
+        //     python -m methods.tinyml.export_scaler_for_android
+        // Die Reihenfolge muss exakt der Feature-Liste in configs/default.yaml entsprechen:
+        //   battery_level, screen_on, brightness, active_app_category,
+        //   wifi_on, mobile_data_on, charging, cpu_usage, temperature, hotspot_on
+        // Aktuelle Werte aus multi-device Training (4 Geräte, models/scaler.joblib).
+        // Regenerieren via: python -m methods.tinyml.export_scaler_for_android
         private val SCALER_MEAN = floatArrayOf(
-            84.694f, 0.810f, 9.339f, 1.779f, 0.0f,
-            1.0f, 0.0f, 53.982f, 31.925f, 0.0f
+            68.785519f, 0.826048f, 8.473016f, 1.311179f, 0.080822f,
+            0.918920f, 0.000000f, 46.353606f, 33.004194f, 0.071038f
         )
         private val SCALER_SCALE = floatArrayOf(
-            17.481f, 0.392f, 11.558f, 1.254f, 1.0f,
-            1.0f, 1.0f, 13.401f, 4.773f, 1.0f
+            29.605581f, 0.379068f, 13.013102f, 1.169956f, 0.272561f,
+            0.272959f, 1.000000f, 16.927498f, 4.214697f, 0.256888f
         )
     }
 
@@ -56,21 +61,13 @@ class BatteryPredictor(context: Context) {
 
     /**
      * Neuen Datenpunkt hinzufügen und Vorhersage machen (falls genug Daten).
+     * @param features Feature-Array in der Reihenfolge aus configs/default.yaml.
      * @return Restlaufzeit in Stunden, oder -1f wenn noch nicht genug Daten (braucht 10 Punkte)
      */
-    fun addDataAndPredict(data: BatteryDataPoint): Float {
-        val features = floatArrayOf(
-            data.batteryLevel,
-            data.screenOn.toFloat(),
-            data.brightness,
-            data.activeAppCategory.toFloat(),
-            data.wifiOn.toFloat(),
-            data.mobileDataOn.toFloat(),
-            data.charging.toFloat(),
-            data.cpuUsage,
-            data.temperature,
-            data.hotspotOn.toFloat()
-        )
+    fun addDataAndPredict(features: FloatArray): Float {
+        require(features.size == NUM_FEATURES) {
+            "expected $NUM_FEATURES features, got ${features.size}"
+        }
 
         // Normalisieren (StandardScaler: (x - mean) / scale)
         val normalized = FloatArray(NUM_FEATURES) { i ->

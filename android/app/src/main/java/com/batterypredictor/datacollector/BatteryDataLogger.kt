@@ -20,13 +20,22 @@ class BatteryDataLogger(private val context: Context) {
     private var count = 0
 
     init {
-        // Header schreiben falls Datei neu
+        val expectedHeader = "session_id,timestamp,datetime,${BatteryDataPoint.CSV_HEADER}"
+
         if (!csvFile.exists() || csvFile.length() == 0L) {
-            csvFile.writeText("session_id,timestamp,datetime,${BatteryDataPoint.CSV_HEADER}\n")
+            csvFile.writeText("$expectedHeader\n")
+        } else {
+            // Schema-Drift: alte CSV (z.B. ohne system_personalized) parken,
+            // neue beginnen. Sonst werden Spalten falsch zugeordnet.
+            val firstLine = csvFile.useLines { it.firstOrNull() ?: "" }
+            if (firstLine != expectedHeader) {
+                val backup = File(context.filesDir, "battery_data_legacy_${System.currentTimeMillis()}.csv")
+                csvFile.copyTo(backup, overwrite = true)
+                csvFile.writeText("$expectedHeader\n")
+            }
         }
-        // Bestehende Zeilen zählen
         count = if (csvFile.exists()) {
-            csvFile.readLines().size - 1 // minus Header
+            csvFile.readLines().size - 1
         } else 0
     }
 

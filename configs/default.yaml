@@ -1,0 +1,92 @@
+# Zentrale Konfiguration - eine Wahrheit für die ganze Pipeline.
+# Wird von methods/* und evaluation/* gelesen.
+
+paths:
+  raw_csv: data/raw/combined.csv
+  processed_dir: data/processed
+  models_dir: models
+  reports_dir: reports
+  figures_dir: reports/figures
+
+# Multi-Device-Setup: Liste aller Geraete-CSVs.
+# merge_devices.py konsolidiert sie zu paths.raw_csv (combined.csv).
+devices:
+  - name: xiaomi_2107113sg
+    csv: data/raw/real_battery_data.csv
+  - name: pixel_9_pro_xl
+    csv: data/raw/pixel_9_pro_xl.csv
+  - name: pixel_8_pro
+    csv: data/raw/pixel_8_pro.csv
+  - name: pixel_7_pro
+    csv: data/raw/pixel_7_pro.csv
+
+# Feature-Reihenfolge ist Vertrag mit der Android-App (BatteryPredictor.kt).
+# NICHT umsortieren ohne Android-Update.
+features:
+  - battery_level
+  - screen_on
+  - brightness
+  - active_app_category
+  - wifi_on
+  - mobile_data_on
+  - charging
+  - cpu_usage
+  - temperature
+  - hotspot_on
+
+data_prep:
+  sequence_length: 10           # Sliding-Window Größe
+  min_segment_length: 15        # Mindestpunkte pro Entladesegment
+  max_gap_ms: 300000            # 5 min Lücke = Segment-Split
+  # WICHTIG: Split auf Segment-Ebene, NICHT Sequenz-Ebene -> kein Leakage
+  split:
+    train: 0.70
+    val: 0.15
+    test: 0.15
+    seed: 42
+  # Target-Berechnung: extrapolierte Restzeit (für Training).
+  # Für faire Evaluation wird zusätzlich das nicht-extrapolierte Target gespeichert.
+  use_extrapolated_target: true
+
+train:
+  epochs: 150
+  batch_size: 32
+  learning_rate: 0.0005
+  patience: 20
+  reduce_lr_factor: 0.5
+  reduce_lr_patience: 5
+  min_lr: 0.000001
+  dropout: 0.2
+  conv_filters: 32
+  conv_kernel: 3
+  dense_1: 32
+  dense_2: 16
+  seed: 42
+
+tflite:
+  variants:
+    - dynamic_range
+    - float16
+    - int8_full
+  representative_samples: 200
+  # int8_full ist Default für Android-Deployment (kleinste Größe + ausreichende Genauigkeit).
+  deploy_variant: int8_full
+
+evaluation:
+  accuracy_tolerances_h: [1.0, 2.0]
+  cumulative_max_h: 10.0
+  cumulative_steps: 300
+  # Effizienz-Benchmark: Anzahl Wiederholungen für stabile Latenz-Messung
+  efficiency:
+    warmup_runs: 50
+    measurement_runs: 1000
+
+baselines:
+  exponential_fit:
+    # Modell: b(t) = a + b * exp(-k * t), gefittet auf die letzten N Punkte.
+    # Extrapolation bis b=0 -> Restlaufzeit.
+    fit_window: 10
+    fallback_to_linear: true   # falls exp-Fit divergiert
+  linear:
+    # Naive Linear: aktueller Akku / mittlere Drain-Rate der letzten N Punkte
+    drain_window: 10

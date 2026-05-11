@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Node.js (paper/build_pptx.js dependencies)
+node_modules/
+package-lock.json
+
+# Pipeline-Artefakte (regenerierbar via run_pipeline.py)
+data/processed/*.npz
+data/processed/predictions_*.npz
+models/battery_model.keras
+models/battery_model*.tflite
+models/random_forest.joblib
+models/scaler.joblib
+
+# LaTeX-Build
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.synctex.gz
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# MS Office lock files
+~$*
+
+# Auto-generated artifacts that don't need tracking
+paper/slide-*.jpg
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.toc
+
+# Android (Build-Output, nicht Source)
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties

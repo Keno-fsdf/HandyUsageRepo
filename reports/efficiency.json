@@ -1,0 +1,35 @@
+{
+  "_meta": {
+    "warmup": 50,
+    "runs": 1000
+  },
+  "keras_float32": {
+    "n_params": 5697,
+    "size_kb": 109.18,
+    "avg_inference_ms": 47.1477,
+    "p50_inference_ms": 45.7864,
+    "p95_inference_ms": 56.4962,
+    "n_runs": 1000
+  },
+  "tflite_dynamic_range": {
+    "size_kb": 15.99,
+    "avg_inference_ms": 0.0039,
+    "p50_inference_ms": 0.0038,
+    "p95_inference_ms": 0.0041,
+    "n_runs": 1000
+  },
+  "tflite_float16": {
+    "size_kb": 17.8,
+    "avg_inference_ms": 0.0037,
+    "p50_inference_ms": 0.0036,
+    "p95_inference_ms": 0.004,
+    "n_runs": 1000
+  },
+  "tflite_int8_full": {
+    "size_kb": 14.35,
+    "avg_inference_ms": 0.0045,
+    "p50_inference_ms": 0.0045,
+    "p95_inference_ms": 0.0047,
+    "n_runs": 1000
+  }
+}

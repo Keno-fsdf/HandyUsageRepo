@@ -1,0 +1,8 @@
+{
+  "n_estimators": 200,
+  "n_input_features": 100,
+  "train_mae_h_extrap": 1.3515,
+  "val_mae_h_extrap": 9.1022,
+  "train_n": 13901,
+  "val_n": 3056
+}
