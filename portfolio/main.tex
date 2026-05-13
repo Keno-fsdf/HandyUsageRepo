@@ -68,6 +68,8 @@
     framexleftmargin=1em,
 }
 \lstset{style=mystyle}
+\renewcommand{\lstlistlistingname}{Quellcode-Verzeichnis}
+\renewcommand{\lstlistingname}{Quellcode}
 
 \lstdefinelanguage{Kotlin}{
   morekeywords={fun,val,var,class,object,import,package,
@@ -83,6 +85,10 @@
 % ── Eigene Befehle ─────────────────────────────────────────
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\datei}[1]{\texttt{\small #1}}
+
+% ── Trennregeln fuer Komposita ─────────────────────────────
+\hyphenation{Fore-ground-Ser-vi-ces Hy-per-pa-ra-me-ter-Tu-ning
+             Seg-ment-Le-vel-Split Multi-De-vice}
 
 \begin{document}
 
@@ -124,7 +130,7 @@
 \end{tabular}
 
 \vfill
-{\large Würzburg, \today}
+{\large Würzburg, 12.\,Mai 2026}
 \end{titlepage}
 
 % ████████████████████████████████████████████████████████████
@@ -160,10 +166,10 @@ stand, kennt das Problem.
 
 Mit Android~12 hat Google im Oktober 2021 ein eigenes
 ML-basiertes Modell ins System eingebaut
-(\code{PowerManager.getBatteryDischargePrediction()}). Auf
-Pixel-Geräten nutzt der Settings-Screen diesen Wert; auf Geräten
-anderer Hersteller (Xiaomi, Samsung) wird er meist gar nicht
-angezeigt, obwohl die API verfügbar ist.
+(\code{PowerManager.getBatteryDischargePrediction()})~\cite{android2021powermanager}.
+Auf Pixel-Geräten nutzt der Settings-Screen diesen Wert; auf
+Geräten anderer Hersteller (Xiaomi, Samsung) wird er meist gar
+nicht angezeigt, obwohl die API verfügbar ist.
 
 \subsection{Zielsetzung}
 
@@ -502,7 +508,7 @@ Upload, keinen Server und keine Telemetrie.
 Für die drei Pixel-Geräte habe ich die App-APK an drei
 Familienmitglieder weitergegeben (per E-Mail bzw.\ direkt am
 Phone installiert). Vor der Installation wurde jeweils erklärt,
-welche Daten gesammelt werden (CSV mit 14 Spalten), dass sie nur
+welche Daten gesammelt werden (CSV mit 17 Spalten, davon 10 Sensor-Features plus Metadaten und Vergleichswerte), dass sie nur
 lokal auf ihrem Phone liegen, dass die CSV nur zu mir kommt, wenn
 sie sie aktiv per Share-Intent verschicken, und dass keinerlei
 Auto-Upload oder Hintergrund-Übertragung stattfindet. Eine
@@ -514,10 +520,11 @@ Abbildung~\ref{fig:app_screenshots} zeigt die Main Activity der App
 auf dem Xiaomi 2107113SG zu zwei Zeitpunkten: einmal direkt nach
 dem Service-Start (Modell sammelt erst zehn Datenpunkte, also
 fünf Minuten Aufwärmphase) und einmal mit aktiver TinyML-Vorhersage.
-Der Datenpunkt-Zähler im unteren Bereich (\code{Gesammelte
-Datenpunkte: 47.572}) ist ein wichtiges UX-Element: er gibt dem
-Nutzer Feedback, dass der Service tatsächlich noch läuft, ohne dass
-er die Notification öffnen muss.
+Der Datenpunkt-Zähler im unteren Bereich zeigt die Anzahl der vom
+Service aufgezeichneten Messpunkte (inkl.\ Lade-Phasen, die später
+bei der Auswertung herausgefiltert werden) und ist ein wichtiges
+UX-Element: er gibt dem Nutzer Feedback, dass der Service
+tatsächlich noch läuft, ohne dass er die Notification öffnen muss.
 
 \begin{figure}[H]
 \centering
@@ -818,7 +825,7 @@ denen EarlyStopping greift.
 \includegraphics[width=0.8\linewidth]{training_curves.png}
 \caption{Trainings- und Validation-MAE des Conv1D-Modells.
 Auf dem Multi-Device-Datensatz erreicht das Modell nach
-21~Epochen ein Validation-MAE von ca.\ 8\,h. Da
+21~Epochen ein Validation-MAE von ca.\ 5\,h. Da
 EarlyStopping mit \code{restore\_best\_weights=True}
 konfiguriert ist, wird das beste Modell zurückgegeben.}
 \label{fig:training_curves}
@@ -868,18 +875,20 @@ Konfiguration und Orchestrator                       & $\approx$\;300 \\
 \item Konkrete Implementierung der analytischen Baselines (Linear,
   Exponential mit Fallback und Cap gegen Divergenz).
 \item Segment-Level-Split als Anti-Leakage-Mechanismus.
-\item Auswertungs-Skripte: Bootstrap-Konfidenzintervalle,
-  Permutationstests, Per-Device-Analyse, Per-Bucket-Analyse.
+\item Auswertungs-Skripte: Genauigkeits-Metriken, Per-Device-Analyse,
+  Daten-Diagnose.
 \end{itemize}
 
 \textbf{Übernommen:}
 
 \begin{itemize}
-\item Conv1D-Architektur in Anlehnung an gängige TinyML-Topologien
+\item Conv1D-Architektur in Anlehnung an gängige
+  TinyML-Topologien~\cite{alajlan2022tinyml,banbury2021mlperf}
   (zwei Convolutions, GlobalAveragePooling, zwei Dense).
 \item TFLite-Konvertierungs-API (Standard-Funktionen von TensorFlow).
 \item \code{scikit-learn}: \code{StandardScaler},
-  \code{RandomForestRegressor}, \code{train\_test\_split}.
+  \code{RandomForestRegressor}~\cite{breiman2001random},
+  \code{train\_test\_split}.
 \item \code{scipy}: \code{curve\_fit} für den exponentiellen Fit.
 \end{itemize}
 
@@ -1027,16 +1036,15 @@ analytischen Baselines (Linear, Exponential) implementiert.
 \subsubsection*{Woche 6 (KW 18: 27.\,April -- 3.\,Mai)}
 
 \textbf{Auswertungs-Infrastruktur fertig stellen.}
-Bootstrap-Konfidenzintervalle, Permutationstests und
-modell-unabhängige Feature-Diagnose (Pearson, Spearman, Mutual
-Information) in die Pipeline integriert. Zwischendurch die
-Xiaomi-Datensammlung beendet (28.\,April) -- die finale Datenmenge
-stand fest: 66.001 Messpunkte. Der Wechsel von Single-Device auf
-Multi-Device zeigte spürbar klarere Unterschiede zwischen den
-Methoden als noch zuvor; das hat die Entscheidung bestätigt, die
-Datensammlung über mehrere Geräte hinweg auszudehnen.
+Auswertungs-Skripte für Modell-Genauigkeit, Gerät-Vergleiche und
+Datenverteilungs-Diagnose in die Pipeline integriert.
+Zwischendurch die Xiaomi-Datensammlung beendet (28.\,April) -- die
+finale Datenmenge stand fest: 66.001 Messpunkte. Der Wechsel von
+Single-Device auf Multi-Device zeigte spürbar klarere Unterschiede
+zwischen den Methoden als noch zuvor; das hat die Entscheidung
+bestätigt, die Datensammlung über mehrere Geräte hinweg auszudehnen.
 
-\subsubsection*{Woche 7 (KW 19: 4.--11.\,Mai)}
+\subsubsection*{Woche 7 (KW 19/20: 4.--11.\,Mai)}
 
 \textbf{Konsolidierung und Dokumentation.}
 Pixel-Datensammlung beendet (10.\,Mai). Die Per-Device-Auswertung
@@ -1064,7 +1072,7 @@ das Schreiben dieses Erfahrungsberichts.
 3 & Trainings-Pipeline + Leakage-Aha-Moment        & $\sim$\;20 \\
 4 & Schema-Migration + APK-Verteilung              & $\sim$\;10 \\
 5 & 6-Wege-Vergleich + analytische Baselines       & $\sim$\;18 \\
-6 & Statistische Tests + Daten-Diagnose            & $\sim$\;15 \\
+6 & Auswertungs-Skripte + Daten-Diagnose           & $\sim$\;15 \\
 7 & Portfolio/Paper schreiben + Audits             & $\sim$\;25 \\
 \midrule
 \textbf{Summe} & & \textbf{$\approx$\,120\,h} \\
@@ -1088,9 +1096,9 @@ Dieser Abschnitt ist bewusst transparent gehalten.
   Argument-Parser, Standard-Plot-Code (matplotlib).
 \item \emph{Recherche-Beschleunigung} -- Suche nach relevanter
   Android- und TinyML-Literatur.
-\item \emph{Statistische Tests} -- Implementierung des
-  Concordance-Index, Bootstrap-Konfidenzintervalle und
-  Permutationstests nach meinen Vorgaben.
+\item \emph{Auswertungs-Skripte} -- Modell-Genauigkeit,
+  Gerät-spezifische Auswertung und Daten-Diagnose nach meinen
+  Vorgaben.
 \item \emph{Schreibhilfe} -- Strukturierung dieses Portfolios und
   des separaten Papers, Tabellen-Formatierung, Korrektur-Lesen.
 \item \emph{Audit-Runden} -- systematisches Aufspüren eigener
@@ -1106,8 +1114,9 @@ Dieser Abschnitt ist bewusst transparent gehalten.
   Spezial-Rechte überhaupt lesen darf).
 \item Datensammlung auf den vier Geräten -- inklusive
   App-Verteilung an drei Familienmitglieder.
-\item Alle methodischen Entscheidungen: Segment-Level-Split,
-  Wahl der Vergleichsmethoden, Bucket-Analyse.
+\item Alle methodischen Entscheidungen: Feature-Auswahl,
+  Segment-Level-Split (Trainingsdaten-Aufbereitung), Auswahl der drei
+  in der App angezeigten Vergleichswerte.
 \item Kritisches Hinterfragen der KI-Vorschläge, wenn etwas
   verdächtig wirkte. Im Verlauf wurden so mehrere eigene Fehler
   (z.\,B.\ falsche Autoren bei drei Quellen, zu plakative Aussagen)
@@ -1177,5 +1186,13 @@ Debugging vor Ort.
 {\small Repository: \url{https://github.com/Keno-fsdf/HandyUsageRepo}}\\[0.3em]
 {\small Eingereicht am \emph{12.\,Mai 2026} -- Keno Schürger}
 \end{center}
+
+\newpage
+
+% ████████████████████████████████████████████████████████████
+%  LITERATUR
+% ████████████████████████████████████████████████████████████
+\bibliographystyle{plain}
+\bibliography{references}
 
 \end{document}

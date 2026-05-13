@@ -19,9 +19,13 @@ models/scaler.joblib
 
 # Lokale Migration-Backups (alte Schema-Versionen, App migriert automatisch)
 data/raw/*_legacy_*.csv
+data/raw/*_backup_*.csv
 
 # Pre-Merge-Snapshots
 .backup_premerge/
+
+# Editor temporaere Sicherungs-Dateien
+*.tex.tmp.*
 
 # LaTeX-Portfolio-Build
 portfolio/*.aux

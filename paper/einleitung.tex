@@ -1,0 +1,126 @@
+% =============================================================
+%  Einleitung -- Standalone-Dokument
+%  (Nur die Introduction, ohne Abstract/Methodik/Results/Disc.)
+%
+%  Konkrete Ergebnis-Zahlen sind durch X / Y ersetzt, damit nicht
+%  erkennbar ist, wie weit das Hauptpaper bereits ist.
+% =============================================================
+
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{siunitx}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  citecolor=blue!50!black,
+  urlcolor=blue!50!black,
+}
+
+\begin{document}
+
+\title{App-Level TinyML for Smartphone Battery-Life Prediction}
+
+\author{
+  \IEEEauthorblockN{Keno Schürger}
+  \IEEEauthorblockA{
+    Technische Hochschule Würzburg-Schweinfurt (THWS)\\
+    Email: \texttt{keno.schuerger@study.thws.de}
+  }
+}
+
+\maketitle
+
+% =====================================================================
+\section{Introduction}
+% =====================================================================
+Predicting the remaining battery life of a smartphone is a long-standing
+problem with two qualitatively different solution classes. \emph{Analytical}
+methods (e.g.\ the linear extrapolation used by most legacy ``Settings
+$\rightarrow$ Battery'' screens) project the recently observed drain rate
+into the future. \emph{Machine-learning} methods, in contrast, attempt to
+exploit context: which apps are active, how bright is the screen, what is
+the battery temperature.
+
+Since Android~12 (October~2021), the platform exposes a system
+estimator via
+\texttt{PowerManager.\allowbreak getBatteryDischargePrediction()}\cite{android2021powermanager},
+which returns a duration estimate computed inside the operating system.
+As a system process the estimator runs at a privilege level not
+available to third-party apps and can in principle access hardware
+counters that the Android permission model does not expose to user-%
+installed applications. The companion method
+\texttt{isBatteryDischargePredictionPersonalized()} indicates whether
+the returned estimate has been adapted to the specific device's usage
+history.
+
+We ask: \emph{how well can a TinyML model running inside an
+Android app predict remaining battery life, compared to analytical
+baselines and Google's native API --- measured on accuracy and
+on-device efficiency?} TinyML here refers to small quantised neural
+networks (typically tens of kilobytes) designed for low-power edge
+devices~\cite{banbury2021mlperf}. While the TinyML literature largely
+targets microcontrollers, smartphones share two relevant properties:
+deployment constraints (model size matters for APK weight, latency
+matters for battery cost) and ubiquity.
+
+This paper provides an empirical answer for the smartphone case. We
+report a six-way head-to-head comparison on identical real-world data
+($X$ measurements collected over an $X$-day window from four Android
+devices spanning two manufacturers), explicitly controlled for a class
+of data-leakage pitfalls that we found to inflate apparent results by a
+data-diversity-dependent factor.
+
+\subsection*{Contributions}
+\begin{enumerate}
+\item \textbf{Methodological observation:} On sliding-window time-series
+data, a random shuffle of \emph{sequences} (the default
+\texttt{train\_test\_split}) silently leaks future information into
+training. On our data the inflation factor depends on data
+diversity ($\sim$$X\times$ on the multi-device dataset,
+$\sim$$Y\times$ on the single-device subset).
+We propose and measure a segment-level split as the principled
+alternative.
+
+\item \textbf{Multi-device six-way comparison with statistical rigour:}
+We collect data on four Android devices (Xiaomi 2107113SG, Pixel~7~Pro,
+8~Pro and 9~Pro~XL) and compare TinyML against four explicit baselines
+(Random Forest, mean predictor, linear drain rate, exponential fit) and
+the native Google~API. Differences are reported with bootstrap 95\%
+confidence intervals; pairwise significance uses a paired permutation
+test for MAE and a paired bootstrap on $\Delta C$ for the $C$-index
+(per-sample swap is invalid for a pairwise metric), with
+Benjamini--Hochberg correction over 15 tests per family.
+
+\item \textbf{Device-dependent learnability:} Per-device evaluation
+reveals a strong hardware effect. On the Pixel~7~Pro the TinyML model
+achieves $C{=}X$, several times the gap to the mean predictor that the
+same model attains on the Xiaomi ($C{=}Y$). This demonstrates that the
+signal available to an app-level model is dominated by the underlying
+sensor stack, not by the model architecture or training budget.
+
+\item \textbf{Model-independent feature diagnostics:} Beyond
+permutation-importance on the Random Forest, we report Pearson, Spearman
+and mutual-information statistics for all ten features. This separates a
+model-specific failure (``Conv1D is the wrong architecture'') from a
+data-level limitation (``the publicly available features only carry
+enough signal on certain hardware'').
+
+\item \textbf{Reproducible open pipeline.} All code, configuration, raw
+data, intermediate artefacts, and the auto-generated report are released
+in a structured repository. A single command
+(\texttt{python run\_pipeline.py}) reproduces every number in this paper.
+\end{enumerate}
+
+\bibliographystyle{IEEEtran}
+\bibliography{einleitung_refs}
+
+\end{document}

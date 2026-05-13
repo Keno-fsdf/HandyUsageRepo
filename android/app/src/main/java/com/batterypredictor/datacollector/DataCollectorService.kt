@@ -75,6 +75,11 @@ class DataCollectorService : Service() {
     private var predictor: BatteryPredictor? = null
     private var sessionId = ""
 
+    // Ringpuffer fuer Linear-Baseline-Fallback: letzte Discharge-Samples
+    // (timestamp_ms, battery_level_pct). Wird beim Laden geleert.
+    private val recentBatteryHistory: ArrayDeque<Pair<Long, Float>> = ArrayDeque()
+    private val LINEAR_HISTORY_SIZE = 10
+
     private val collectRunnable = object : Runnable {
         override fun run() {
             collectAndLog()
@@ -176,6 +181,17 @@ class DataCollectorService : Service() {
         val cpuUsage = getCpuUsage()
         val temperature = getBatteryTemperature()
         val hotspotOn = if (isHotspotOn()) 1 else 0
+
+        // Battery-Historie fuer Linear-Fallback updaten:
+        // Beim Laden leeren (sonst negative Drain-Rate), sonst Sample anhaengen.
+        if (charging == 1) {
+            recentBatteryHistory.clear()
+        } else {
+            if (recentBatteryHistory.size >= LINEAR_HISTORY_SIZE) {
+                recentBatteryHistory.removeFirst()
+            }
+            recentBatteryHistory.addLast(now to batteryLevel)
+        }
 
         // 2) TinyML-Vorhersage (fail-safe)
         val features = floatArrayOf(
@@ -410,28 +426,58 @@ class DataCollectorService : Service() {
     }
 
     /**
-     * Naive lineare Baseline aus BatteryManager:
-     *     restzeit_h = charge_counter [µAh] / |current_average| [µA]
+     * Naive lineare Baseline.
      *
-     * Das ist konzeptuell dieselbe Berechnung, die die MIUI/Stock-Settings-App
-     * macht. Liefert -1f wenn die Werte nicht lesbar sind (manche Hersteller
-     * blockieren CURRENT_AVERAGE oder geben Long.MIN_VALUE zurück).
+     * 1. Versuch: BatteryManager-Counter (funktioniert auf Pixels):
+     *        restzeit_h = charge_counter [µAh] / |current_average| [µA]
+     *    Dieselbe Berechnung wie die Stock-Settings-Apps. Liefert -1 auf
+     *    Geraeten, die CURRENT_AVERAGE blockieren (z.B.\ einige Xiaomis ->
+     *    Long.MIN_VALUE).
+     *
+     * 2. Fallback: Aus den letzten bis zu 10 Discharge-Samples die
+     *    Drain-Rate ueber den Akku-Level berechnen (gleiche Logik wie die
+     *    Linear-Baseline in der Python-Auswertung). Funktioniert auf jedem
+     *    Geraet, sobald genug Discharge-Dynamik beobachtet wurde.
+     *
+     * Beide Wege geben -1 zurueck, wenn nichts berechenbar ist (laedt, oder
+     * noch kein nutzbarer Discharge-Verlauf).
      */
     private fun getLinearBaselineHours(): Float {
+        val fromBatteryManager = tryLinearFromBatteryManager()
+        if (fromBatteryManager > 0f) return fromBatteryManager
+        return getLinearFromHistory()
+    }
+
+    private fun tryLinearFromBatteryManager(): Float {
         return try {
             val bm = getSystemService(Context.BATTERY_SERVICE) as BatteryManager
             val chargeCounter = bm.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
             val currentAvg = bm.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_AVERAGE)
-            // Long.MIN_VALUE oder 0 = nicht verfügbar
             if (chargeCounter <= 0 || currentAvg == Long.MIN_VALUE || currentAvg == 0L) {
                 return -1f
             }
-            // current_avg ist negativ beim Entladen, positiv beim Laden -> abs
             val absCurrent = Math.abs(currentAvg).toFloat()
             chargeCounter.toFloat() / absCurrent
         } catch (e: Exception) {
             -1f
         }
+    }
+
+    /**
+     * History-basierte Linear-Baseline aus den im Service gehaltenen
+     * Discharge-Samples (Ringpuffer ueber die letzten ~10 Messpunkte =
+     * ~5 Minuten). Setzt voraus, dass mindestens zwei Samples vorliegen
+     * und der Akku in dieser Zeit gefallen ist.
+     */
+    private fun getLinearFromHistory(): Float {
+        if (recentBatteryHistory.size < 2) return -1f
+        val first = recentBatteryHistory.first()
+        val last = recentBatteryHistory.last()
+        val deltaB = first.second - last.second                  // % Drop
+        val deltaH = (last.first - first.first) / 3_600_000f     // ms -> h
+        if (deltaB <= 0f || deltaH <= 0f) return -1f
+        val ratePctPerHour = deltaB / deltaH
+        return last.second / ratePctPerHour                      // Restzeit_h
     }
 
     // ---- Feature 8: CPU Usage (%) ----
