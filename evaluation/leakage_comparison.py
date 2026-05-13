@@ -21,9 +21,7 @@ import random
 import time
 from pathlib import Path
 
-import joblib
 import numpy as np
-import pandas as pd
 import yaml
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -83,7 +81,7 @@ def _train_and_eval(
     }
 
 
-def main(config_path: str = "configs/default.yaml") -> None:
+def main(config_path: str = "configs/default.yaml", device_filter: str | None = None) -> None:
     with open(config_path, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
     cfg_prep = PrepConfig.from_yaml(config_path)
@@ -91,6 +89,17 @@ def main(config_path: str = "configs/default.yaml") -> None:
 
     print(f"[leakage] reading {cfg_prep.raw_csv}")
     df = load_raw(cfg_prep.raw_csv)
+    if device_filter:
+        if "device" not in df.columns:
+            raise RuntimeError(
+                f"--device {device_filter} requested but combined CSV has no 'device' column. "
+                "Re-run merge_devices first."
+            )
+        before = len(df)
+        df = df[df["device"] == device_filter].reset_index(drop=True)
+        print(f"[leakage] device-filter={device_filter}: {len(df)}/{before} rows kept")
+        if df.empty:
+            raise RuntimeError(f"No rows for device='{device_filter}'.")
     segments = find_discharge_segments(df, cfg_prep.min_segment_length, cfg_prep.max_gap_ms)
     print(f"[leakage] {len(segments)} discharge segments")
 
@@ -175,12 +184,10 @@ def main(config_path: str = "configs/default.yaml") -> None:
     )
     print(f"[leakage] B took {time.time() - t0:.1f}s   test_MAE={res_B['test_mae_h']:.3f}h")
 
-    factor = res_A["test_mae_h"]
-    factor = res_B["test_mae_h"] / max(res_A["test_mae_h"], 1e-9)
-
     out = {
         "_meta": {
             "source_csv": str(cfg_prep.raw_csv),
+            "device_filter": device_filter,
             "n_total_sequences": int(n_total),
             "n_segments": int(n_seg),
         },
@@ -201,12 +208,19 @@ def main(config_path: str = "configs/default.yaml") -> None:
 
     reports = Path(cfg["paths"]["reports_dir"])
     reports.mkdir(parents=True, exist_ok=True)
-    (reports / "leakage_comparison.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
-    print(f"\n[leakage] wrote {reports / 'leakage_comparison.json'}")
+    suffix = f"_{device_filter}" if device_filter else ""
+    out_path = reports / f"leakage_comparison{suffix}.json"
+    out_path.write_text(json.dumps(out, indent=2), encoding="utf-8")
+    print(f"\n[leakage] wrote {out_path}")
     print(f"[leakage] inflation factor (segment_MAE / random_MAE) = {out['inflation_factor']:.2f}x")
 
 
 if __name__ == "__main__":
-    import sys
+    import argparse
 
-    main(sys.argv[1] if len(sys.argv) > 1 else "configs/default.yaml")
+    p = argparse.ArgumentParser()
+    p.add_argument("config", nargs="?", default="configs/default.yaml")
+    p.add_argument("--device", default=None,
+                   help="restrict to one device (e.g. xiaomi_2107113sg) for single-device leakage")
+    args = p.parse_args()
+    main(args.config, device_filter=args.device)

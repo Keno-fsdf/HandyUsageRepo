@@ -83,6 +83,12 @@ def write_main_table(reports: Path) -> None:
 
 
 def write_significance_table(reports: Path) -> None:
+    """
+    significance.json hat zwei Target-Bloecke (vs_y_real / vs_y_extrap),
+    jeder mit c_index_pairs + mae_pairs. Wir flatten in eine CSV mit
+    `target`-Spalte und reporten Roh-p plus Bonferroni- und BH-FDR-adjustierte
+    p-Werte.
+    """
     sig_path = reports / "significance.json"
     if not sig_path.exists():
         print("[csv] significance.json missing, skipping")
@@ -91,23 +97,33 @@ def write_significance_table(reports: Path) -> None:
     csv_path = reports / "significance_table.csv"
     with csv_path.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["metric", "method_a", "method_b", "value_a", "value_b", "delta", "p_value", "n", "n_perm"])
-        for metric_name, group in (("c_index", sig.get("c_index_pairs", {})), ("mae", sig.get("mae_pairs", {}))):
-            for key, t in group.items():
-                a, b = key.split("__vs__")
-                w.writerow(
-                    [
+        w.writerow([
+            "target", "metric", "method_a", "method_b",
+            "value_a", "value_b", "delta",
+            "p_raw", "p_bonferroni", "p_bh_fdr",
+            "test_kind", "n", "n_perm_or_boot",
+        ])
+        for target_key in ("vs_y_real", "vs_y_extrap"):
+            block = sig.get(target_key, {})
+            target_label = block.get("_target", target_key)
+            for metric_name, group_key in (("c_index", "c_index_pairs"), ("mae", "mae_pairs")):
+                for key, t in block.get(group_key, {}).items():
+                    a, b = key.split("__vs__")
+                    n_iter = t.get("n_perm") or t.get("n_boot") or 0
+                    w.writerow([
+                        target_label,
                         metric_name,
-                        a,
-                        b,
+                        a, b,
                         f"{t['metric_a']:.4f}",
                         f"{t['metric_b']:.4f}",
                         f"{t['delta_obs']:+.4f}",
                         f"{t['p_value']:.4f}",
+                        f"{t.get('p_bonferroni', float('nan')):.4f}",
+                        f"{t.get('p_bh_fdr', float('nan')):.4f}",
+                        t.get("test", "?"),
                         t["n"],
-                        t["n_perm"],
-                    ]
-                )
+                        n_iter,
+                    ])
     print(f"[csv] wrote {csv_path}")
 
 

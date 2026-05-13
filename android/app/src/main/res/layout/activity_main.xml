@@ -62,7 +62,90 @@
                 android:text=""
                 android:textSize="12sp"
                 android:textColor="#4CAF50"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="12dp" />
+
+            <!-- Trennlinie -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#C8E6C9"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vergleich aller Methoden"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#2E7D32"
+                android:layout_marginBottom="6dp" />
+
+            <!-- Vergleichs-Zeile TinyML -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="2dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🤖 TinyML (eigenes Modell)"
+                    android:textSize="13sp"
+                    android:textColor="#1B5E20" />
+                <TextView
+                    android:id="@+id/predTinyML"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="#1B5E20" />
+            </LinearLayout>
+
+            <!-- Vergleichs-Zeile Google API -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="2dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🅖 Google (Android-API)"
+                    android:textSize="13sp"
+                    android:textColor="#2E7D32" />
+                <TextView
+                    android:id="@+id/predGoogle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textSize="13sp"
+                    android:textColor="#2E7D32" />
+            </LinearLayout>
+
+            <!-- Vergleichs-Zeile Linear Baseline -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📐 Linear (charge_counter)"
+                    android:textSize="13sp"
+                    android:textColor="#2E7D32" />
+                <TextView
+                    android:id="@+id/predLinear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textSize="13sp"
+                    android:textColor="#2E7D32" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btnRefresh"

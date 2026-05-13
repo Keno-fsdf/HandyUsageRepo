@@ -69,10 +69,26 @@ class BatteryPredictor(context: Context) {
             "expected $NUM_FEATURES features, got ${features.size}"
         }
 
-        // Normalisieren (StandardScaler: (x - mean) / scale)
+        // Validitaets-Check: NaN/Inf koennen aus fehlgeschlagenen Sensor-APIs kommen
+        // und wuerden den StandardScaler und damit das Modell mit OOD-Input fuettern.
+        // Die Feature-Getter in DataCollectorService nutzen numerische Fallbacks
+        // (Raumtemperatur 25f, CPU 0f, App-Category 0), NICHT -1f -- ein -1f-Wert
+        // bei z.B. temperature waere ein legitimer Wintertemperatur-Messwert und
+        // soll deshalb NICHT ausgefiltert werden.
+        for (v in features) {
+            if (v.isNaN() || v.isInfinite()) {
+                return -1f
+            }
+        }
+
+        // Normalisieren (StandardScaler: (x - mean) / scale).
+        // Toleranz statt exakter 0-Vergleich: bei Features ohne Varianz im Training
+        // (z.B. charging in den Discharge-Segmenten) setzt sklearn scale_=1.0,
+        // aber numerisch koennten Werte wie 1e-12 vorkommen.
         val normalized = FloatArray(NUM_FEATURES) { i ->
-            if (SCALER_SCALE[i] != 0f) {
-                (features[i] - SCALER_MEAN[i]) / SCALER_SCALE[i]
+            val s = SCALER_SCALE[i]
+            if (s > 1e-6f) {
+                (features[i] - SCALER_MEAN[i]) / s
             } else {
                 0f
             }

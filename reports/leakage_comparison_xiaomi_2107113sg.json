@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "source_csv": "data/raw/combined.csv",
+    "device_filter": "xiaomi_2107113sg",
+    "n_total_sequences": 9024,
+    "n_segments": 387
+  },
+  "random_shuffle_leaky": {
+    "n_train": 6316,
+    "n_val": 1354,
+    "n_test": 1354,
+    "test_mae_h": 6.534590244293213,
+    "test_rmse_h": 9.61584186553955,
+    "epochs_run": 150
+  },
+  "segment_level_clean": {
+    "n_train": 6487,
+    "n_val": 1479,
+    "n_test": 1058,
+    "test_mae_h": 11.062458038330078,
+    "test_rmse_h": 14.830857276916504,
+    "epochs_run": 27
+  },
+  "inflation_factor": 1.692907684302186
+}

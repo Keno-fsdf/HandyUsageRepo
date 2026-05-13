@@ -1,8 +1,8 @@
 {
   "params": 5697,
-  "train_loss_final": 68.68345642089844,
-  "val_loss_final": 217.30758666992188,
-  "train_mae_final_h": 4.5792317390441895,
-  "val_mae_final_h": 9.619102478027344,
+  "train_loss_final": 67.11804962158203,
+  "val_loss_final": 216.31369018554688,
+  "train_mae_final_h": 4.556456089019775,
+  "val_mae_final_h": 9.742833137512207,
   "epochs_run": 21
 }

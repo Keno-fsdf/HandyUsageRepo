@@ -1,6 +1,6 @@
 # Data preparation summary
 
-Source: `data\raw\combined.csv`
+Source: `data/raw/combined.csv`
 Sequence length: 10
 Total discharge segments: 553
 

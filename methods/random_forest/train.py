@@ -7,11 +7,6 @@ Begruendung im Paper-Kontext:
     voellig anderes Modell-Paradigma (Ensembles ueber flachen Features),
     bekannt fuer robuste Performance auf strukturierten Tabellen.
 
-    Wenn der RF auf denselben Features ebenfalls bei C-Index ~0.5 landet,
-    ist es ein **Daten-Limit**, kein Modell-Fehler.
-    Wenn der RF deutlich besser performt, ist Conv1D mit 5697 Parametern
-    schlicht ueberfittet/unterausgestattet.
-
 Input-Aufbereitung:
     Die Sliding-Window-Tensoren (n, 10, 10) werden zu flachen (n, 100)
     Vektoren reshaped. RF kann zeitliche Struktur nicht direkt verarbeiten,
@@ -19,9 +14,11 @@ Input-Aufbereitung:
     aller 10 Features - das ist die gleiche Information, die der Conv1D
     bekommt.
 
-Hyperparameter konservativ gewaehlt:
-    n_estimators=200, max_depth=None (default), random_state fuer
-    Reproduzierbarkeit.
+Hyperparameter:
+    Aus configs/default.yaml unter `random_forest:`. Default-Werte sind
+    regularisiert (max_depth=20, min_samples_leaf=5), weil der frueher
+    genutzte max_depth=None einen 6-7x Train-vs-Val-MAE-Gap erzeugt hat,
+    was Permutation-Importance unzuverlaessig macht.
 """
 
 from __future__ import annotations
@@ -42,6 +39,13 @@ def main(config_path: str = "configs/default.yaml") -> None:
     processed = Path(cfg["paths"]["processed_dir"])
     models = Path(cfg["paths"]["models_dir"])
 
+    rf_cfg = cfg.get("random_forest", {})
+    n_estimators = int(rf_cfg.get("n_estimators", 200))
+    max_depth = rf_cfg.get("max_depth", 20)
+    min_samples_split = int(rf_cfg.get("min_samples_split", 5))
+    min_samples_leaf = int(rf_cfg.get("min_samples_leaf", 5))
+    random_state = int(rf_cfg.get("random_state", 42))
+
     train = dict(np.load(processed / "train.npz"))
     val = dict(np.load(processed / "val.npz"))
 
@@ -50,11 +54,11 @@ def main(config_path: str = "configs/default.yaml") -> None:
     X_val = val["X"].reshape(len(val["X"]), seq_len * n_feat)
 
     rf = RandomForestRegressor(
-        n_estimators=200,
-        max_depth=None,
-        min_samples_split=5,
-        min_samples_leaf=2,
-        random_state=42,
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        min_samples_split=min_samples_split,
+        min_samples_leaf=min_samples_leaf,
+        random_state=random_state,
         n_jobs=-1,
     )
     print(f"[rf-train] fitting on X={X_train.shape}, y={train['y_extrap'].shape}")
@@ -70,9 +74,13 @@ def main(config_path: str = "configs/default.yaml") -> None:
     joblib.dump(rf, models / "random_forest.joblib")
     summary = {
         "n_estimators": rf.n_estimators,
+        "max_depth": rf.max_depth,
+        "min_samples_split": rf.min_samples_split,
+        "min_samples_leaf": rf.min_samples_leaf,
         "n_input_features": int(seq_len * n_feat),
         "train_mae_h_extrap": round(train_mae, 4),
         "val_mae_h_extrap": round(val_mae, 4),
+        "train_val_mae_ratio": round(val_mae / max(train_mae, 1e-9), 2),
         "train_n": int(n_train),
         "val_n": int(len(val["X"])),
     }

@@ -36,10 +36,17 @@ def accuracy_within(y_true: np.ndarray, y_pred: np.ndarray, tol_h: float) -> flo
     return float(np.mean(np.abs(y_true - y_pred) <= tol_h))
 
 
-def concordance_index(y_true: np.ndarray, y_pred: np.ndarray, max_pairs: int = 5_000_000) -> float:
+def concordance_index(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    max_pairs: int = 5_000_000,
+    seed: int = 0,
+) -> float:
     """
     Harrell C-Index. O(n log n) ueber Sortierung + n^2 worst case ueber Paarvergleich;
     fuer typische n (~Tausende) komfortabel. Bei sehr grossen n samplen wir.
+
+    Der `seed` steuert nur das Pair-Sampling im Large-n-Fall (n*(n-1)/2 > max_pairs).
     """
     y_true = np.asarray(y_true, dtype=np.float64)
     y_pred = np.asarray(y_pred, dtype=np.float64)
@@ -50,7 +57,7 @@ def concordance_index(y_true: np.ndarray, y_pred: np.ndarray, max_pairs: int = 5
     # Bei zu vielen Paaren: zufaellige Stichprobe
     total_pairs = n * (n - 1) // 2
     if total_pairs > max_pairs:
-        rng = np.random.default_rng(0)
+        rng = np.random.default_rng(seed)
         idx_a = rng.integers(0, n, size=max_pairs)
         idx_b = rng.integers(0, n, size=max_pairs)
         mask = idx_a != idx_b
@@ -90,7 +97,7 @@ def all_metrics(
 
 
 def bootstrap_ci(
-    metric_fn: Callable[[np.ndarray, np.ndarray], float],
+    metric_fn: Callable[..., float],
     y_true: np.ndarray,
     y_pred: np.ndarray,
     n_boot: int = 1000,
@@ -101,19 +108,27 @@ def bootstrap_ci(
     Bootstrap-Konfidenzintervall fuer eine beliebige Punkt-Metrik
     (MAE, RMSE, C-Index, ...).
 
+    Bei `concordance_index` wird zusaetzlich pro Resample ein eigener Pair-Sample-Seed
+    durchgereicht, damit das interne Subsampling (n*(n-1)/2 > max_pairs) nicht ueber
+    alle Bootstrap-Iterationen identisch ist und die CI dadurch zu eng wird.
+
     Returns:
         (point_estimate, ci_low, ci_high) bei (1-alpha)*100% Niveau
         (Default: 95% CI).
     """
     rng = np.random.default_rng(seed)
     n = len(y_true)
-    point = float(metric_fn(y_true, y_pred))
+    accepts_seed = metric_fn is concordance_index
+    point = float(metric_fn(y_true, y_pred, seed=seed) if accepts_seed else metric_fn(y_true, y_pred))
     if n < 5:
         return point, float("nan"), float("nan")
     samples = np.empty(n_boot, dtype=np.float64)
     for b in range(n_boot):
         idx = rng.integers(0, n, size=n)
-        samples[b] = metric_fn(y_true[idx], y_pred[idx])
+        if accepts_seed:
+            samples[b] = metric_fn(y_true[idx], y_pred[idx], seed=seed + 1 + b)
+        else:
+            samples[b] = metric_fn(y_true[idx], y_pred[idx])
     low = float(np.percentile(samples, 100 * alpha / 2))
     high = float(np.percentile(samples, 100 * (1 - alpha / 2)))
     return point, low, high

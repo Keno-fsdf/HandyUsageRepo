@@ -90,3 +90,14 @@ baselines:
   linear:
     # Naive Linear: aktueller Akku / mittlere Drain-Rate der letzten N Punkte
     drain_window: 10
+
+random_forest:
+  # Hyperparameter fuer das Sanity-Vergleichsmodell.
+  # max_depth=None gibt extreme Overfit-Probleme (Train MAE 1.35h vs Val 9.1h
+  # auf unseren Daten); 20 bremst das, ohne dass die Test-Performance deutlich
+  # leidet. min_samples_leaf=5 erhoeht die Bias-Robustheit weiter.
+  n_estimators: 200
+  max_depth: 20
+  min_samples_split: 5
+  min_samples_leaf: 5
+  random_state: 42

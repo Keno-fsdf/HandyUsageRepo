@@ -146,7 +146,10 @@ def _exec_summary(acc: dict | None, sig: dict | None, eff: dict | None) -> str:
         lines.append("")
 
     if sig:
-        c_pairs = sig.get("c_index_pairs", {})
+        # Neue Struktur: vs_y_real / vs_y_extrap, jeder mit c_index_pairs.
+        # Wir reporten gegen y_real (Hauptmetric) im Exec-Summary.
+        target_block = sig.get("vs_y_real") or sig.get("vs_y_extrap") or {}
+        c_pairs = target_block.get("c_index_pairs", {})
 
         def _find(a: str, b: str) -> dict | None:
             return c_pairs.get(f"{a}__vs__{b}") or c_pairs.get(f"{b}__vs__{a}")
@@ -155,14 +158,18 @@ def _exec_summary(acc: dict | None, sig: dict | None, eff: dict | None) -> str:
         rf_mp = _find("random_forest", "mean_const")
         tn_g = _find("tinyml", "google")
         if tn_mp and rf_mp and tn_g:
-            lines.append("**Permutation tests (1000 perms) of pairwise C-index differences:**\n")
+            def _p_str(t: dict) -> str:
+                p = t.get("p_bh_fdr", t.get("p_value"))
+                return f"p_BH={p:.3f}"
+
             lines.append(
-                f"- TinyML vs. Mean predictor: ΔC-idx={tn_mp['delta_obs']:+.3f}, p={tn_mp['p_value']:.3f} "
-                f"→ **TinyML is statistically indistinguishable from the no-features floor**.\n"
-                f"- Random Forest vs. Mean predictor: ΔC-idx={rf_mp['delta_obs']:+.3f}, p={rf_mp['p_value']:.3f} "
-                f"→ same conclusion for an independent ML paradigm.\n"
-                f"- TinyML vs. Google API: ΔC-idx={tn_g['delta_obs']:+.3f}, p={tn_g['p_value']:.3f} "
-                f"→ Google's system-level access is significantly superior.\n"
+                f"**Pairwise tests, target=y_real, Benjamini--Hochberg-adjusted "
+                f"over {target_block.get('_n_tests', '?')} tests:**\n"
+            )
+            lines.append(
+                f"- TinyML vs. Mean predictor: ΔC-idx={tn_mp['delta_obs']:+.3f}, {_p_str(tn_mp)}.\n"
+                f"- Random Forest vs. Mean predictor: ΔC-idx={rf_mp['delta_obs']:+.3f}, {_p_str(rf_mp)}.\n"
+                f"- TinyML vs. Google API: ΔC-idx={tn_g['delta_obs']:+.3f}, {_p_str(tn_g)}.\n"
             )
 
     if eff:
@@ -192,29 +199,44 @@ def _significance_section(sig: dict | None) -> str:
         return "_no significance.json found_\n"
     meta = sig.get("_meta", {})
     out = [
-        f"Permutation tests on common-valid subset (n={meta.get('n_common', 0)}, target=`{meta.get('target', '?')}`).",
-        f"Significance levels: `***` p<0.001, `**` p<0.01, `*` p<0.05, `ns` not significant.\n",
+        f"Pairwise tests on common-valid subset (n={meta.get('n_common', 0)}).",
+        f"MAE: paired permutation (n_perm={meta.get('n_perm_mae', '?')}). "
+        f"C-Index: paired bootstrap on ΔC (n_boot={meta.get('n_boot_cindex', '?')}).",
+        "p-values shown: raw and Benjamini-Hochberg-adjusted (`p_BH`) over the pair-family.",
+        "Significance based on `p_BH`: `***` <0.001, `**` <0.01, `*` <0.05, `ns` otherwise.\n",
     ]
 
     def _row(pair: str, t: dict) -> str:
-        p = t["p_value"]
-        sig_marker = "***" if p < 0.001 else "**" if p < 0.01 else "*" if p < 0.05 else "ns"
-        return f"| {pair} | {t['metric_a']:.3f} | {t['metric_b']:.3f} | {t['delta_obs']:+.3f} | {p:.3f} | {sig_marker} |"
+        p_raw = t.get("p_value", float("nan"))
+        p_bh = t.get("p_bh_fdr", p_raw)
+        sig_marker = "***" if p_bh < 0.001 else "**" if p_bh < 0.01 else "*" if p_bh < 0.05 else "ns"
+        return (
+            f"| {pair} | {t['metric_a']:.3f} | {t['metric_b']:.3f} | "
+            f"{t['delta_obs']:+.3f} | {p_raw:.3f} | {p_bh:.3f} | {sig_marker} |"
+        )
 
-    out.append("### C-index pairwise tests\n")
-    out.append("| A vs B | C-idx(A) | C-idx(B) | ΔC-idx | p-value | sig |")
-    out.append("|---|---|---|---|---|---|")
-    for k, v in sig.get("c_index_pairs", {}).items():
-        a, b = k.split("__vs__")
-        out.append(_row(f"{a} vs {b}", v))
-    out.append("")
+    for target_key, target_label in (("vs_y_real", "y_real (measured)"),
+                                      ("vs_y_extrap", "y_extrap (training target)")):
+        block = sig.get(target_key)
+        if not block:
+            continue
+        out.append(f"## Target: {target_label}\n")
 
-    out.append("### MAE pairwise tests (h)\n")
-    out.append("| A vs B | MAE(A) | MAE(B) | ΔMAE | p-value | sig |")
-    out.append("|---|---|---|---|---|---|")
-    for k, v in sig.get("mae_pairs", {}).items():
-        a, b = k.split("__vs__")
-        out.append(_row(f"{a} vs {b}", v))
+        out.append("### C-index pairwise tests\n")
+        out.append("| A vs B | C(A) | C(B) | ΔC | p_raw | p_BH | sig |")
+        out.append("|---|---|---|---|---|---|---|")
+        for k, v in block.get("c_index_pairs", {}).items():
+            a, b = k.split("__vs__")
+            out.append(_row(f"{a} vs {b}", v))
+        out.append("")
+
+        out.append("### MAE pairwise tests (h)\n")
+        out.append("| A vs B | MAE(A) | MAE(B) | ΔMAE | p_raw | p_BH | sig |")
+        out.append("|---|---|---|---|---|---|---|")
+        for k, v in block.get("mae_pairs", {}).items():
+            a, b = k.split("__vs__")
+            out.append(_row(f"{a} vs {b}", v))
+        out.append("")
     return "\n".join(out) + "\n"
 
 
@@ -265,8 +287,9 @@ def _per_segment_section(ps: dict | None, tols: list[float]) -> str:
 
     method_order = ("tinyml", "random_forest", "mean_const", "linear", "exponential", "google")
 
-    def _bucket_block(title: str, group: dict, target_label: str) -> str:
-        out = [f"### {title} (vs. {target_label})\n"]
+    def _bucket_block(title: str, group: dict, target_label: str, subset: str) -> str:
+        """`subset` ist 'common' (alle Methoden gleiches n) oder 'native' (per-Methode-Validity)."""
+        out = [f"### {title} (vs. {target_label}, subset={subset})\n"]
         out.append(
             "| Bucket | n | "
             + " | ".join(f"{m} MAE" for m in method_order)
@@ -276,40 +299,48 @@ def _per_segment_section(ps: dict | None, tols: list[float]) -> str:
         )
         out.append("|---|---|" + "|".join(["---"] * (2 * len(method_order))) + "|")
         for bname, b in group.items():
-            n = b.get("_n", 0)
+            if subset == "common":
+                n_label = b.get("_n_common_in_bucket", 0)
+            else:
+                n_label = b.get("_n_in_bucket", 0)
+            block = b.get(subset, {})
+            if not isinstance(block, dict):
+                continue
             mae_cells, cidx_cells = [], []
             for m in method_order:
-                mm = b.get(m)
+                mm = block.get(m)
                 if not mm or "mae_h" not in mm:
                     mae_cells.append("-")
                     cidx_cells.append("-")
                 else:
                     mae_cells.append(f"{mm['mae_h']:.2f}")
                     cidx_cells.append(f"{mm['c_index']:.2f}" if mm.get("c_index") is not None else "-")
-            out.append(f"| {bname} | {n} | " + " | ".join(mae_cells + cidx_cells) + " |")
+            out.append(f"| {bname} | {n_label} | " + " | ".join(mae_cells + cidx_cells) + " |")
         return "\n".join(out) + "\n"
 
-    lines.append(
-        _bucket_block(
+    # Hauptmetric: gegen y_real (common subset = direkter Vergleich)
+    if "by_battery_level_vs_real" in ps:
+        lines.append(_bucket_block(
             "By battery level at prediction time",
-            ps.get("by_battery_level_vs_extrap", {}),
-            "y_extrap",
-        )
-    )
-    lines.append(
-        _bucket_block(
+            ps["by_battery_level_vs_real"], "y_real", "common"))
+    if "by_segment_length_vs_real" in ps:
+        lines.append(_bucket_block(
             "By total segment length",
-            ps.get("by_segment_length_vs_extrap", {}),
-            "y_extrap",
-        )
-    )
-    lines.append(
-        _bucket_block(
-            "By y_real magnitude (only short measured remaining time available)",
-            ps.get("by_y_real_bucket_vs_real", {}),
-            "y_real",
-        )
-    )
+            ps["by_segment_length_vs_real"], "y_real", "common"))
+    if "by_y_real_bucket_vs_real" in ps:
+        lines.append(_bucket_block(
+            "By y_real magnitude",
+            ps["by_y_real_bucket_vs_real"], "y_real", "common"))
+    if "by_y_extrap_bucket_vs_extrap" in ps:
+        lines.append(_bucket_block(
+            "By y_extrap magnitude (long-horizon analysis)",
+            ps["by_y_extrap_bucket_vs_extrap"], "y_extrap", "common"))
+
+    # Sekundaer: vs y_extrap (zirkulaerer Bias zugunsten TinyML/RF, fuer Reviewer-Vergleich)
+    if "by_battery_level_vs_extrap" in ps:
+        lines.append(_bucket_block(
+            "By battery level [secondary: y_extrap]",
+            ps["by_battery_level_vs_extrap"], "y_extrap", "common"))
     return "\n".join(lines) + "\n"
 
 

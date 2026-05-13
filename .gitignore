@@ -17,6 +17,22 @@ models/battery_model*.tflite
 models/random_forest.joblib
 models/scaler.joblib
 
+# Lokale Migration-Backups (alte Schema-Versionen, App migriert automatisch)
+data/raw/*_legacy_*.csv
+
+# Pre-Merge-Snapshots
+.backup_premerge/
+
+# LaTeX-Portfolio-Build
+portfolio/*.aux
+portfolio/*.log
+portfolio/*.out
+portfolio/*.toc
+portfolio/*.lof
+portfolio/*.lot
+portfolio/*.lol
+portfolio/*.synctex.gz
+
 # LaTeX-Build
 paper/*.aux
 paper/*.bbl

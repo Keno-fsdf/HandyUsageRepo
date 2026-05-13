@@ -65,7 +65,9 @@ def main(config_path: str = "configs/default.yaml") -> None:
         "_meta": {
             "test_n": int(len(devices)),
             "devices": unique_devices,
-            "target": "y_extrap (common evaluation target across all 6 methods)",
+            "_note": ("vs_real = Hauptmetric im Paper (gemessene Restzeit). "
+                      "vs_extrap = gegen Trainings-Target, zirkulaerer Bias zugunsten "
+                      "TinyML/RF; nur zum Vergleich gegen Modell-Pfad."),
         },
         "per_device": {},
     }
@@ -73,21 +75,25 @@ def main(config_path: str = "configs/default.yaml") -> None:
     for dev in unique_devices:
         dev_mask = devices == dev
         n = int(dev_mask.sum())
-        out["per_device"][dev] = {"n_test": n, "methods": {}}
+        out["per_device"][dev] = {"n_test": n, "methods_vs_real": {}, "methods_vs_extrap": {}}
         if n < 10:
             continue
-        y_extrap = test["y_extrap"][dev_mask]
         for name, p in preds.items():
             mask = dev_mask & p["valid"] & ~np.isnan(p["y_pred"])
             n_valid = int(mask.sum())
+            cov = round(100.0 * n_valid / n, 1)
             if n_valid < 5:
-                out["per_device"][dev]["methods"][name] = {"n": n_valid}
+                out["per_device"][dev]["methods_vs_real"][name] = {"n": n_valid}
+                out["per_device"][dev]["methods_vs_extrap"][name] = {"n": n_valid}
                 continue
             y_p = p["y_pred"][mask]
-            y_t = test["y_extrap"][mask]
-            out["per_device"][dev]["methods"][name] = {
-                "coverage_pct": round(100.0 * n_valid / n, 1),
-                **all_metrics(y_t, y_p, tols_h=tols),
+            out["per_device"][dev]["methods_vs_real"][name] = {
+                "coverage_pct": cov,
+                **all_metrics(test["y_real"][mask], y_p, tols_h=tols),
+            }
+            out["per_device"][dev]["methods_vs_extrap"][name] = {
+                "coverage_pct": cov,
+                **all_metrics(test["y_extrap"][mask], y_p, tols_h=tols),
             }
 
     reports.mkdir(parents=True, exist_ok=True)
@@ -95,14 +101,14 @@ def main(config_path: str = "configs/default.yaml") -> None:
     print(f"[per-device] wrote {reports / 'per_device_analysis.json'}")
 
     # Konsole-Zusammenfassung
-    print("\n[per-device] C-index by method and device (vs y_extrap):")
+    print("\n[per-device] C-index by method and device (vs y_real):")
     method_order = ("tinyml", "random_forest", "mean_const", "linear", "exponential", "google")
     header = f"  {'method':<15}" + "".join(f"  {d[:14]:<14}" for d in unique_devices)
     print(header)
     for m in method_order:
         cells = []
         for dev in unique_devices:
-            md = out["per_device"][dev]["methods"].get(m, {})
+            md = out["per_device"][dev]["methods_vs_real"].get(m, {})
             c = md.get("c_index")
             cells.append(f"{c:.3f}" if c is not None else "  -  ")
         print(f"  {m:<15}" + "".join(f"  {c:<14}" for c in cells))

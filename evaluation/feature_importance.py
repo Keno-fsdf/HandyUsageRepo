@@ -50,20 +50,38 @@ def main(config_path: str = "configs/default.yaml") -> None:
     rf = joblib.load(rf_path)
     # Bei sehr grossen Test-Sets (Multi-Device) Subsample, sonst dauert
     # die Permutation O(n_features x n_repeats x n_test x rf_predict) zu lange.
+    # Device-stratifiziert sampeln, damit das Importance-Bild nicht vom
+    # dominanten Geraet (Xiaomi) dominiert wird.
+    n_repeats = 5
     if n_test > 1500:
         rng = np.random.default_rng(42)
-        sub = rng.choice(n_test, size=1500, replace=False)
+        devices = test.get("device", None)
+        if devices is not None and len(devices) == n_test:
+            devices = np.asarray(devices).astype(str)
+            unique = np.unique(devices)
+            per_dev = max(1, 1500 // len(unique))
+            sub_parts = []
+            for d in unique:
+                idx_d = np.where(devices == d)[0]
+                k = min(per_dev, len(idx_d))
+                sub_parts.append(rng.choice(idx_d, size=k, replace=False))
+            sub = np.concatenate(sub_parts)
+            rng.shuffle(sub)
+            print(f"[feat-imp] stratified subsample {len(sub)}/{n_test} "
+                  f"({per_dev} per device, {len(unique)} devices)")
+        else:
+            sub = rng.choice(n_test, size=1500, replace=False)
+            print(f"[feat-imp] subsampled (no device info): {len(sub)}/{n_test}")
         X_eval = X_test[sub]
         y_eval = y_test[sub]
-        print(f"[feat-imp] subsampled test set: {len(X_eval)}/{n_test} for permutation importance")
     else:
         X_eval = X_test
         y_eval = y_test
-    print(f"[feat-imp] permutation importance (n_repeats=3, n_jobs=2)")
+    print(f"[feat-imp] permutation importance (n_repeats={n_repeats}, n_jobs=2)")
     # n_jobs=2 statt -1: 89MB-Modell x viele Cores macht RAM eng und ist
     # paradoxerweise langsamer als wenige Workers.
     result = permutation_importance(
-        rf, X_eval, y_eval, n_repeats=3, random_state=42, n_jobs=2,
+        rf, X_eval, y_eval, n_repeats=n_repeats, random_state=42, n_jobs=2,
         scoring="neg_mean_absolute_error",
     )
     importances = -result.importances_mean  # MAE-Erhoehung beim Permutieren
@@ -95,7 +113,8 @@ def main(config_path: str = "configs/default.yaml") -> None:
     individual.sort(key=lambda x: x["importance_mae_h"], reverse=True)
 
     out = {
-        "_method": "permutation_importance, scoring=neg_MAE, n_repeats=5",
+        "_method": f"permutation_importance, scoring=neg_MAE, n_repeats={n_repeats}",
+        "_subsample": f"{len(X_eval)}/{n_test} (device-stratified if available)",
         "by_feature_aggregated": aggregated,
         "top_individual": individual[:20],
     }

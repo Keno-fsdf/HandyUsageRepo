@@ -30,7 +30,9 @@ def extract(config_path: str = "configs/default.yaml") -> dict:
     processed = Path(cfg["paths"]["processed_dir"])
     test = dict(np.load(processed / "test.npz"))
     sys_min = test["system_estimate_min"]
-    valid = sys_min > 0
+    # -1 = Sentinel "API liefert null" (z.B. waehrend Ladens). 0 ist eine
+    # legitime Vorhersage ("Akku gleich leer") und wird als valid behalten.
+    valid = sys_min > -0.5
     y_pred = np.where(valid, sys_min / 60.0, np.nan).astype(np.float32)
 
     print(f"[google-api] valid {int(valid.sum())}/{len(y_pred)} ({100.0 * valid.mean():.1f}%)")

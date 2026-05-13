@@ -35,7 +35,7 @@ A Methodologically Honest Negative Result}
   \IEEEauthorblockN{Keno Schürger}
   \IEEEauthorblockA{
     Technische Hochschule Würzburg-Schweinfurt (THWS)\\
-    Email: \texttt{k.schuerger2004@gmail.com}
+    Email: \texttt{keno.schuerger@study.thws.de}
   }
 }
 
@@ -55,18 +55,23 @@ Forest, a mean-predictor floor, a linear drain-rate baseline, an
 exponential fit, and the Google~API. A \emph{segment-level}
 train/test split prevents the sequence-shuffle leakage common in
 sliding-window setups; on our data the inflation it causes ranges
-from $\sim$1.24$\times$ (multi-device) to $\sim$19$\times$
+from $\sim$1.24$\times$ (multi-device) to $\sim$1.69$\times$
 (single-device subset), which we report as a methodological
 observation in its own right. On the leakage-free split, TinyML and
-Random Forest reach $C{=}0.67$ and $C{=}0.69$, both significantly
-above the floor ($p \leq 0.005$); the analytical baselines and the
-Google~API form a tied top group at $C \approx 0.77$, with Google
-not significantly better than linear extrapolation. A per-device
-breakdown reveals strong hardware dependence: on the Pixel~7~Pro
-TinyML reaches $C{=}0.79$, on the Xiaomi only $C{=}0.59$. The
-TFLite~INT8 pipeline itself meets its targets
-(\SI{14.4}{\kilo\byte}, $\sim$\SI{4.5}{\micro\second} per inference).
-The bottleneck is sensor signal, not model capacity.
+Random Forest reach $C{=}0.66$ and $C{=}0.69$ against the training
+target $y^{\text{extrap}}$, both significantly above the floor
+($p_{\text{BH}} < 0.001$ over 15 pairwise tests with
+Benjamini--Hochberg correction); against the uncensored measured
+target $y^{\text{real}}$ neither ML model significantly outranks the
+constant mean. The analytical baselines and the Google~API form a
+tied top group at $C \approx 0.77$, with Google not significantly
+better than linear extrapolation ($\Delta C{=}{+}0.009$,
+$p_{\text{BH}}{=}0.11$). A per-device breakdown reveals strong
+hardware dependence: on the Pixel~7~Pro TinyML reaches $C{=}0.75$,
+on the Xiaomi only $C{=}0.59$. The TFLite~INT8 pipeline itself meets
+its targets (\SI{14.4}{\kilo\byte}, single-microsecond inference
+latency on a CPU reference). The bottleneck is sensor signal, not
+model capacity.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -121,7 +126,7 @@ data, a random shuffle of \emph{sequences} (the default
 \texttt{train\_test\_split}) silently leaks future information into
 training. On our data the inflation factor depends on data
 diversity ($\sim$1.24$\times$ on the multi-device dataset,
-$\sim$19$\times$ on the single-device subset; see
+$\sim$1.69$\times$ on the single-device subset; see
 Table~\ref{tab:leakage}). We propose and measure a segment-level
 split as the principled alternative.
 
@@ -130,15 +135,18 @@ We collect data on four Android devices (Xiaomi 2107113SG, Pixel~7~Pro,
 8~Pro and 9~Pro~XL) and compare TinyML against four explicit baselines
 (Random Forest, mean predictor, linear drain rate, exponential fit) and
 the native Google~API. Differences are reported with bootstrap 95\%
-confidence intervals and verified with paired permutation tests.
+confidence intervals; pairwise significance uses a paired permutation
+test for MAE and a paired bootstrap on $\Delta C$ for the $C$-index
+(per-sample swap is invalid for a pairwise metric), with
+Benjamini--Hochberg correction over 15 tests per family.
 
 \item \textbf{Device-dependent learnability:} Per-device evaluation
 reveals a strong hardware effect. On the Pixel~7~Pro the TinyML model
-achieves $C{=}0.79$, three times the gap to the mean predictor that
-the same model attains on the Xiaomi ($C{=}0.59$). This demonstrates
-that the signal available to an app-level model is dominated by the
-underlying sensor stack, not by the model architecture or training
-budget.
+achieves $C{=}0.75$, more than two and a half times the gap to the
+mean predictor that the same model attains on the Xiaomi
+($C{=}0.59$). This demonstrates that the signal available to an
+app-level model is dominated by the underlying sensor stack, not by
+the model architecture or training budget.
 
 \item \textbf{Model-independent feature diagnostics:} Beyond
 permutation-importance on the Random Forest, we report Pearson, Spearman
@@ -177,24 +185,28 @@ native Google API and against analytical baselines on identical data, and
 
 \paragraph{TinyML.}
 Banbury \emph{et al.}\cite{banbury2021mlperf} introduced MLPerf~Tiny,
-described by the authors as the first industry-standard benchmark
-suite for ultra-low-power tiny ML systems, which jointly measures
-\emph{accuracy, latency and energy}. We follow the first two and
-report energy-relevant proxies (model size and inference latency on
-a CPU reference); on-device energy measurement on commodity Android
-hardware is not exposed to third-party apps. Recent TinyML
-surveys~\cite{heydari2025tinyml,alajlan2022tinyml} are focused on
-microcontroller-class hardware (MCU, Arduino, Raspberry Pi) and do
-not cover smartphone applications. We treat the smartphone case as
-under-studied within the TinyML literature on this empirical basis.
+which they describe as ``the first industry-standard benchmark
+suite for ultra-low-power tiny [machine learning] systems'' that
+measures \emph{accuracy, latency, and energy}. We follow the first
+two and report energy-relevant proxies (model size and inference
+latency on a CPU reference); on-device energy measurement on
+commodity Android hardware is not exposed to third-party apps.
+Recent TinyML surveys~\cite{heydari2025tinyml,alajlan2022tinyml}
+focus primarily on microcontroller-class hardware (MCU, Arduino,
+Raspberry Pi); smartphone applications are not a central topic in
+either. We treat the smartphone case as under-studied within the
+TinyML literature on this empirical basis.
 
 \paragraph{Time-series evaluation methodology.}
-Albelali and Ahmed~\cite{albelali2025hidden} systematically demonstrate
-that constructing input/output sequences before the train/test
-partition leaks future information into LSTM training. They report
-an ``RMSE Gain'' (relative increase due to leakage) of up to 20.5\,\%
-specifically for 10-fold cross-validation at extended lag steps, and
-below 5\,\% for 2-way and 3-way holdout splits. We replicate the
+Albelali and Ahmed~\cite{albelali2025hidden} systematically study how
+the order of two preprocessing steps --- forming sliding-window
+sequences first, then partitioning into train and test --- affects
+LSTM forecasting evaluation. When sequences are constructed before
+the split, samples derived from the same underlying segment can end
+up on opposite sides of the partition, causing systematic optimism.
+They report an ``RMSE Gain'' (relative increase due to leakage) of
+up to 20.5\,\% specifically for 10-fold cross-validation at extended
+lag steps, and below 5\,\% for 2-way and 3-way holdout splits. We replicate the
 direction of their observation in our sliding-window setting,
 although the magnitude we observe is substantially larger than theirs
 (Section~\ref{sec:results-leakage}); we report this as a
@@ -308,7 +320,7 @@ from data-level failure: if the Random Forest also fails to outperform
 the mean predictor, the bottleneck is the data, not the choice of Conv1D.
 
 \item \textbf{Mean predictor (floor).} For every test point, predicts the
-training-set mean of $y^{\text{extrap}}$ (\SI{14.18}{\hour}). By
+training-set mean of $y^{\text{extrap}}$ (\SI{11.18}{\hour}). By
 construction, its Concordance index is exactly $0.5$ and any learning
 model that does not significantly exceed this floor has not learned a
 feature-to-output relationship.
@@ -344,12 +356,23 @@ target-bias and remains meaningful under censoring.
 
 We attach 95\% bootstrap confidence intervals to MAE, RMSE, ME and $C$
 (1{,}000 resamples; 200 for $C$, which is $O(n^2)$). Pairwise method
-differences are tested with a paired permutation test (1{,}000
-permutations for MAE, 200 for $C$): per-sample, with probability $0.5$,
-swap the two methods' predictions, recompute the metric difference, and
-report the share of permutations whose absolute difference equals or
-exceeds the observed one. We use the standard Wasserman correction
-$(k{+}1)/(B{+}1)$ for the resulting $p$-value.
+differences use two different paired tests, chosen to match each
+metric's structure. \emph{For MAE}, which is sample-additive, we use a
+paired permutation test (1{,}000 permutations): per-sample, with
+probability $0.5$, swap the two methods' predictions, recompute the
+metric difference, and report the share of permutations whose absolute
+difference equals or exceeds the observed one
+$((k{+}1)/(B{+}1)$ correction). \emph{For $C$-index}, which is a
+pairwise metric, the per-sample swap is not valid because it destroys
+the pair structure the metric depends on; we instead use a paired
+bootstrap on $\Delta C$ (500 resamples on the joint
+$(y^{\text{true}}, \hat y_A, \hat y_B)$ triples), giving a $95\%$~CI
+for $\Delta C$ and a two-sided bootstrap $p$-value
+$2\min(\Pr[\Delta C \le 0], \Pr[\Delta C \ge 0])$.
+With six methods, 15 pairwise tests are run per metric per target.
+We report both raw $p$-values and Benjamini--Hochberg FDR-adjusted
+$p$-values ($p_{\text{BH}}$), and base significance claims on the
+adjusted values.
 
 % =====================================================================
 \section{Results}
@@ -373,12 +396,13 @@ segment level (clean). The inflation factor is the ratio of clean to
 leaky test MAE.}
 \label{tab:leakage}
 \centering
-\small
+\footnotesize
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lcccc}
 \toprule
 Dataset & Seqs & MAE leaky & MAE clean & Inflation \\
 \midrule
-Single device (Xiaomi only)  & \phantom{0}9{,}024 & 0.53 & \textbf{9.96} & $\sim$19$\times$ \\
+Single device (Xiaomi only)  & \phantom{0}9{,}024 & 6.53 & \textbf{11.06} & $\sim$1.69$\times$ \\
 Multi-device (4 devices)     & 20{,}842 & 4.00 & \textbf{4.97} & $\sim$1.24$\times$ \\
 \bottomrule
 \end{tabular}
@@ -389,31 +413,37 @@ leakage-free segment-level split produces a higher (i.e.\ honest)
 test~MAE, consistent in direction with the LSTM-benchmark observation
 of Albelali and Ahmed~\cite{albelali2025hidden}. Second, the
 magnitude of the inflation is itself dataset-dependent: the
-single-device subset shows a much larger inflation than the
-multi-device dataset, which sits in the same ballpark as the authors'
-$\sim$20\,\% RMSE Gain. We read this as evidence that data diversity
-attenuates the leakage effect, presumably because intra-segment
-correlations become a smaller share of the total signal. The
-practical recommendation stands either way: \emph{report the
-splitting strategy explicitly and verify it is segment-level}. All
-subsequent results in this paper use the leakage-free multi-device
-split.
+single-device subset shows a noticeably larger inflation
+($\sim$1.69$\times$, or a $\sim$69\,\% relative MAE increase) than
+the multi-device dataset ($\sim$1.24$\times$, $\sim$24\,\%). The
+multi-device number is in the same broad range as the
+$\sim$20.5\,\% RMSE Gain that Albelali and
+Ahmed~\cite{albelali2025hidden} report for 10-fold cross-validation
+at extended lag steps; the single-device number is larger by a factor
+of $\sim$3.4. We read this as evidence that data diversity attenuates
+the leakage effect, presumably because intra-segment correlations
+become a smaller share of the total signal. The practical
+recommendation stands either way: \emph{report the splitting strategy
+explicitly and verify it is segment-level}. All subsequent results in
+this paper use the leakage-free multi-device split.
 
 \subsection{Six-Way Accuracy on the Common Subset}
 Table~\ref{tab:accuracy} reports MAE and $C$ (with 95\% bootstrap CIs)
-on the common subset of 2{,}827 test sequences (out of 3{,}885) for
-which all six methods produce a defined prediction. The two ML
-methods clear the mean-predictor floor decisively: TinyML reaches
-$C{=}0.666\,[0.656,\,0.675]$, Random Forest $C{=}0.686\,[0.673,\,0.696]$,
-both with confidence intervals that exclude the floor of $0.500$. The
-two analytical baselines and the Google~API form a tied top group at
-$C \approx 0.77$, and the Google~API is \emph{not significantly better
-than the linear drain-rate baseline} on MAE (Table~\ref{tab:significance}).
+on the common subset of 2{,}883 test sequences (out of 3{,}885) for
+which all six methods produce a defined prediction. Against the
+training target $y^{\text{extrap}}$, the two ML methods clear the
+mean-predictor floor: TinyML reaches $C{=}0.656\,[0.647,\,0.664]$,
+Random Forest $C{=}0.685\,[0.673,\,0.695]$, both with confidence
+intervals that exclude the floor of $0.500$. The two analytical
+baselines and the Google~API form a tied top group at $C \approx 0.77$,
+and the Google~API is \emph{not significantly better than the linear
+drain-rate baseline} on $C$~or MAE
+(Table~\ref{tab:significance}).
 
 \emph{Caveat on the common subset.} Restricting the comparison to
 samples where every method (notably the Google~API) is defined
 introduces a mild selection effect: the mean of $y^{\text{extrap}}$
-on the common subset is \SI{6.7}{\hour} versus \SI{7.7}{\hour} on the
+on the common subset is \SI{6.76}{\hour} versus \SI{7.68}{\hour} on the
 full test set. The Google~API is more often available at shorter
 remaining times, so the common subset is biased toward easier
 prediction targets. This affects all methods symmetrically (we
@@ -421,7 +451,7 @@ compare them on the same samples), so the ranking is unaffected, but
 absolute MAE values would be larger on the unrestricted test set.
 
 \begin{table*}[t]
-\caption{Accuracy on the common subset (n${=}2{,}827$ test sequences,
+\caption{Accuracy on the common subset (n${=}2{,}883$ test sequences,
 all six methods defined). Target: $y^{\text{extrap}}$ as defined in
 Eq.~\eqref{eq:yextrap}. Brackets are 95\% bootstrap CIs.}
 \label{tab:accuracy}
@@ -431,12 +461,12 @@ Eq.~\eqref{eq:yextrap}. Brackets are 95\% bootstrap CIs.}
 \toprule
 Method & MAE (h) & RMSE (h) & ME (h) & $C$-index & $\text{Acc}_{\pm 2\text{h}}$ \\
 \midrule
-Mean predictor (floor)  & 6.51 [6.28, 6.75] & 9.28 [8.72, 9.83] & $+4.48$ & 0.500 [0.500, 0.500] & 21.7\,\% \\
-TinyML Conv1D           & 4.28 [4.04, 4.53] & 8.38 [7.67, 9.03] & $+1.45$ & 0.666 [0.656, 0.675] & 51.1\,\% \\
-Random Forest           & 4.01 [3.79, 4.25] & 7.54 [6.95, 8.11] & $+1.49$ & 0.686 [0.673, 0.696] & 45.2\,\% \\
-\textbf{Linear (drain rate)}     & \textbf{3.22 [2.94, 3.49]} & 8.55 [7.61, 9.40] & $-2.45$ & 0.776 [0.767, 0.784] & 58.3\,\% \\
-Exponential fit         & 3.49 [3.20, 3.76] & 8.88 [7.96, 9.68] & $-1.72$ & 0.773 [0.764, 0.781] & 59.8\,\% \\
-\textbf{Google API}     & 3.24 [2.97, 3.52] & 8.55 [7.63, 9.40] & $-2.23$ & \textbf{0.777 [0.767, 0.785]} & 60.1\,\% \\
+Mean predictor (floor)  & 6.52 [6.29, 6.76] & 9.25 [8.69, 9.80] & $+4.42$ & 0.500 [0.500, 0.500] & 21.5\,\% \\
+TinyML Conv1D           & 4.60 [4.33, 4.82] & 8.47 [7.78, 9.13] & $+1.81$ & 0.656 [0.647, 0.664] & 43.7\,\% \\
+Random Forest           & 4.06 [3.83, 4.28] & 7.56 [6.98, 8.11] & $+1.61$ & 0.685 [0.673, 0.695] & 46.4\,\% \\
+\textbf{Linear (drain rate)}     & \textbf{3.30 [3.03, 3.57]} & 8.57 [7.69, 9.39] & $-2.39$ & \textbf{0.770 [0.761, 0.780]} & 57.3\,\% \\
+Exponential fit         & 3.63 [3.34, 3.91] & 9.04 [8.14, 9.84] & $-1.60$ & 0.767 [0.758, 0.776] & 59.0\,\% \\
+Google API              & 3.37 [3.10, 3.65] & 8.65 [7.74, 9.45] & $-2.37$ & 0.762 [0.751, 0.772] & 59.0\,\% \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -445,10 +475,10 @@ Exponential fit         & 3.49 [3.20, 3.76] & 8.88 [7.96, 9.68] & $-1.72$ & 0.77
 \label{sec:results-perdevice}
 The aggregate ranking in Table~\ref{tab:accuracy} hides a substantial
 between-device variation, summarised in Table~\ref{tab:perdevice}. On
-the Pixel~7~Pro, the TinyML model reaches $C{=}0.79$, comparable to
-the analytical baselines and only $0.07$ below the Google~API's
+the Pixel~7~Pro, the TinyML model reaches $C{=}0.75$, comparable to
+the analytical baselines and $0.10$ below the Google~API's
 $C{=}0.85$ on that device. On the Xiaomi 2107113SG, the same model
-collapses to $C{=}0.59$. Random Forest behaves similarly: $0.80$ on
+collapses to $C{=}0.59$. Random Forest behaves similarly: $0.81$ on
 Pixel~7~Pro, $0.63$ on Xiaomi. The two analytical baselines, by
 contrast, are stable in the $0.69$--$0.79$ band across all four
 devices.
@@ -468,10 +498,10 @@ The two ML models show the largest swing across devices.}
 & & \multicolumn{2}{c|}{TinyML} & \multicolumn{2}{c|}{Random Forest} & \multicolumn{2}{c|}{Linear} & \multicolumn{2}{c}{Google API} \\
 Device & $n$ & $C$ & MAE & $C$ & MAE & $C$ & MAE & $C$ & MAE \\
 \midrule
-Pixel 7 Pro          & 1{,}825 & 0.786 & 2.28 & 0.804 & 2.08 & 0.792 & 2.05 & \textbf{0.853} & \textbf{1.89} \\
-Pixel 8 Pro          & \phantom{0}\phantom{0}98    & 0.714 & 2.93 & 0.801 & 3.02 & 0.696 & \textbf{1.36} & \textbf{0.921} & 9.92 \\
-Pixel 9 Pro XL       & \phantom{0}614   & 0.599 & 2.34 & \textbf{0.759} & \textbf{1.71} & 0.730 & 2.54 & 0.677 & 2.53 \\
-Xiaomi 2107113SG     & 1{,}348 & 0.593 & 9.95 & 0.631 & 9.87 & \textbf{0.724} & 5.87 & 0.664 & \textbf{5.37} \\
+Pixel 7 Pro          & 1{,}825 & 0.754 & 2.50 & 0.807 & 2.04 & 0.792 & 2.05 & \textbf{0.853} & \textbf{1.89} \\
+Pixel 8 Pro          & \phantom{0}\phantom{0}98    & 0.742 & 2.67 & 0.815 & 2.94 & 0.696 & \textbf{1.36} & \textbf{0.921} & 9.92 \\
+Pixel 9 Pro XL       & \phantom{0}614   & 0.571 & 2.37 & \textbf{0.767} & \textbf{1.62} & 0.730 & 2.54 & 0.677 & 2.53 \\
+Xiaomi 2107113SG     & 1{,}348 & 0.593 & 10.17 & 0.628 & 9.94 & \textbf{0.724} & \textbf{5.87} & 0.473 & 8.54 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -489,33 +519,55 @@ problem and as a justification for reporting both ranking and
 absolute-error metrics throughout.
 
 \subsection{Statistical Significance}
-The pairwise permutation tests (Table~\ref{tab:significance}) reinforce
-the visual picture from Table~\ref{tab:accuracy}. Both ML models clear
-the mean-predictor floor with $p \leq 0.005$ on $C$. Within the top
-group, Linear and Google are statistically indistinguishable
-($\Delta C{=}{-}0.001$, $p{=}0.83$), as are Linear and Exponential
-($\Delta C{=}{+}0.003$, $p{=}0.30$). The Google~API significantly
-exceeds both ML models on $C$ ($p \leq 0.005$).
+The pairwise tests (Table~\ref{tab:significance}) reinforce the visual
+picture from Table~\ref{tab:accuracy}. Against the training target
+$y^{\text{extrap}}$, both ML models clear the mean-predictor floor on
+$C$ (BH-adjusted $p_{\text{BH}} < 0.001$). Within the top group,
+Linear and Google are statistically indistinguishable
+($\Delta C{=}{+}0.009$, $p_{\text{BH}}{=}0.11$), as are Linear and
+Exponential ($\Delta C{=}{+}0.004$, $p_{\text{BH}}{=}0.27$) and
+Exponential and Google ($\Delta C{=}{+}0.005$, $p_{\text{BH}}{=}0.28$).
+The Google~API significantly exceeds both ML models on $C$
+($p_{\text{BH}} < 0.001$).
+
+\paragraph{Robustness check against the measured target.} Re-running
+the same tests against $y^{\text{real}}$ (uncensored measured
+remaining time) materially changes two of the comparisons in a way
+that \emph{strengthens} the negative-result reading: TinyML
+\emph{vs.}\ Mean collapses to $\Delta C{=}{+}0.001$
+($p_{\text{BH}}{=}0.82$, ns), and Random~Forest \emph{vs.}\ Mean
+reverses to $\Delta C{=}{-}0.052$ ($p_{\text{BH}}<0.001$). In other
+words, on the measured target the two ML models do \emph{not}
+outperform a constant-mean baseline at ranking (RF in fact ranks
+worse), while the Google~API and the analytical baselines retain
+their ranking advantage. We treat $y^{\text{extrap}}$ as the
+primary target for significance because it is the training target
+and matches the bias of the ML models; the $y^{\text{real}}$ result
+is the more honest reading of practical utility.
 
 \begin{table}[t]
-\caption{Selected pairwise permutation tests on $C$-index, common
-subset (n${=}2{,}827$), target $y^{\text{extrap}}$. ``ns'' = not
-significant at $p{>}0.05$.}
+\caption{Selected pairwise tests, common subset (n${=}2{,}883$),
+target $y^{\text{extrap}}$. MAE uses a paired permutation test
+(1{,}000 permutations); $C$-index uses a paired bootstrap on
+$\Delta C$ (500 resamples) because the per-sample swap is invalid
+for a pairwise metric. $p_{\text{BH}}$ is the
+Benjamini--Hochberg-adjusted $p$-value over the 15 pairwise tests in
+each family. ``ns'' = not significant at $p_{\text{BH}}{>}0.05$.}
 \label{tab:significance}
 \centering
 \small
 \begin{tabular}{lcccc}
 \toprule
-Comparison & $C_A$ & $C_B$ & $\Delta C$ & $p$ \\
+Comparison & $C_A$ & $C_B$ & $\Delta C$ & $p_{\text{BH}}$ \\
 \midrule
-TinyML \emph{vs.}\ Mean        & 0.666 & 0.500 & $+0.166$ & \textbf{0.005} \\
-RF \emph{vs.}\ Mean            & 0.686 & 0.500 & $+0.186$ & \textbf{0.005} \\
-TinyML \emph{vs.}\ RF          & 0.666 & 0.686 & $-0.020$ & \textbf{0.005} \\
-Linear \emph{vs.}\ Exponential & 0.776 & 0.773 & $+0.003$ & 0.30 (ns) \\
-Linear \emph{vs.}\ Google      & 0.776 & 0.777 & $-0.001$ & 0.83 (ns) \\
-Exp.\ \emph{vs.}\ Google       & 0.773 & 0.777 & $-0.004$ & 0.36 (ns) \\
-TinyML \emph{vs.}\ Google      & 0.666 & 0.777 & $-0.111$ & \textbf{0.005} \\
-RF \emph{vs.}\ Google          & 0.686 & 0.777 & $-0.091$ & \textbf{0.005} \\
+TinyML \emph{vs.}\ Mean        & 0.656 & 0.500 & $+0.156$ & \textbf{$<$0.001} \\
+RF \emph{vs.}\ Mean            & 0.685 & 0.500 & $+0.184$ & \textbf{$<$0.001} \\
+TinyML \emph{vs.}\ RF          & 0.656 & 0.685 & $-0.028$ & \textbf{$<$0.001} \\
+Linear \emph{vs.}\ Exponential & 0.770 & 0.767 & $+0.004$ & 0.27 (ns) \\
+Linear \emph{vs.}\ Google      & 0.770 & 0.762 & $+0.009$ & 0.11 (ns) \\
+Exp.\ \emph{vs.}\ Google       & 0.767 & 0.762 & $+0.005$ & 0.28 (ns) \\
+TinyML \emph{vs.}\ Google      & 0.656 & 0.762 & $-0.105$ & \textbf{$<$0.001} \\
+RF \emph{vs.}\ Google          & 0.685 & 0.762 & $-0.077$ & \textbf{$<$0.001} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -555,18 +607,22 @@ predict.}
 \label{sec:datadiag}
 Table~\ref{tab:datadiag} reports Pearson, Spearman and mutual-information
 statistics between each feature (taken at the latest timestep of the
-window) and $y^{\text{extrap}}$, computed on the training split. Pearson
-correlations are weak across the board (max $|r|{=}0.29$ for
-\texttt{hotspot\_on}). Mutual information identifies
-\texttt{temperature} (1.24~nat) and \texttt{battery\_level} (0.99~nat)
-as the only features carrying nontrivial nonlinear signal. All other
-features are below 0.5~nat, and three features
-(\texttt{wifi\_on}, \texttt{mobile\_data\_on}, \texttt{charging}) are
-effectively constant in our discharge-only filter.
+window) and $y^{\text{extrap}}$, computed on the training split
+(n${=}13{,}901$). Linear (Pearson) correlations are moderate, with
+\texttt{hotspot\_on}, \texttt{wifi\_on} and \texttt{mobile\_data\_on}
+all showing $|r|{\approx}0.5$; these three features encode connectivity
+modes that correlate strongly with device-specific usage patterns rather
+than with discharge dynamics directly. Mutual information identifies
+\texttt{temperature} (\SI{2.07}{\nat}), \texttt{battery\_level}
+(\SI{1.72}{\nat}) and \texttt{brightness} (\SI{1.14}{\nat}) as the
+features carrying the most nonlinear signal; all other features
+fall below \SI{0.5}{\nat}. Only one feature is effectively constant
+in our discharge-only filter: \texttt{charging}, which is $0$ by
+construction.
 
 \begin{table}[t]
-\caption{Feature--target relationships on the training split,
-target: $y^{\text{extrap}}$.}
+\caption{Feature--target relationships on the training split
+(n${=}13{,}901$), target: $y^{\text{extrap}}$. Sorted by $|r|$ descending.}
 \label{tab:datadiag}
 \centering
 \small
@@ -574,33 +630,64 @@ target: $y^{\text{extrap}}$.}
 \toprule
 Feature              & Pearson $r$ & Spearman $\rho$ & MI (nat) \\
 \midrule
-\texttt{hotspot\_on}            & $+0.29$ & $+0.26$ & 0.20 \\
-\texttt{battery\_level}         & $+0.10$ & $+0.18$ & 0.99 \\
-\texttt{cpu\_usage}             & $-0.10$ & $-0.10$ & 0.20 \\
-\texttt{screen\_on}             & $-0.09$ & $-0.06$ & 0.19 \\
-\texttt{wifi\_on}               & $-0.07$ & $-0.13$ & 0.02 \\
-\texttt{mobile\_data\_on}       & $+0.07$ & $+0.13$ & 0.02 \\
-\texttt{active\_app\_category}  & $-0.06$ & $-0.03$ & 0.45 \\
-\texttt{brightness}             & $+0.05$ & $+0.01$ & 1.21 \\
-\texttt{temperature}            & $+0.02$ & $+0.06$ & \textbf{1.24} \\
+\texttt{hotspot\_on}            & $+0.53$ & $+0.36$ & 0.23 \\
+\texttt{wifi\_on}               & $+0.51$ & $+0.39$ & 0.24 \\
+\texttt{mobile\_data\_on}       & $-0.50$ & $-0.39$ & 0.24 \\
+\texttt{battery\_level}         & $+0.43$ & $+0.58$ & \textbf{1.72} \\
+\texttt{screen\_on}             & $-0.35$ & $-0.25$ & 0.16 \\
+\texttt{temperature}            & $-0.24$ & $-0.26$ & \textbf{2.07} \\
+\texttt{active\_app\_category}  & $-0.10$ & $-0.06$ & 0.29 \\
+\texttt{cpu\_usage}             & $-0.05$ & $+0.02$ & 0.31 \\
+\texttt{brightness}             & $-0.02$ & $+0.08$ & \textbf{1.14} \\
 \texttt{charging} (constant)    & $\phantom{+}0.00$ & $\phantom{+}0.00$ & 0.00 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-This finding is consistent across modelling paradigms: the Random Forest
-permutation importance confirms \texttt{temperature} as by far the most
-useful single feature ($\Delta\,\text{MAE}{=}{+}1.02$\,h), with all
-others below $\Delta\,\text{MAE}{=}{+}0.25$\,h.
+The non-trivial linear correlations on the three connectivity features
+reflect the multi-device structure of our training set: Xiaomi sessions
+have systematically different WiFi/mobile-data patterns than the three
+Pixel devices, and battery temperature distributions also differ. These
+features are therefore informative as device identifiers rather than as
+direct predictors of discharge dynamics, which limits how well a model
+can generalise across hardware. We return to this point in
+Section~\ref{sec:limitations}.
+
+\paragraph{Permutation-importance check (Random Forest).}
+The same conclusion holds when measured through model-side feature
+importance. Permutation importance on the held-out test set
+(device-stratified subsample, $n_{\text{repeats}}{=}5$, scoring on
+$-\text{MAE}$) ranks \texttt{brightness} ($\Delta\text{MAE}{=}{+}0.05$\,h)
+and \texttt{hotspot\_on} ($+0.04$\,h) as the only features whose
+permutation \emph{worsens} the model's predictions; all other features
+have small or even negative aggregated importance. The negative
+aggregated values for \texttt{battery\_level} ($-5.3$\,h),
+\texttt{temperature} ($-0.4$\,h) and \texttt{cpu\_usage} ($-0.2$\,h)
+indicate that the Random Forest is fitting these features to noise
+on the training set in a way that does not transfer to test
+(consistent with the train/val MAE ratio of $\sim$4.6 in our
+regularised RF, despite $\texttt{max\_depth}{=}20$ and
+$\texttt{min\_samples\_leaf}{=}5$). The fact that even the most useful
+single feature changes the test MAE by less than \SI{0.1}{\hour} ---
+on a target with mean \SI{6.76}{\hour} on the common subset --- is
+itself the central observation: no single feature available to an
+app-level model carries enough signal to push the model's MAE
+meaningfully closer to the analytical baselines.
 
 \subsection{Per-Bucket Behaviour}
 A bucket-level analysis on battery-level at prediction time
-shows that the Google~API's advantage is not uniform but concentrated
-in the most relevant bucket: at battery 50--75\,\%, Google reaches
-$C{=}0.95$ versus 0.47 (TinyML) and 0.54 (RF). At
-battery 75--100\,\% all methods are weaker, but Google still leads.
-Buckets for segment lengths longer than two hours are empty in our
-dataset (see Section~\ref{sec:limitations}).
+(common subset, target $y^{\text{extrap}}$) shows that the
+Google~API's advantage is not uniform but concentrated in the longer
+horizons. At battery 75--100\,\%, where the longest remaining-time
+predictions sit, Google reaches $C{=}0.73$ and Linear $C{=}0.73$ versus
+$0.50$ (TinyML) and $0.57$ (RF). At battery 50--75\,\%, Google and the
+analytical baselines compress to $C{\approx}0.62\text{--}0.63$ and the
+gap to the ML models is smaller. At battery 0--25\,\%
+(near-empty, remaining time short), Random Forest unexpectedly leads
+($C{=}0.74$) while all other methods drop into the $0.53\text{--}0.57$ band.
+Bucketed on segment length, the 2--\SI{5}{\hour} bucket
+($n{=}820$ common) is where Google attains its peak $C{=}0.96$ on
+$y^{\text{extrap}}$, with all other methods at $C{=}0.87\text{--}0.91$.
 
 \subsection{Efficiency}
 Table~\ref{tab:efficiency} reports model size and inference latency for
@@ -643,9 +730,10 @@ Table~\ref{tab:leakage} shows that the leakage effect is consistent
 in direction (random shuffle always produces an over-optimistic test
 MAE) but variable in magnitude. On the multi-device dataset the
 inflation is $\sim$1.24$\times$, in the same broad range as the
-$\sim$20\,\% RMSE Gain Albelali and Ahmed~\cite{albelali2025hidden}
-report for 10-fold cross-validation on LSTM benchmarks. On the much
-smaller single-device subset the inflation is $\sim$19$\times$. A plausible reading is that as
+$\sim$20.5\,\% RMSE Gain Albelali and
+Ahmed~\cite{albelali2025hidden} report for 10-fold cross-validation
+at extended lag steps. On the much smaller single-device subset
+the inflation is $\sim$1.69$\times$. A plausible reading is that as
 the dataset accumulates more segments and more device-to-device
 variation, intra-segment correlations make up a smaller fraction of
 the available signal and the leak provides correspondingly less
@@ -655,13 +743,17 @@ not specify the splitting strategy is suspect. We recommend that
 future work in app-based mobile sensing report the splitting unit
 (sequence, segment, session, or user) explicitly.
 
-\paragraph{Both ML models do learn signal --- but less than analytical baselines.}
-On the multi-device test set, TinyML reaches $C{=}0.67$ and Random
-Forest $C{=}0.69$, both significantly above the mean-predictor floor
-($p{\leq}0.005$). This contradicts the narrative one might infer from
-a single-device study, where the effect can disappear into the
-mean. However, the analytical baselines (Linear drain rate at $C{=}0.78$,
-Exponential fit at $C{=}0.77$) outperform both ML models substantially.
+\paragraph{Both ML models learn target-specific signal, less so on the measured target.}
+On the multi-device test set against the training target $y^{\text{extrap}}$,
+TinyML reaches $C{=}0.66$ and Random Forest $C{=}0.69$, both above the
+mean-predictor floor at $p_{\text{BH}} < 0.001$. Against the
+uncensored measured target $y^{\text{real}}$, the same models reduce
+to $\Delta C{=}{+}0.001$ ($p_{\text{BH}}{=}0.82$, ns) and
+$\Delta C{=}{-}0.05$ ($p_{\text{BH}}{<}0.001$) respectively,
+i.e.\ no significant ranking advantage over the constant mean
+(Random Forest in fact ranks worse). The analytical baselines
+(Linear drain rate at $C{=}0.77$, Exponential fit at $C{=}0.77$)
+outperform both ML models substantially.
 The most parsimonious explanation is that the dominant signal in
 app-level battery data is the recent drain rate, which the analytical
 baselines exploit directly while the ML models have to recover it from
@@ -673,18 +765,18 @@ learned model over $b/\dot b$ extrapolation.
 \paragraph{Google's API is on par with linear extrapolation on the typical horizon.}
 On the common subset, the Google~API is statistically
 \emph{indistinguishable} from the linear drain-rate baseline both on
-MAE ($\Delta{=}{-}0.03\,$h, $p{=}0.55$) and on $C$
-($\Delta C{=}{-}0.001$, $p{=}0.83$). This aggregate result, however,
-hides a structure that only emerges in a bucket analysis: of the
-2{,}827 common-subset samples, 1{,}355 (47.9\,\%) fall in the
-$y^{\text{extrap}} < $\SI{5}{\hour} bucket where Linear and Google
-produce nearly identical errors (MAE \SI{1.00}{\hour} vs.\
-\SI{0.99}{\hour}), and 1{,}395 (49.3\,\%) fall in the
-5--\SI{15}{\hour} bucket where they remain close. Only 77 samples
-(2.7\,\%) fall above \SI{15}{\hour}, and in the very-long-horizon
+MAE ($\Delta{=}{+}0.07\,$h, $p_{\text{BH}}{=}0.55$) and on $C$
+($\Delta C{=}{+}0.009$, $p_{\text{BH}}{=}0.11$). This aggregate
+result, however, hides a structure that only emerges in a bucket
+analysis: of the 2{,}883 common-subset samples, 1{,}376 (47.7\,\%)
+fall in the $y^{\text{extrap}} < $\SI{5}{\hour} bucket where Linear
+and Google produce nearly identical errors (MAE \SI{1.11}{\hour}
+vs.\ \SI{1.02}{\hour}), and 1{,}414 (49.0\,\%) fall in the
+5--\SI{15}{\hour} bucket where they remain close. Only 93 samples
+(3.2\,\%) fall above \SI{15}{\hour}, and in the very-long-horizon
 bucket ($\geq$\SI{30}{\hour}, $n{=}58$) the Concordance index
 diverges sharply: Google reaches $C{=}0.98$ while the linear
-baseline only $C{=}0.64$. The system API's privilege --- access to
+baseline collapses to $C{=}0.64$. The system API's privilege --- access to
 per-application power accounting and the Adaptive Battery system,
 which a third-party app cannot reach --- does translate into a
 measurable advantage, but only where the prediction horizon is long
@@ -694,101 +786,65 @@ linear baseline is competitive. This is good news for app
 developers: BatteryManager counters alone are enough for the use
 cases users actually see.
 
-\paragraph{Predictability is hardware-dependent --- with a caveat.}
+\paragraph{Predictability is hardware-dependent --- with a confound.}
 The per-device breakdown (Table~\ref{tab:perdevice}) is the strongest
-practical finding. The same TinyML model, trained on the union of all
-four devices, reaches $C{=}0.79$ when evaluated on Pixel~7~Pro samples
-and $C{=}0.59$ when evaluated on Xiaomi samples --- a $\Delta C$ of
-about $0.20$, which is roughly $57\%$ of the available range between
-the mean-predictor floor and the best per-device score in the table.
-Random Forest shows the same pattern. The two analytical baselines
-are less device-sensitive (Linear $C \in [0.70,\,0.79]$, Exponential
-$C \in [0.65,\,0.79]$ across all devices; the smaller-$n$
-Pixel~8~Pro pulls the exponential lower bound down).
-
+practical finding. The same TinyML model reaches $C{=}0.75$ on
+Pixel~7~Pro and $C{=}0.59$ on Xiaomi --- a $\Delta C$ of $0.16$,
+roughly $46\,\%$ of the available range between the mean-predictor
+floor and the best per-device score. Random Forest shows the same
+pattern; the two analytical baselines are less device-sensitive
+(Linear $C \in [0.70,\,0.79]$, Exponential $C \in [0.65,\,0.79]$
+across all devices).
 A confounder we cannot fully isolate is that the per-device
-collections also differ in their input-feature distributions: on
-Xiaomi the battery level is above 75\,\% in 88.8\,\% of measurements
-(mean 94\,\%), whereas on Pixel 7 Pro it is above 75\,\% in only
-40.8\,\% of measurements (mean 58\,\%). The Xiaomi sub-collection
-therefore offers fewer discharge dynamics for an ML model to learn
-from, and the Xiaomi test set has a longer mean
+collections differ in input-feature distributions: on Xiaomi the
+battery level is above 75\,\% in 88.8\,\% of measurements
+(mean 94\,\%), against 40.8\,\% on Pixel~7~Pro (mean 58\,\%). The
+Xiaomi sub-collection therefore offers fewer discharge dynamics for
+an ML model to learn from, and the Xiaomi test set has a longer mean
 $y^{\text{extrap}}$ (\SI{10.14}{\hour} vs.\ \SI{5.79}{\hour} on
-Pixel~7~Pro). Part of the $\Delta C{=}0.20$ swing therefore likely
+Pixel~7~Pro). Part of the $\Delta C{=}0.16$ swing therefore likely
 reflects this distribution difference rather than sensor quality
-alone. Disentangling the two would require either a controlled,
-identical-usage protocol across devices, or much larger samples per
-device.
-We read this as evidence that the limiting factor is not the
-\emph{absence} of signal in app-level sensors, but the \emph{noise} of
-those sensors on certain manufacturers. A practical consequence is
-that any deployed app-level battery predictor should report a
-device-specific confidence estimate; a globally-trained model has very
-different reliability profiles on Pixel and Xiaomi hardware.
+alone; disentangling the two would require a controlled identical-usage
+protocol across devices, or much larger per-device samples.
+The practical consequence is that any deployed app-level battery
+predictor should report a device-specific confidence estimate ---
+a globally-trained model has very different reliability profiles on
+Pixel and Xiaomi hardware.
 
 \subsection{Where App-Level TinyML for Battery Prediction Still Makes Sense}
 \label{sec:where-tinyml}
-
 Our negative finding applies specifically to \emph{modern Android
 devices ($\geq$ API~31) where the system already provides a privileged
 ML prediction}. It does not generalise to four scenarios where
-app-level TinyML for battery prediction remains a defensible engineering
-choice:
-
-\paragraph{Pre-Android-12 devices.}
-\texttt{getBatteryDischargePrediction()} was added in API level 31
-(October~2021); on earlier Android versions the only system-provided
-remaining-time estimate is the legacy linear extrapolation that we
-measured here as the ``Linear (drain rate)'' baseline. Our results
-show that this analytical baseline is competitive with the Android~12+
-system API on the aggregate metrics
-(Tables~\ref{tab:accuracy}--\ref{tab:significance}), so the practical
-target on this sub-population is not to close a gap to the system API
-but to add value above the linear baseline. Whether an app-level ML
-model can do that is an open question; our experiments suggest it
-would need richer features than our current ten.
-
-\paragraph{Custom ROMs and de-Googled Android.}
-LineageOS, GrapheneOS, /e/OS and similar de-Googled Android
-distributions ship without the proprietary system services that
-implement \texttt{getBatteryDischargePrediction()}. On these systems,
-even API-31+ devices fall back to the legacy linear estimator. The
-target user population is small but technically engaged and explicitly
-opts into giving applications more capability; an app-level TinyML
-estimator is the natural way to recover ML-grade prediction without
-re-introducing proprietary system services.
-
-\paragraph{Wearables.}
-Smartwatches and fitness bands run severely constrained hardware
-(typically $\leq$\SI{1}{\giga\byte} RAM, ARM Cortex-M-class secondary
-processors, sub-\SI{500}{\milli\ampere\hour} batteries) and are
-exactly the form factor TinyML was designed for. The 14\,KB INT8 model
-demonstrated here would fit comfortably on a Wear OS device or even a
-TinyML-grade microcontroller. Whether the same data-signal limitations
-apply is an open empirical question, but the cost-benefit ratio of
-on-device inference is fundamentally more favourable than on
-smartphones.
-
-\paragraph{IoT and embedded battery-powered devices.}
-The deployment story of TinyML --- small quantised models
-(reported sizes spanning tens to low hundreds of kilobytes) running
-on microcontroller-class hardware
-\cite{banbury2021mlperf,alajlan2022tinyml} --- maps cleanly to sensor
-nodes, environmental monitoring stations, and asset trackers.
-These devices both lack a privileged system ML predictor and have
-fundamentally different physical constraints (continuous monotonic
-discharge under known load profiles); the data-signal limitations
-documented here for an unpredictable consumer-smartphone setting do
-not necessarily transfer.
+app-level TinyML remains a defensible engineering choice:
+(i)~\textbf{pre-Android-12 devices}, where the only system baseline is
+legacy linear extrapolation rather than a learned predictor, so an
+app-level model competes only against \texttt{Linear (drain rate)};
+(ii)~\textbf{custom ROMs and de-Googled Android} (LineageOS,
+GrapheneOS, /e/OS), which ship without the proprietary services that
+implement \texttt{getBatteryDischargePrediction()}, leaving even
+API-31+ devices on the legacy estimator;
+(iii)~\textbf{wearables} (smartwatches, fitness bands) running on
+constrained hardware ($\leq$\SI{1}{\giga\byte} RAM, Cortex-M-class
+co-processors, sub-\SI{500}{\milli\ampere\hour} batteries), the
+form factor TinyML was originally designed for, where the 14\,KB
+INT8 model would fit even on bare microcontrollers; and
+(iv)~\textbf{IoT and embedded battery-powered devices} (sensor nodes,
+environmental monitors, asset trackers~\cite{banbury2021mlperf,alajlan2022tinyml})
+which both lack a privileged system predictor and have fundamentally
+different physical constraints (continuous monotonic discharge under
+known load profiles), so the data-signal limitations documented here
+for the unpredictable consumer-smartphone setting do not necessarily
+transfer.
 
 We therefore read our results not as an argument against TinyML in
 general, but as evidence that on modern Android with the Google~API
 present, the sandbox-vs-system access asymmetry dominates whatever
 benefit a small on-device model could add. The methodology developed
-in this paper (segment-level splits, mean-predictor floor, model-%
-independent feature diagnostics) transfers to the four scenarios
-above, where it can be used to settle each case empirically rather
-than by analogy.
+here (segment-level splits, mean-predictor floor,
+model-independent feature diagnostics, paired bootstrap on $\Delta C$
+with BH correction) transfers to all four scenarios above, where it
+can settle each case empirically rather than by analogy.
 
 % =====================================================================
 \section{Limitations and Scope}
@@ -834,31 +890,65 @@ randomly across the four devices, so the trained models have seen
 samples from every device during training. The per-device numbers in
 Table~\ref{tab:perdevice} therefore measure \emph{within-device}
 generalisation only. We do not test how the trained models would
-perform on a fifth, unseen device. A leave-one-device-out evaluation
+perform on a fifth, unseen device; a leave-one-device-out evaluation
 is the natural follow-up.
 
-\subsection{Unexplained TinyML behaviour on Pixel 9 Pro XL}
-On the Pixel~9~Pro~XL, the TinyML model reaches only $C{=}0.60$, while
-the Random Forest on the same samples reaches $C{=}0.76$ and the
-linear drain-rate baseline $C{=}0.73$. We do not have an
-instrumentation-level explanation for this single discrepancy. The
-most likely contributing factors are that (i)~the Pixel~9~Pro~XL
-sensor stack differs from the older Pixel generations in ways our
-ten-feature representation does not capture, and (ii)~the
-StandardScaler we fit on the training set may suit Conv1D worse than
-RF on the device-specific feature distribution. We flag this as an
+One per-device anomaly is worth flagging explicitly:
+on the Pixel~9~Pro~XL the TinyML model collapses to $C{=}0.57$
+while the Random Forest on the same samples reaches $C{=}0.77$ and
+the linear drain-rate baseline $C{=}0.73$. We do not have an
+instrumentation-level explanation. Plausible contributing factors
+are that (i)~the Pixel~9~Pro~XL sensor stack differs from the older
+Pixel generations in ways our ten-feature representation does not
+capture, and (ii)~the global StandardScaler may suit Conv1D worse
+than RF on this specific feature distribution. We flag this as an
 open question rather than paper over it.
 
-\subsection{Three features lack within-discharge variance}
-After filtering to discharge-only samples, \texttt{wifi\_on} is always
-0, \texttt{mobile\_data\_on} is always 1 and \texttt{charging} is always
-0 in our dataset. These three features therefore carry no signal in our
-particular setting; we report them as zeros in
-Table~\ref{tab:datadiag} for transparency. Variance in these features
-would be restored under a multi-device deployment (different users have
-different connectivity patterns) but is unlikely to change the central
-finding, since all three features are coarse binary state indicators
-without obvious causal coupling to discharge dynamics.
+\subsection{One feature lacks within-discharge variance}
+After filtering to discharge-only samples, \texttt{charging} is by
+construction $0$ everywhere in our training data and therefore carries
+no signal; we report it as constant in Table~\ref{tab:datadiag} for
+transparency. The other connectivity features (\texttt{wifi\_on},
+\texttt{mobile\_data\_on}, \texttt{hotspot\_on}) do show variance
+across the multi-device dataset, but as Table~\ref{tab:datadiag}
+makes clear, their correlation with $y^{\text{extrap}}$ is largely
+mediated by device identity rather than by causal coupling to
+discharge dynamics. A single-device subset would collapse most of
+this signal as well.
+
+\subsection{Several features are device-concentrated or rare}
+\label{sec:limit-feat-balance}
+Beyond the constant \texttt{charging} feature, several other features
+in our dataset are not well-balanced. Across the 39{,}104 discharge
+data points in the merged dataset:
+\begin{itemize}
+\item \texttt{hotspot\_on} is positive in 7.1\,\% of samples; 99\,\%
+of those positive samples come from the Pixel~8~Pro
+(978 of 983 in the training split).
+\item \texttt{wifi\_on} is positive in 8.1\,\% of samples; the
+Pixel~8~Pro contributes the majority of WiFi-enabled samples
+(1{,}475 of 1{,}643 across all devices), while the other three
+devices stay below 1\,\% WiFi each.
+\item \texttt{active\_app\_category} is heavily skewed: the
+\emph{gaming} category (11.4\,\% of samples) is essentially
+Xiaomi-only (4{,}433 of 4{,}442 gaming samples). The
+\emph{browser} (3.0\,\%) and \emph{productivity} (0.9\,\%)
+categories together account for fewer than 4\,\% of discharge
+data and are also unevenly distributed across devices.
+\end{itemize}
+Practically, this means that the linear correlations on the
+connectivity features (Table~\ref{tab:datadiag}) and the
+permutation-importance ranking of \texttt{hotspot\_on}
+(Section~\ref{sec:datadiag}) reflect device-specific usage patterns
+rather than universal discharge-rate signals. A model that learns
+``hotspot~on $\Rightarrow$ Pixel~8~Pro-like discharge'' is fitting
+device identity, not battery dynamics; it will not transfer to a
+fifth device that runs hotspot heavily but has a different sensor
+stack. We treat the observed feature signal as a soft upper bound on
+what an app-level model can learn from public sensors --- and even
+that bound is reached only because of incidental between-device
+balance differences. A balanced multi-device deployment would shrink
+the apparent signal further.
 
 \subsection{What a definitive follow-up would look like}
 A study that aims to refute or confirm our central finding under more
@@ -881,65 +971,74 @@ native Android~12 battery-discharge prediction on the two axes of
 evaluation gives a separable answer on each axis.
 
 \paragraph{Accuracy.}
-TinyML and Random Forest both significantly outperform a no-features
-mean predictor ($C{=}0.67$ and $C{=}0.69$ respectively, $p{\leq}0.005$),
-showing that publicly accessible smartphone sensors do carry exploitable
-signal. They do not, however, match the top group: the linear
-drain-rate baseline, the per-segment exponential fit, and the Google~API
-are statistically tied at $C \approx 0.77$, and the Google~API is
-indistinguishable from the simple linear baseline both on MAE
-($p{=}0.55$) and $C$ ($p{=}0.83$) at the aggregate level. A bucket
-analysis (Section~\ref{sec:results-perdevice} and Discussion) shows
-that this tie reflects the dominance of short and medium horizons
-($\sim$97\,\% of test samples have $y^{\text{extrap}} <$\,15\,h);
-at very long horizons ($\geq$\,30\,h, $n{=}58$) Google~API
-substantially outperforms the linear baseline in $C$.
+TinyML and Random Forest reach $C{=}0.66$ and $C{=}0.69$ against the
+training target $y^{\text{extrap}}$ ($p_{\text{BH}} < 0.001$ over the
+15-test family), suggesting that publicly accessible smartphone sensors
+carry some exploitable signal. The strength of that conclusion is
+target-sensitive: against the uncensored measured target
+$y^{\text{real}}$ neither ML model significantly outranks the constant
+mean ($\Delta C{=}{+}0.001$, $p_{\text{BH}}{=}0.82$ for TinyML;
+Random Forest's $C$ actually falls below the mean baseline at
+$\Delta C{=}{-}0.05$, $p_{\text{BH}}{<}0.001$). The two ML models do
+not match the top group either way: the linear drain-rate baseline,
+the per-segment exponential fit, and the Google~API are statistically
+tied at $C \approx 0.77$, and the Google~API is indistinguishable
+from the simple linear baseline both on MAE ($p_{\text{BH}}{=}0.55$)
+and $C$ ($\Delta C{=}{+}0.009$, $p_{\text{BH}}{=}0.11$) at the
+aggregate level. A bucket analysis
+(Section~\ref{sec:results-perdevice} and Discussion) shows that this
+tie reflects the dominance of short and medium horizons
+($\sim$97\,\% of test samples have $y^{\text{extrap}} <$\,\SI{15}{\hour});
+at very long horizons ($\geq$\,\SI{30}{\hour}, $n{=}58$ on the common
+subset) the Google~API substantially outperforms the linear baseline
+in $C$.
 
 \paragraph{Efficiency.}
 The TFLite quantisation pipeline behaves exactly as advertised. The
 deployed full-INT8 model occupies \SI{14.4}{\kilo\byte} and runs in
-\SI{4.5}{\micro\second} per inference on a CPU --- a $7.6\times$ size
+single-microsecond latency on a CPU reference --- a $7.6\times$ size
 reduction and a $\sim$$\!10{,}000\times$ latency reduction over the
 Keras Float32 reference. There is no meaningful efficiency cost to
 deploying the TinyML model; the open question on the accuracy axis
 is the only relevant trade-off.
 
-\paragraph{Hardware sensitivity (with caveat).}
-The most consequential single finding is the strong device dependence
-(Table~\ref{tab:perdevice}). The same TinyML model performs at
-$C{=}0.79$ on Pixel~7~Pro and at $C{=}0.59$ on Xiaomi 2107113SG.
-Random Forest shows the same pattern. The two analytical baselines
-are far less device-sensitive. We read this as evidence that the
-limiting factor is not the model architecture but some combination
-of sensor noise floor and discharge-dynamics coverage that differs
-substantially across hardware (on Xiaomi the battery is above
-75\,\% in 88.8\,\% of measurements, leaving the model with very
-little dynamic range to learn from). A practical consequence is
-that any deployed app-level battery predictor should report a
-device-specific confidence estimate; a globally trained model has
-very different reliability profiles on Pixel and Xiaomi hardware.
+\paragraph{Hardware sensitivity.}
+Per-device evaluation (Table~\ref{tab:perdevice}) shows a strong
+device dependence: the same TinyML model reaches $C{=}0.75$ on
+Pixel~7~Pro and $C{=}0.59$ on Xiaomi. Random Forest behaves
+identically, while the analytical baselines are far more
+device-stable. The most parsimonious reading is that the limiting
+factor is the available dynamic range rather than the model
+architecture --- on Xiaomi the battery sits above 75\,\% in
+88.8\,\% of measurements, leaving little observed discharge for any
+learning model to exploit. Any deployed app-level battery predictor
+should therefore report a device-specific confidence estimate.
 
 The methodological observation --- that the choice of splitting unit
-(sequence vs.\ segment) changes the apparent test MAE on this kind
-of data by a data-diversity-dependent factor, up to nearly twenty-fold
-on a single-device subset --- is, we believe, the more durable
-contribution. We release the
-complete pipeline, raw data and auto-generated reproducibility report so
-that future work can either extend the comparison (multiple devices,
-prospective full-cycle data) or simply verify that random-shuffle
-benchmarks in this domain are not measuring what they appear to measure.
+(sequence vs.\ segment) changes the apparent test MAE on this kind of
+data by a data-diversity-dependent factor of $\sim$1.24$\times$ to
+$\sim$1.69$\times$ --- is, we believe, the more durable contribution.
+We release the complete pipeline, raw data and auto-generated
+reproducibility report so that future work can extend the comparison
+(more devices, prospective full-cycle data) or simply verify that
+random-shuffle benchmarks in this domain are not measuring what they
+appear to measure.
 
 % =====================================================================
 \section*{Reproducibility Statement}
 % =====================================================================
 The pipeline (data preparation, training, TFLite conversion, evaluation
 and report generation) is available at the project repository. All
-hyperparameters are stored in
-\texttt{configs/default.yaml}. A full reproduction is invoked by
-\texttt{python run\_pipeline.py} and completes in under two minutes on a
-laptop CPU; the auto-generated report contains every numerical value
+hyperparameters are stored in \texttt{configs/default.yaml}. A full
+reproduction is invoked by \texttt{python run\_pipeline.py} and
+typically completes in under twenty minutes on a laptop CPU
+(the evaluation stage with bootstrap intervals dominates the
+runtime). The auto-generated report contains every numerical value
 quoted in this paper.
 
+% Force entire bibliography (including the "References" heading)
+% into the right-hand column of the last page
+\newpage
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 

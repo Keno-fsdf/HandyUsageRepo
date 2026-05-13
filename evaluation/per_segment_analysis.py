@@ -103,16 +103,55 @@ def _segment_lengths_hours(test: dict, raw_csv: Path) -> np.ndarray:
     return out
 
 
-def _bucket_table(preds: dict[str, dict], y_true: np.ndarray, mask: np.ndarray, label: str, tols) -> dict:
-    out = {"_label": label, "_n": int(mask.sum())}
-    if mask.sum() < 5:
+def _common_mask(preds: dict[str, dict]) -> np.ndarray:
+    masks = list(preds.values())
+    m = masks[0]["valid"].copy()
+    for p in masks[1:]:
+        m &= p["valid"]
+    return m
+
+
+def _bucket_table(
+    preds: dict[str, dict],
+    y_true: np.ndarray,
+    bucket_mask: np.ndarray,
+    label: str,
+    tols,
+    common: np.ndarray,
+) -> dict:
+    """
+    Pro Bucket reporten wir BEIDE Subsets:
+      - native: Methoden auf ihrer eigenen Validity-Mask (Coverage-Spalte unterscheidet sich)
+      - common: nur Punkte, wo alle Methoden valid sind -> direkte Vergleichbarkeit
+
+    Frueher: nur native, was zu n=2915-vs-n=2827-Verwechslungen gefuehrt hat.
+    """
+    out = {"_label": label, "_n_in_bucket": int(bucket_mask.sum()),
+           "_n_common_in_bucket": int((bucket_mask & common).sum())}
+    if bucket_mask.sum() < 5:
         return out
+
+    # Common-Subset: alle Methoden auf demselben n -> direkt vergleichbar
+    common_in_bucket = bucket_mask & common
+    if common_in_bucket.sum() >= 5:
+        common_block: dict = {}
+        for name, p in preds.items():
+            yt = y_true[common_in_bucket]
+            yp = p["y_pred"][common_in_bucket]
+            common_block[name] = all_metrics(yt, yp, tols_h=tols)
+        out["common"] = common_block
+    else:
+        out["common"] = {"_skipped": "n_common < 5"}
+
+    # Native-Subset: jede Methode auf ihrer eigenen Validity -> Coverage-Vergleich
+    native_block: dict = {}
     for name, p in preds.items():
-        m = mask & p["valid"] & ~np.isnan(p["y_pred"])
+        m = bucket_mask & p["valid"] & ~np.isnan(p["y_pred"])
         if m.sum() < 5:
-            out[name] = {"n": int(m.sum())}
+            native_block[name] = {"n": int(m.sum())}
             continue
-        out[name] = all_metrics(y_true[m], p["y_pred"][m], tols_h=tols)
+        native_block[name] = all_metrics(y_true[m], p["y_pred"][m], tols_h=tols)
+    out["native"] = native_block
     return out
 
 
@@ -156,24 +195,47 @@ def main(config_path: str = "configs/default.yaml") -> None:
         ("y_real_over_3h", y_real >= 3),
     ]
 
+    # Bucket (d) by y_extrap (Trainings-Target; relevant fuer Long-Horizon-Analyse)
+    extrap_buckets = [
+        ("y_extrap_under_5h", y_extrap < 5),
+        ("y_extrap_5_15h", (y_extrap >= 5) & (y_extrap < 15)),
+        ("y_extrap_15_30h", (y_extrap >= 15) & (y_extrap < 30)),
+        ("y_extrap_over_30h", y_extrap >= 30),
+    ]
+
+    common = _common_mask(preds)
     out = {
         "_meta": {
             "n_test": int(len(y_real)),
+            "n_common_valid": int(common.sum()),
             "y_real_mean_h": float(y_real.mean()),
             "y_extrap_mean_h": float(y_extrap.mean()),
             "segment_length_mean_h": float(np.nanmean(seg_h)),
             "segment_length_max_h": float(np.nanmax(seg_h)),
+            "_note": ("Hauptmetric im Paper: gegen y_real. "
+                      "vs_extrap-Block dient nur als Vergleich zum Trainings-Target "
+                      "(zirkulaerer Bias zugunsten TinyML/RF). "
+                      "Innerhalb jedes Bucket-Eintrags gibt es 'common' "
+                      "(alle Methoden gleicher n - direkt vergleichbar) und 'native' "
+                      "(jede Methode auf eigener Validity-Mask)."),
         },
+        "by_battery_level_vs_real": {},
+        "by_segment_length_vs_real": {},
+        "by_y_real_bucket_vs_real": {},
+        "by_y_extrap_bucket_vs_extrap": {},
         "by_battery_level_vs_extrap": {},
         "by_segment_length_vs_extrap": {},
-        "by_y_real_bucket_vs_real": {},
     }
     for name, m in bat_buckets:
-        out["by_battery_level_vs_extrap"][name] = _bucket_table(preds, y_extrap, m, name, tols)
+        out["by_battery_level_vs_real"][name] = _bucket_table(preds, y_real, m, name, tols, common)
+        out["by_battery_level_vs_extrap"][name] = _bucket_table(preds, y_extrap, m, name, tols, common)
     for name, m in seg_buckets:
-        out["by_segment_length_vs_extrap"][name] = _bucket_table(preds, y_extrap, m, name, tols)
+        out["by_segment_length_vs_real"][name] = _bucket_table(preds, y_real, m, name, tols, common)
+        out["by_segment_length_vs_extrap"][name] = _bucket_table(preds, y_extrap, m, name, tols, common)
     for name, m in real_buckets:
-        out["by_y_real_bucket_vs_real"][name] = _bucket_table(preds, y_real, m, name, tols)
+        out["by_y_real_bucket_vs_real"][name] = _bucket_table(preds, y_real, m, name, tols, common)
+    for name, m in extrap_buckets:
+        out["by_y_extrap_bucket_vs_extrap"][name] = _bucket_table(preds, y_extrap, m, name, tols, common)
 
     reports.mkdir(parents=True, exist_ok=True)
     (reports / "per_segment_analysis.json").write_text(json.dumps(out, indent=2), encoding="utf-8")

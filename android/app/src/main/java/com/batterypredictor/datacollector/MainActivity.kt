@@ -29,6 +29,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var countText: TextView
     private lateinit var predictionText: TextView
     private lateinit var predictionDetail: TextView
+    private lateinit var predTinyML: TextView
+    private lateinit var predGoogle: TextView
+    private lateinit var predLinear: TextView
     private lateinit var logger: BatteryDataLogger
 
     private val uiTimer = Timer()
@@ -39,26 +42,46 @@ class MainActivity : AppCompatActivity() {
             val prediction = intent.getFloatExtra("prediction", -1f)
             val bufferSize = intent.getIntExtra("buffer_size", 0)
             val batteryLevel = intent.getFloatExtra("battery_level", -1f)
-            val systemEstimate = intent.getFloatExtra("system_estimate", -1f)
+            val systemEstimateMin = intent.getFloatExtra("system_estimate", -1f)
+            val linearBaselineH = intent.getFloatExtra("linear_baseline", -1f)
 
+            // ---- Hauptzeile (TinyML, prominent) ----
             if (prediction >= 0f) {
-                val hours = prediction.toInt()
-                val mins = ((prediction - hours) * 60).toInt()
-                predictionText.text = "Noch ${hours}h ${mins}min"
-
-                // Detail-Zeile mit Vergleich
-                val detail = StringBuilder("Akku: ${batteryLevel.toInt()}%")
-                if (systemEstimate > 0f) {
-                    val sysH = (systemEstimate / 60f).toInt()
-                    val sysM = (systemEstimate % 60f).toInt()
-                    detail.append(" | Android sagt: ${sysH}h ${sysM}min")
-                }
-                predictionDetail.text = detail.toString()
+                predictionText.text = "Noch ${formatHoursShort(prediction)}"
+                predictionDetail.text = "Akku: ${batteryLevel.toInt()}%"
             } else {
                 predictionText.text = "Sammle Daten... ($bufferSize/10)"
-                predictionDetail.text = "Braucht 10 Messungen (${10 - bufferSize} übrig à 30s)"
+                predictionDetail.text =
+                    "Braucht 10 Messungen (${10 - bufferSize} übrig à 30s)"
             }
+
+            // ---- Vergleichs-Block: alle drei Methoden ----
+            predTinyML.text = formatPredictionHours(prediction)
+            predGoogle.text = formatPredictionMinutes(systemEstimateMin, batteryLevel)
+            predLinear.text = formatPredictionHours(linearBaselineH)
         }
+    }
+
+    /** Kompakte Anzeige fuer Stunden-Eingabe, z.B. "13h 57min" oder "—". */
+    private fun formatHoursShort(h: Float): String {
+        val hours = h.toInt()
+        val mins = ((h - hours) * 60).toInt()
+        return "${hours}h ${mins}min"
+    }
+
+    private fun formatPredictionHours(h: Float): String {
+        if (h < 0f) return "—"
+        return formatHoursShort(h)
+    }
+
+    /** Google-API liefert Minuten und ist beim Laden / 100% oft -1. */
+    private fun formatPredictionMinutes(min: Float, batteryLevel: Float): String {
+        if (min <= 0f) {
+            return if (batteryLevel >= 99f) "n/v (lädt)" else "n/v"
+        }
+        val hours = (min / 60f).toInt()
+        val mins = (min % 60f).toInt()
+        return "${hours}h ${mins}min"
     }
 
     // Permission-Launcher für Notification (Android 13+)
@@ -78,7 +101,10 @@ class MainActivity : AppCompatActivity() {
         countText = findViewById(R.id.countText)
         predictionText = findViewById(R.id.predictionText)
         predictionDetail = findViewById(R.id.predictionDetail)
-        logger = BatteryDataLogger(this)
+        predTinyML = findViewById(R.id.predTinyML)
+        predGoogle = findViewById(R.id.predGoogle)
+        predLinear = findViewById(R.id.predLinear)
+        logger = BatteryDataLogger.getInstance(this)
 
         // ---- Buttons ----
 

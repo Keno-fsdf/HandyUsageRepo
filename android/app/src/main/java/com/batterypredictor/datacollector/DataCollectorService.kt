@@ -84,7 +84,7 @@ class DataCollectorService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        logger = BatteryDataLogger(this)
+        logger = BatteryDataLogger.getInstance(this)
         try {
             predictor = BatteryPredictor(this)
         } catch (e: Exception) {
@@ -95,12 +95,17 @@ class DataCollectorService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // WICHTIG (Android 12+): Nach startForegroundService() MUSS innerhalb von
+        // 5 Sekunden startForeground() aufgerufen werden -- IMMER, egal welcher Branch.
+        // Sonst: ForegroundServiceDidNotStartInTimeException.
+        startForeground(NOTIFICATION_ID, buildNotification())
+
         // Prüfen ob User explizit gestoppt hat — nur bei System-Restart relevant (intent == null)
-        // Nicht bei explizitem Start durch User oder Refresh
         if (intent == null) {
             val enabled = getSharedPreferences("battery_collector", MODE_PRIVATE)
                 .getBoolean("service_enabled", false)
             if (!enabled) {
+                stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
                 return START_NOT_STICKY
             }
@@ -112,11 +117,10 @@ class DataCollectorService : Service() {
             return START_STICKY
         }
 
-        // Neue Session bei jedem Service-Start
-        sessionId = java.util.UUID.randomUUID().toString().take(8)
-
-        val notification = buildNotification()
-        startForeground(NOTIFICATION_ID, notification)
+        // Neue Session bei jedem expliziten Service-Start
+        if (sessionId.isEmpty()) {
+            sessionId = java.util.UUID.randomUUID().toString().take(8)
+        }
 
         // Merken dass Service aktiv ist (für BootReceiver)
         getSharedPreferences("battery_collector", MODE_PRIVATE)
@@ -482,9 +486,7 @@ class DataCollectorService : Service() {
      * Kann auf manchen Geräten auch gesperrt sein.
      */
     private fun getLoadAvg(): Float {
-        val reader = BufferedReader(FileReader("/proc/loadavg"))
-        val line = reader.readLine()
-        reader.close()
+        val line = BufferedReader(FileReader("/proc/loadavg")).use { it.readLine() }
         val load1min = line.split(" ")[0].toFloat()
         val cores = Runtime.getRuntime().availableProcessors().coerceAtLeast(1)
         return (load1min / cores * 100f).coerceIn(0f, 100f)
