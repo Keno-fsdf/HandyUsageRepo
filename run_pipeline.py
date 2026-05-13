@@ -64,6 +64,22 @@ def run_tflite(cfg: str) -> None:
 
     f(cfg)
 
+    # Direkt nach TFLite-Export pruefen, ob die Kotlin-Hardcode-Scaler-Werte
+    # noch zum frisch trainierten Modell passen. Bei Divergenz wuerde die
+    # On-Device-Inferenz systematisch verzerrt -- nicht ohne Warnung weiterfahren.
+    _stage("check_scaler_sync")
+    from methods.tinyml.check_scaler_sync import main as fcheck
+
+    rc = fcheck(cfg)
+    if rc != 0:
+        print(
+            "[pipeline] WARNUNG: Kotlin-Scaler divergiert vom aktuellen Modell.\n"
+            "[pipeline]          App-Vorhersagen werden falsch sein.\n"
+            "[pipeline]          Fix: python -m methods.tinyml.export_scaler_for_android\n"
+            "[pipeline]          und Output in BatteryPredictor.kt einsetzen.",
+            file=sys.stderr,
+        )
+
 
 def run_train_rf(cfg: str) -> None:
     _stage("train_random_forest")

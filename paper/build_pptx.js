@@ -1,6 +1,6 @@
-// Verteidigungs-Praesentation fuer:
+// Verteidigungs-Praesentation fuer das Paper:
 // "App-Level TinyML for Smartphone Battery-Life Prediction"
-// Output: Verteidigung.pptx
+// Output: Paper_Verteidigung.pptx
 //
 // Aufruf: node build_pptx.js
 
@@ -977,6 +977,6 @@ const TOTAL = 16;
 // ============================================================
 // Write
 // ============================================================
-pres.writeFile({ fileName: "Verteidigung.pptx" }).then((file) => {
+pres.writeFile({ fileName: "Paper_Verteidigung.pptx" }).then((file) => {
   console.log("Wrote: " + file);
 });
