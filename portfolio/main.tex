@@ -139,10 +139,13 @@
 \newpage
 \pagenumbering{arabic}
 
+% Sections starten gemaess Pruefungsplan-Gliederung bei 0
+\setcounter{section}{-1}
+
 % ████████████████████████████████████████████████████████████
-%  1  AUSGANGSSITUATION
+%  0  AUSGANGSSITUATION UND ZIELSETZUNG
 % ████████████████████████████████████████████████████████████
-\section{Ausgangssituation und Motivation}
+\section{Ausgangssituation und Zielsetzung}
 \label{sec:ausgangssituation}
 
 \subsection{Problemstellung}
@@ -192,14 +195,15 @@ Dieses Portfolio dokumentiert den \emph{Bau-Aufwand}, die
 Architektur und die Programmier-Eigenleistung. Die
 \emph{wissenschaftliche} Auswertung des Multi-Device-Vergleichs ist
 Gegenstand der separaten Paper-Einreichung
-(\datei{paper/main.pdf} im selben Repo).
+(\datei{paper/main.pdf} im selben Repo) und nicht Inhalt dieses
+Dokuments.
 
 \subsection{Rahmenbedingungen}
 
 \begin{itemize}
 \item \textbf{Eigenes Gerät:} Xiaomi 2107113SG (Redmi Note 10 Pro),
   Android 12, 8\,GB RAM.
-\item \textbf{Zusätzliche Test-Geräte} (Mitstudierende): Google
+\item \textbf{Zusätzliche Test-Geräte} (Familie): Google
   Pixel~7~Pro, Pixel~8~Pro, Pixel~9~Pro~XL.
 \item \textbf{Entwicklungsumgebung:} Android Studio (Kotlin),
   Python 3.13 mit TensorFlow 2.21 am Windows-Notebook.
@@ -207,10 +211,42 @@ Gegenstand der separaten Paper-Einreichung
   (sieben Wochen).
 \end{itemize}
 
+\subsection{Eckdaten des Projekts}
+
+Das Projekt umfasst drei Schichten -- die Android-App selbst, eine
+Python-Pipeline am PC für Training und Auswertung, sowie das
+zurück-deployte TFLite-Modell für die On-Device-Vorhersage. Die
+folgenden Kennzahlen geben einen ersten Eindruck vom Umfang;
+Details zu jeder Schicht finden sich in den entsprechenden
+Hauptkapiteln.
+
+\begin{table}[H]
+\centering
+\caption{Projekt auf einen Blick}
+\label{tab:eckdaten}
+\small
+\begin{tabular}{lp{9.5cm}}
+\toprule
+\textbf{Kennzahl} & \textbf{Wert} \\
+\midrule
+Bearbeitungszeit          & 7 Wochen, $\approx$\,120\,h Eigenleistung \\
+Code-Umfang gesamt        & $\approx$\;4.350 Zeilen (Kotlin + Python) \\
+Android-App               & 6 Kotlin-Module (Activity, Service, Logger, Predictor, Receiver, DataPoint) \\
+Python-Pipeline           & 25 Module in zwei Schichten (\code{methods/}, \code{evaluation/}) \\
+Test-Geräte               & 4 (Xiaomi 2107113SG + Pixel 7 / 8 / 9 Pro) \\
+Mitwirkende               & 3 Familienmitglieder für APK-Rollout und Pixel-Datensammlung \\
+Feld-Sammlung             & 45 Tage Dauerbetrieb, 180 Service-Sessions \\
+Datensatz                 & 66.001 Messpunkte $\times$ 10 Features \\
+TFLite-Modell             & 14.4\,KB INT8-quantisiert, $\sim$\,5\,$\mu$s pro Inferenz \\
+App-Vergleich in der UI   & 3 Werte (TinyML on-device, Google-API, Linear-Baseline) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \newpage
 
 % ████████████████████████████████████████████████████████████
-%  2  ARCHITEKTURMODELL
+%  1  ARCHITEKTURMODELL
 % ████████████████████████████████████████████████████████████
 \section{Architekturmodell}
 \label{sec:architektur}
@@ -332,7 +368,7 @@ Die Auswerte-Seite ist nach \emph{Forschungs-Methodik} organisiert
 \newpage
 
 % ████████████████████████████████████████████████████████████
-%  3  DATENMODELL
+%  2  DATENMODELL
 % ████████████████████████████████████████████████████████████
 \section{Datenmodell}
 \label{sec:datenmodell}
@@ -400,11 +436,77 @@ cpu\_usage), \textbf{Konnektivität} (wifi, mobile, hotspot).
 Die CSV liegt im app-internen Verzeichnis
 (\code{Context.filesDir}). Das ist nur für diese App lesbar -- weder
 andere Apps noch ein angeschlossener PC können die Datei direkt
-sehen (siehe Kapitel~\ref{sec:datenschutz}). Der Export erfolgt
-explizit per Share-Intent durch den Nutzer.
+sehen (siehe Datenschutz-Subsection~\ref{sec:datenschutz}). Der
+Export erfolgt explizit per Share-Intent durch den Nutzer.
 
 Über vier Geräte hinweg wurden in 45 Tagen
 \textbf{66.001 Messpunkte} in \textbf{180 Sessions} gesammelt.
+
+\subsection{Datenschutz}
+\label{sec:datenschutz}
+
+\subsubsection*{Was wird erhoben}
+
+Die App speichert ausschließlich technische Geräte-Metriken (die
+Spalten oben). Es gibt \emph{keinen} Zugriff auf:
+
+\begin{itemize}
+\item Standort (keine \code{ACCESS\_*\_LOCATION}-Permission),
+\item Kontakte, Anrufprotokolle, SMS,
+\item Mikrofon, Kamera,
+\item Inhalte von Apps (kein Accessibility-Service, kein
+  Screen-Recording),
+\item personenbezogene Identifikatoren wie IMEI oder Telefonnummer.
+\end{itemize}
+
+Das einzige potenziell sensible Feld ist
+\code{active\_app\_category}, und auch das nur als \emph{Kategorie}
+(0--5), nicht als konkreter Paketname.
+
+\subsubsection*{Wo gespeichert wird}
+
+Im internen Verzeichnis der App (\code{Context.filesDir}). Nur
+diese App selbst hat Zugriff; andere Apps können nichts lesen
+(Android-Sandbox); bei Deinstallation werden die Daten automatisch
+mit entfernt; die Datei wird weder in iCloud noch in Google Backup
+synchronisiert. Ein Export findet ausschließlich über expliziten
+Nutzerklick (Share-Intent) statt -- es gibt keinen automatischen
+Upload, keinen Server und keine Telemetrie.
+
+\subsubsection*{Berechtigungen}
+
+\begin{table}[H]
+\centering
+\caption{Im Manifest deklarierte Permissions}
+\label{tab:permissions}
+\small
+\begin{tabular}{lp{8.5cm}}
+\toprule
+\textbf{Permission} & \textbf{Wofür} \\
+\midrule
+\code{FOREGROUND\_SERVICE} & Background-Service mit Notification \\
+\code{FOREGROUND\_SERVICE\_SPECIAL\_USE} & Service-Typ ab Android 14 \\
+\code{WAKE\_LOCK} & Service läuft auch bei Display aus \\
+\code{RECEIVE\_BOOT\_COMPLETED} & Auto-Restart nach Geräte-Neustart \\
+\code{ACCESS\_NETWORK\_STATE} & WiFi-/Mobile-Daten-Status lesen \\
+\code{ACCESS\_WIFI\_STATE} & WiFi-Status, Hotspot-Reflection \\
+\code{PACKAGE\_USAGE\_STATS} & Aktive App lesen (Nutzer muss manuell aktivieren) \\
+\code{POST\_NOTIFICATIONS} & Vorhersage in Notification anzeigen \\
+\code{REQUEST\_IGNORE\_BATTERY\_OPTIMIZATIONS} & Service vor Doze schützen \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{Beim Verteilen in der Familie}
+
+Für die drei Pixel-Geräte habe ich die App-APK an drei
+Familienmitglieder weitergegeben (per E-Mail bzw.\ direkt am
+Phone installiert). Vor der Installation wurde jeweils erklärt,
+welche Daten gesammelt werden (CSV mit 14 Spalten), dass sie nur
+lokal auf ihrem Phone liegen, dass die CSV nur zu mir kommt, wenn
+sie sie aktiv per Share-Intent verschicken, und dass keinerlei
+Auto-Upload oder Hintergrund-Übertragung stattfindet. Eine
+Einwilligung hat jeder per WhatsApp bestätigt.
 
 \subsection{Die App in Aktion}
 
@@ -413,7 +515,7 @@ auf dem Xiaomi 2107113SG zu zwei Zeitpunkten: einmal direkt nach
 dem Service-Start (Modell sammelt erst zehn Datenpunkte, also
 fünf Minuten Aufwärmphase) und einmal mit aktiver TinyML-Vorhersage.
 Der Datenpunkt-Zähler im unteren Bereich (\code{Gesammelte
-Datenpunkte: 47\,572}) ist ein wichtiges UX-Element: er gibt dem
+Datenpunkte: 47.572}) ist ein wichtiges UX-Element: er gibt dem
 Nutzer Feedback, dass der Service tatsächlich noch läuft, ohne dass
 er die Notification öffnen muss.
 
@@ -445,7 +547,7 @@ On-Device-Vorhersage.}
 \newpage
 
 % ████████████████████████████████████████████████████████████
-%  4  PROGRAMMIERUNG
+%  3  PROGRAMMIERUNG
 % ████████████████████████████████████████████████████████████
 \section{Programmierung}
 \label{sec:programmierung}
@@ -600,8 +702,12 @@ class BatteryPredictor(context: Context) {
     private val recentData = ArrayDeque<FloatArray>(SEQUENCE_LENGTH)
 
     fun addDataAndPredict(features: FloatArray): Float {
+        // NaN/Inf-Guard vor StandardScaler
+        for (v in features) if (v.isNaN() || v.isInfinite()) return -1f
+
         val normalized = FloatArray(NUM_FEATURES) { i ->
-            (features[i] - SCALER_MEAN[i]) / SCALER_SCALE[i]
+            val s = SCALER_SCALE[i]
+            if (s > 1e-6f) (features[i] - SCALER_MEAN[i]) / s else 0f
         }
         if (recentData.size >= SEQUENCE_LENGTH) recentData.removeFirst()
         recentData.addLast(normalized)
@@ -718,15 +824,16 @@ konfiguriert ist, wird das beste Modell zurückgegeben.}
 \label{fig:training_curves}
 \end{figure}
 
-\newpage
+\subsection{Code-Umfang und Eigenleistung}
 
-% ████████████████████████████████████████████████████████████
-%  5  EIGENLEISTUNG
-% ████████████████████████████████████████████████████████████
-\section{Eigenleistung}
-\label{sec:eigenleistung}
-
-Im Repo liegen aktuell folgende Code-Mengen:
+Über die sieben Bearbeitungswochen sind drei Schichten parallel
+entstanden -- die Android-App in Kotlin, die ML-Pipeline am PC und
+die Auswertungs-Schicht. Tabelle~\ref{tab:codeumfang} zeigt den
+Umfang nach Bereich; die wichtigsten Brocken sind die
+Auswertungs-Schicht ($\approx$\,2.050 Zeilen reine
+Auswertungs-Logik) und die Android-App
+($\approx$\,850 Zeilen Kotlin, die produktionsnah auf vier Geräten
+laufen).
 
 \begin{table}[H]
 \centering
@@ -736,17 +843,17 @@ Im Repo liegen aktuell folgende Code-Mengen:
 \toprule
 \textbf{Bereich} & \textbf{Zeilen (ohne Leerzeilen)} \\
 \midrule
-Android-App (6 Kotlin-Dateien)                       & $\approx$\;750 \\
-Python-Pipeline (\code{methods/}, 12 Module)         & $\approx$\;1{,}050 \\
-Python-Auswertung (\code{evaluation/}, 11 Module)    & $\approx$\;1{,}200 \\
-Konfiguration und Orchestrator                       & $\approx$\;200 \\
+Android-App (6 Kotlin-Dateien)                       & $\approx$\;850 \\
+Python-Pipeline (\code{methods/}, 13 Module)         & $\approx$\;1.150 \\
+Python-Auswertung (\code{evaluation/}, 12 Module)    & $\approx$\;2.050 \\
+Konfiguration und Orchestrator                       & $\approx$\;300 \\
 \midrule
-\textbf{Summe}                                       & \textbf{$\approx$\;3{,}200} \\
+\textbf{Summe}                                       & \textbf{$\approx$\;4.350} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Was selbst geschrieben wurde}
+\textbf{Selbst geschrieben:}
 
 \begin{itemize}
 \item Gesamte Android-App-Struktur (Activity, Service,
@@ -760,13 +867,12 @@ Konfiguration und Orchestrator                       & $\approx$\;200 \\
   Modul, Trennung von Methoden- und Auswertungs-Schicht).
 \item Konkrete Implementierung der analytischen Baselines (Linear,
   Exponential mit Fallback und Cap gegen Divergenz).
-\item Segment-Level-Split als Anti-Leakage-Mechanismus -- der
-  vermutlich wichtigste methodische Beitrag.
+\item Segment-Level-Split als Anti-Leakage-Mechanismus.
 \item Auswertungs-Skripte: Bootstrap-Konfidenzintervalle,
   Permutationstests, Per-Device-Analyse, Per-Bucket-Analyse.
 \end{itemize}
 
-\subsection{Was übernommen wurde}
+\textbf{Übernommen:}
 
 \begin{itemize}
 \item Conv1D-Architektur in Anlehnung an gängige TinyML-Topologien
@@ -777,7 +883,7 @@ Konfiguration und Orchestrator                       & $\approx$\;200 \\
 \item \code{scipy}: \code{curve\_fit} für den exponentiellen Fit.
 \end{itemize}
 
-\subsection{Probleme und wie sie gelöst wurden}
+\textbf{Probleme und wie sie gelöst wurden:}
 
 \begin{itemize}
 \item \emph{Service stirbt auf MIUI:} Auto-Restart über AlarmManager.
@@ -791,183 +897,76 @@ Konfiguration und Orchestrator                       & $\approx$\;200 \\
   72-h-Cap als Sanity-Bound.
 \end{itemize}
 
-\subsection{Ergebnis-Visualisierung}
+\subsection{Reproduzierbarkeit der Pipeline}
 
-Abbildung~\ref{fig:cumulative} zeigt die kumulative Fehlerverteilung
-auf dem Test-Set für alle sechs verglichenen Methoden -- bei einer
-Toleranz von 2\,h erreichen die Top-Methoden (Linear, Exp,
-Google-API) rund 60\,\% Trefferquote.
+Damit die Auswertung nicht von Hand-Schritten abhängt, gibt es einen
+einzigen Orchestrator \datei{run\_pipeline.py}, der die komplette
+Verarbeitungskette ausführt -- vom Mergen der Geräte-CSVs bis zu den
+fertigen Auswertungs-Reports.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.85\linewidth]{cumulative_error.png}
-\caption{Kumulative Fehlerverteilung der sechs verglichenen
-Methoden auf dem leakage-freien Test-Set
-($n{=}2{,}827$). Die x-Achse ist die Fehlertoleranz
-in Stunden, die y-Achse der Anteil der Vorhersagen
-innerhalb dieser Toleranz.}
-\label{fig:cumulative}
-\end{figure}
+\begin{lstlisting}[language=bash,caption={Pipeline reproduzierbar starten}]
+# vollstaendige Pipeline: ca. 20 Minuten auf Notebook-CPU
+python run_pipeline.py
 
-\newpage
+# nur die ML-Schritte (ohne Eval) -- ca. 5 Minuten
+python run_pipeline.py --stage tinyml
+\end{lstlisting}
 
-% ████████████████████████████████████████████████████████████
-%  6  DATENSCHUTZ
-% ████████████████████████████████████████████████████████████
-\section{Datenschutz}
-\label{sec:datenschutz}
-
-\subsection{Was wird erhoben?}
-
-Die App speichert ausschließlich technische Geräte-Metriken (siehe
-Datenmodell). Es gibt \emph{keinen} Zugriff auf:
-
-\begin{itemize}
-\item Standort (keine \code{ACCESS\_*\_LOCATION}-Permission)
-\item Kontakte, Anrufprotokolle, SMS
-\item Mikrofon, Kamera
-\item Inhalte von Apps (kein Accessibility-Service, kein
-  Screen-Recording)
-\item Personenbezogene Identifikatoren wie IMEI oder Telefonnummer
-\end{itemize}
-
-Das einzige potenziell sensible Feld ist
-\code{active\_app\_category}, und auch das nur als \emph{Kategorie}
-(0--5), nicht als konkreter Paketname.
-
-\subsection{Wo wird gespeichert?}
-
-Im internen Verzeichnis der App (\code{Context.filesDir}):
-
-\begin{itemize}
-\item Nur diese App selbst hat Zugriff.
-\item Andere Apps können nichts lesen (Android-Sandbox).
-\item Bei Deinstallation werden die Daten automatisch mit entfernt.
-\item Wird nicht in iCloud / Google Backup synchronisiert.
-\end{itemize}
-
-\subsection{Export}
-
-Nur über expliziten Nutzerklick (Share-Intent). Es gibt
-\emph{keinen} automatischen Upload, keinen Server, keine
-Telemetrie. Der Nutzer entscheidet, ob die CSV per Mail, Drive oder
-USB-Kabel weitergegeben wird.
-
-\subsection{Berechtigungen}
-
-\begin{table}[H]
-\centering
-\caption{Im Manifest deklarierte Permissions}
-\label{tab:permissions}
-\small
-\begin{tabular}{lp{8.5cm}}
-\toprule
-\textbf{Permission} & \textbf{Wofür} \\
-\midrule
-\code{FOREGROUND\_SERVICE} & Background-Service mit Notification \\
-\code{FOREGROUND\_SERVICE\_SPECIAL\_USE} & Service-Typ ab Android 14 \\
-\code{WAKE\_LOCK} & Service läuft auch bei Display aus \\
-\code{RECEIVE\_BOOT\_COMPLETED} & Auto-Restart nach Geräte-Neustart \\
-\code{ACCESS\_NETWORK\_STATE} & WiFi-/Mobile-Daten-Status lesen \\
-\code{ACCESS\_WIFI\_STATE} & WiFi-Status, Hotspot-Reflection \\
-\code{PACKAGE\_USAGE\_STATS} & Aktive App lesen (Nutzer muss manuell aktivieren) \\
-\code{POST\_NOTIFICATIONS} & Vorhersage in Notification anzeigen \\
-\code{REQUEST\_IGNORE\_BATTERY\_OPTIMIZATIONS} & Service vor Doze schützen \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Beim Verteilen an Mitstudierende}
-
-Für die drei Pixel-Geräte habe ich die App-APK per E-Mail
-verschickt. Vor der Installation wurde den drei Personen erklärt:
-
-\begin{itemize}
-\item welche Daten gesammelt werden (CSV mit 14 Spalten),
-\item wo sie lokal liegen (nur auf ihrem Phone),
-\item dass die CSV nur zu mir kommt, wenn sie sie aktiv per
-  Share-Intent verschicken,
-\item dass keinerlei Auto-Upload oder Hintergrund-Übertragung
-  stattfindet.
-\end{itemize}
-
-Eine schriftliche Einwilligung hat jeder per WhatsApp bestätigt.
+Alle Hyperparameter, Feature-Listen, Random-Seeds und Pfade liegen
+in \datei{configs/default.yaml}. Beim Re-Training werden zusätzlich
+die \code{StandardScaler}-Werte für die Android-App neu exportiert
+(\datei{methods/tinyml/export\_scaler\_for\_android.py}) und ein
+Check-Script vergleicht sie mit den hardcoded Werten in
+\datei{BatteryPredictor.kt}, damit die Normalisierung in App und
+Modell garantiert übereinstimmt.
 
 \newpage
 
 % ████████████████████████████████████████████████████████████
-%  7  KI-NUTZUNG
+%  4  KURZREFERAT (FOLIEN)
 % ████████████████████████████████████████████████████████████
-\section{KI-Nutzung}
-\label{sec:ki}
+\section{Kurzreferat (Folien)}
+\label{sec:folien}
 
-Während des Projekts habe ich \textbf{Claude Code} (Anthropic, Modell
-Opus~4.7 mit 1M-Token-Kontext) als Programmier-Assistent verwendet.
-Dieser Abschnitt ist bewusst transparent gehalten.
+Für den 5-minütigen Pitch zum Portfolio habe ich eine eigene
+8-Folien-Kurzpräsentation unter
+\datei{portfolio/App\_Kurzpraesi.pptx} erstellt. Sie ist
+ausschließlich auf die App ausgerichtet; der wissenschaftliche
+Methoden-Vergleich (Paper-Ergebnisse) bleibt bewusst außen vor.
 
-\subsection{Wofür Claude genutzt wurde}
+\begin{enumerate}
+\item Titel (Battery Data Collector, Vertiefung I, 5 Minuten).
+\item Was die App macht: Sammeln -- Rechnen -- Anzeigen.
+\item Die App in Aktion: Screenshots (Aufwärmphase und aktive
+  Vorhersage auf dem Xiaomi).
+\item \textbf{Hauptfeature, Teil 1:} On-Device-Inferenz -- was
+  \glqq{}on-device\grqq{} konkret heißt und warum es ein gutes
+  Feature ist (Datenschutz, Offline, Latenz, keine Server).
+\item \textbf{Hauptfeature, Teil 2:} wie die Inferenz technisch
+  abläuft (5-Schritt-Pipeline) und Modell-Steckbrief (Conv1D,
+  TFLite~INT8, 14.4\,KB, $\sim$\,5\,$\mu$s).
+\item Das größte App-Problem: MIUI killt Hintergrund-Services --
+  Foreground-Service + AlarmManager + BootReceiver als Lösung.
+\item Datenschutz (keine Standort/Mikro/Kamera, alles lokal) und
+  Stand: 4 Geräte, 45 Tage, 66.001 Messpunkte.
+\item Fragen + Kontakt.
+\end{enumerate}
 
-\begin{itemize}
-\item \textbf{Code-Refactoring:} Umstrukturierung von einem
-  monolithischen Trainings-Skript zu einer modularen Pipeline
-  (\code{methods/}, \code{evaluation/}).
-\item \textbf{Boilerplate:} TFLite-Konvertierungs-Boilerplate,
-  Argument-Parser, Standard-Plot-Code (matplotlib).
-\item \textbf{Methodische Recherche:} Suche nach relevanter
-  Literatur (Li 2018, Albelali \& Ahmed 2025, Flores-Martin 2024,
-  MLPerf~Tiny, Harrell 1982).
-\item \textbf{Statistische Tests:} Implementierung des
-  Concordance-Index, Bootstrap-Konfidenzintervalle und
-  Permutationstests nach meinen Vorgaben.
-\item \textbf{Paper-Schreibhilfe:} Strukturierung des LaTeX-Papers,
-  Tabellen-Formatierung, Korrektur-Lesen.
-\item \textbf{Mehrere Audit-Runden:} Die KI hat geholfen, eigene
-  Fehler (falsche Quellen-Autoren, inkonsistente Zahlen,
-  methodische Schwächen wie den Hardware-vs.\,Datenverteilungs-
-  Confounder) systematisch zu finden.
-\end{itemize}
-
-\subsection{Was ich selbst gemacht habe}
-
-\begin{itemize}
-\item Das gesamte Projekt-Konzept und die Forschungsfrage.
-\item Auswahl der zehn Features (auf welche APIs man als App
-  zugreifen kann).
-\item Datensammlung auf den vier Geräten -- inklusive
-  App-Verteilung an Mitstudierende.
-\item Alle methodischen Entscheidungen: Segment-Level-Split,
-  C-Index als Metrik, Wahl der Vergleichsmethoden, Bucket-Analyse.
-\item Kritisches Hinterfragen der KI-Vorschläge, wenn etwas
-  methodisch verdächtig wirkte. Im Verlauf entdeckte die KI auf
-  Nachfrage mehrere eigene Fehler, etwa falsche Autoren bei drei
-  Quellen, erfundene Bucket-Zahlen und zu plakative Aussagen wie
-  \glqq{}Linear = Google\grqq{}.
-\item Alle Anpassungen am Android-Manifest, Permissions,
-  geräte-spezifisches Debugging (MIUI-Service-Stirbt-Problem).
-\end{itemize}
-
-\subsection{Bilanz}
-
-Realistisch eingeschätzt: ohne KI-Unterstützung hätte ich das
-Projekt in dieser Tiefe nicht in sieben Wochen geschafft. Die KI
-war besonders nützlich für \emph{Boilerplate und
-Recherche-Beschleunigung} sowie für \emph{methodische Disziplin}
-(Audit-Pass, Konsistenz-Checks über große Code-Mengen).
-
-Was die KI \emph{nicht} ersetzt hat: die Entscheidung, was gemacht
-wird, das Verstehen der Ergebnisse, die Verteidigung von
-Trade-offs, und vor allem die handfeste Geräte-Logistik und das
-Debugging vor Ort.
+Der Schwerpunkt liegt auf dem \emph{Hauptfeature} (Folien 4 und 5
+zusammen rund zwei Minuten). Folien 2--3 und 6--7 liefern den
+App-Kontext drumherum, Folie 1 und 8 sind Rahmen.
 
 \newpage
 
 % ████████████████████████████████████████████████████████████
-%  8  ERFAHRUNGSBERICHT
+%  5  ABSCHLIESSENDER ERFAHRUNGSBERICHT
 % ████████████████████████████████████████████████████████████
-\section{Wöchentlicher Erfahrungsbericht}
+\section{Abschließender Erfahrungsbericht}
 \label{sec:wochenbericht}
 
-\subsection*{Woche 1 (KW 13: 23.--29.\,März)}
+\subsection{Wöchentliche Einträge}
+
+\subsubsection*{Woche 1 (KW 13: 23.--29.\,März)}
 
 \textbf{Setup und erste Datensammlung.}
 Repo angelegt, Android-Projekt aufgesetzt, erste Version des
@@ -979,7 +978,7 @@ manuell ankreuzen. Ich habe deshalb einen Button in der App
 eingebaut, der direkt zum \code{ACTION\_USAGE\_ACCESS\_SETTINGS}
 springt.
 
-\subsection*{Woche 2 (KW 14: 30.\,März -- 5.\,April)}
+\subsubsection*{Woche 2 (KW 14: 30.\,März -- 5.\,April)}
 
 \textbf{Service-Robustheit.}
 Datensammlung bricht beim Wegwischen aus der App-Übersicht ab.
@@ -990,7 +989,7 @@ Lösung: \code{onTaskRemoved} $\to$
 1 Sekunde später wieder. Plus \code{BootReceiver} damit nach
 Neustart automatisch weitergesammelt wird.
 
-\subsection*{Woche 3 (KW 15: 6.--12.\,April)}
+\subsubsection*{Woche 3 (KW 15: 6.--12.\,April)}
 
 \textbf{Erstes Modell, erste Auswertung -- erstes Erschrecken.}
 Genug Daten zusammen ($\sim$11.000 Messpunkte), erstes Training
@@ -1000,22 +999,22 @@ Google-API? Beim Nachprüfen festgestellt, dass das ein klassisches
 Data-Leakage-Artefakt vom Random-Split war. Pipeline auf
 Segment-Level-Split umgestellt $\to$ MAE wird zu 9.96\,h. Das war
 der methodische Wendepunkt der Arbeit.
-Am 12.\,April App-APK an einen Mitstudierenden mit Pixel~7~Pro
+Am 12.\,April App-APK an ein Familienmitglied mit Pixel~7~Pro
 weitergegeben.
 
-\subsection*{Woche 4 (KW 16: 13.--19.\,April)}
+\subsubsection*{Woche 4 (KW 16: 13.--19.\,April)}
 
 \textbf{Multi-Device wird real.}
-APK an zwei weitere Pixel-Nutzer verteilt (Pixel~8~Pro,
-Pixel~9~Pro~XL). Schwierig vor allem die Aufklärung darüber, was
+APK an zwei weitere Familienmitglieder verteilt (Pixel~8~Pro,
+Pixel~9~Pro~XL). Wichtig vor allem die Aufklärung darüber, was
 genau gesammelt wird -- ich habe einen Mini-Datenschutz-Hinweis
-schriftlich verschickt und mündlich erklärt. Alle drei haben
+schriftlich geschickt und mündlich erklärt. Alle drei haben
 zugestimmt. Parallel das CSV-Schema erweitert
 (\code{system\_personalized}, \code{linear\_baseline\_h}) und den
 Logger so gebaut, dass er bei Schema-Wechsel die alte Datei
 sicher parkt.
 
-\subsection*{Woche 5 (KW 17: 20.--26.\,April)}
+\subsubsection*{Woche 5 (KW 17: 20.--26.\,April)}
 
 \textbf{Auswertungs-Tiefe.}
 Pipeline so umgebaut, dass sie alle vier Geräte-CSVs konsolidiert
@@ -1025,32 +1024,31 @@ Sanity-Modelle hinzugefügt, weil ein
 ohne zu zeigen womit es überhaupt verglichen wird. Dazu noch die
 analytischen Baselines (Linear, Exponential) implementiert.
 
-\subsection*{Woche 6 (KW 18: 27.\,April -- 3.\,Mai)}
+\subsubsection*{Woche 6 (KW 18: 27.\,April -- 3.\,Mai)}
 
-\textbf{Statistische Härte.}
-Bootstrap-Konfidenzintervalle, Permutationstests,
+\textbf{Auswertungs-Infrastruktur fertig stellen.}
+Bootstrap-Konfidenzintervalle, Permutationstests und
 modell-unabhängige Feature-Diagnose (Pearson, Spearman, Mutual
-Information). Zwischendurch die Xiaomi-Datensammlung beendet
-(28.\,April) -- die finale Datenmenge stand fest: 66.001
-Messpunkte. Erkenntnis dieser Woche: TinyML schlägt auf
-Multi-Device den Mean-Predictor signifikant ($p \leq 0.005$) --
-anders als noch auf Single-Device, wo es statistisch indifferent
-war.
+Information) in die Pipeline integriert. Zwischendurch die
+Xiaomi-Datensammlung beendet (28.\,April) -- die finale Datenmenge
+stand fest: 66.001 Messpunkte. Der Wechsel von Single-Device auf
+Multi-Device zeigte spürbar klarere Unterschiede zwischen den
+Methoden als noch zuvor; das hat die Entscheidung bestätigt, die
+Datensammlung über mehrere Geräte hinweg auszudehnen.
 
-\subsection*{Woche 7 (KW 19: 4.--11.\,Mai)}
+\subsubsection*{Woche 7 (KW 19: 4.--11.\,Mai)}
 
-\textbf{Konsolidierung und Paper-Schreiben.}
-Pixel-Datensammlung beendet (10.\,Mai). Per-Device-Analyse zeigt
-sehr unterschiedliche Performance pro Gerät -- auf Pixel~7~Pro
-$C{=}0{.}79$, auf Xiaomi nur $0{.}59$. Datenverteilungs-Confounder
-identifiziert: auf Xiaomi war der Akku 88\,\% der Zeit über
-75\,\%, weshalb wenig Discharge-Dynamik zum Lernen da war.
-Diese Woche viel Zeit darin investiert, dass das Paper methodisch
-sauber formuliert ist und die Quellen wirklich das sagen, was
-zitiert wird (zwei Quellen-Audits, vier korrigierte
-Autorenangaben, eine korrigierte Größenordnung-Behauptung).
+\textbf{Konsolidierung und Dokumentation.}
+Pixel-Datensammlung beendet (10.\,Mai). Die Per-Device-Auswertung
+zeigte deutlich unterschiedliche Modell-Performance je nach Gerät;
+beim Hineinschauen in die Datenverteilung wurde der Grund sichtbar:
+auf dem Xiaomi war der Akku 88\,\% der Zeit über 75\,\%, also
+kaum Entlade-Dynamik zum Lernen vorhanden. Diese Woche viel Zeit
+in die Aufbereitung beider Abgabe-Dokumente (Portfolio und
+separates Paper) gesteckt, in Pipeline-Konsistenz-Checks und in
+das Schreiben dieses Erfahrungsberichts.
 
-\subsection{Aufwand}
+\subsection{Gesamt-Aufwand}
 
 \begin{table}[H]
 \centering
@@ -1067,56 +1065,70 @@ Autorenangaben, eine korrigierte Größenordnung-Behauptung).
 4 & Schema-Migration + APK-Verteilung              & $\sim$\;10 \\
 5 & 6-Wege-Vergleich + analytische Baselines       & $\sim$\;18 \\
 6 & Statistische Tests + Daten-Diagnose            & $\sim$\;15 \\
-7 & Paper schreiben + Audits + Verteidigung        & $\sim$\;25 \\
+7 & Portfolio/Paper schreiben + Audits             & $\sim$\;25 \\
 \midrule
 \textbf{Summe} & & \textbf{$\approx$\,120\,h} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\newpage
+\subsection{KI-Nutzung}
 
-% ████████████████████████████████████████████████████████████
-%  9  KURZREFERAT
-% ████████████████████████████████████████████████████████████
-\section{Kurzreferat-Folien}
-\label{sec:folien}
+Während des Projekts habe ich \textbf{Claude Code} (Anthropic, Modell
+Opus~4.7 mit 1M-Token-Kontext) als Programmier-Assistent verwendet.
+Dieser Abschnitt ist bewusst transparent gehalten.
 
-Für die mündliche Verteidigung habe ich eine 16-Folien-Präsentation
-unter \datei{paper/Verteidigung.pptx} erstellt. Sie deckt ab:
+\textbf{Wofür Claude genutzt wurde:}
 
-\begin{enumerate}
-\item Titel und Forschungsfrage
-\item Motivation (Settings-App vs.\ Google-API seit Android~12)
-\item Verwandte Arbeiten
-\item Datensammlung: 4 Geräte, 45 Tage
-\item Sechs verglichene Methoden
-\item Methodik-Kernpunkt: Segment-Level-Split
-\item Hauptergebnisse (6-Wege-Vergleich)
-\item Statistische Signifikanz (Permutationstests)
-\item Per-Device-Analyse (Hardware-Effekt)
-\item Effizienz-Benchmark (TFLite-Quantisierung)
-\item Diskussion: TinyML lernt Signal
-\item Diskussion: Google\,$\approx$\,Linear-Baseline
-\item Limitations
-\item Conclusion (drei Achsen)
-\item Q\&A
-\end{enumerate}
+\begin{itemize}
+\item \emph{Code-Refactoring} -- Umstrukturierung von einem
+  monolithischen Trainings-Skript zu einer modularen Pipeline
+  (\code{methods/}, \code{evaluation/}).
+\item \emph{Boilerplate} -- TFLite-Konvertierungs-Boilerplate,
+  Argument-Parser, Standard-Plot-Code (matplotlib).
+\item \emph{Recherche-Beschleunigung} -- Suche nach relevanter
+  Android- und TinyML-Literatur.
+\item \emph{Statistische Tests} -- Implementierung des
+  Concordance-Index, Bootstrap-Konfidenzintervalle und
+  Permutationstests nach meinen Vorgaben.
+\item \emph{Schreibhilfe} -- Strukturierung dieses Portfolios und
+  des separaten Papers, Tabellen-Formatierung, Korrektur-Lesen.
+\item \emph{Audit-Runden} -- systematisches Aufspüren eigener
+  Fehler (inkonsistente Zahlen, methodische Schwächen,
+  Confounder-Verdacht).
+\end{itemize}
 
-Die Folien sind absichtlich für die wissenschaftliche
-Paper-Verteidigung optimiert. In diesem Portfolio-Kontext
-(App-Entwicklungs-Fokus) wären andere Schwerpunkte sinnvoll
-(Service-Lifecycle, App-Verteilungs-Erfahrung, Geräte-Logistik).
-Falls ein eigenes Portfolio-Kurzreferat verlangt wird, kann ich
-daraus eine angepasste Variante extrahieren.
+\textbf{Was ich selbst gemacht habe:}
 
-% ████████████████████████████████████████████████████████████
-%  10  ZUSAMMENFASSUNG
-% ████████████████████████████████████████████████████████████
-\section{Zusammenfassung}
-\label{sec:zusammenfassung}
+\begin{itemize}
+\item Das gesamte Projekt-Konzept und die App-Idee.
+\item Auswahl der zehn Features (was eine normale App ohne
+  Spezial-Rechte überhaupt lesen darf).
+\item Datensammlung auf den vier Geräten -- inklusive
+  App-Verteilung an drei Familienmitglieder.
+\item Alle methodischen Entscheidungen: Segment-Level-Split,
+  Wahl der Vergleichsmethoden, Bucket-Analyse.
+\item Kritisches Hinterfragen der KI-Vorschläge, wenn etwas
+  verdächtig wirkte. Im Verlauf wurden so mehrere eigene Fehler
+  (z.\,B.\ falsche Autoren bei drei Quellen, zu plakative Aussagen)
+  korrigiert.
+\item Alle Anpassungen am Android-Manifest, Permissions,
+  geräte-spezifisches Debugging (MIUI-Service-Stirbt-Problem).
+\end{itemize}
 
-\subsection[Was funktioniert (Stand 11.\ Mai 2026)]{Was funktioniert (Stand 11.\,Mai 2026)}
+\textbf{Bilanz.}
+Realistisch eingeschätzt: ohne KI-Unterstützung hätte ich das
+Projekt in dieser Tiefe nicht in sieben Wochen geschafft. Die KI
+war besonders nützlich für Boilerplate und Recherche-Beschleunigung
+sowie für methodische Disziplin (Konsistenz-Checks über große
+Code-Mengen). Was die KI \emph{nicht} ersetzt hat: die Entscheidung,
+was gemacht wird, das Verstehen der Ergebnisse, das Verteidigen von
+Trade-offs, und vor allem die handfeste Geräte-Logistik und das
+Debugging vor Ort.
+
+\subsection{Abschluss-Reflexion}
+
+\textbf{Was funktioniert (Stand 11.\,Mai 2026):}
 
 \begin{itemize}
 \item Android-App läuft stabil im Hintergrund auf vier
@@ -1127,36 +1139,35 @@ daraus eine angepasste Variante extrahieren.
   Share-Intent exportiert.
 \item Trainings- und Auswertungs-Pipeline reproduzierbar via einem
   Befehl (\code{python run\_pipeline.py}).
-\item Wissenschaftliches Paper erstellt (separates Dokument).
 \end{itemize}
 
-\subsection{Was noch nicht ideal ist}
+\textbf{Was noch nicht ideal ist:}
 
 \begin{itemize}
 \item Die App-UI ist zweckmäßig, aber nicht hübsch. Material-3 ist
   nur das Default-Theme.
-\item Die Scaler-Werte werden manuell aus dem Python-Modell ins
-  Kotlin kopiert -- automatisierbar via Build-Step wäre eleganter.
+\item Die Scaler-Werte werden per Skript aus dem Python-Modell ins
+  Kotlin kopiert -- ein automatischer Build-Step wäre eleganter.
 \item Es gibt kein In-App-Onboarding für die UsageStats-Permission,
   nur einen Button-Hinweis.
 \end{itemize}
 
-\subsection{Was ich aus dem Projekt mitnehme}
+\textbf{Was ich aus dem Projekt mitnehme:}
 
 \begin{itemize}
-\item \textbf{Android im Hintergrund ist hart.} Theoretisch sind
+\item \emph{Android im Hintergrund ist hart.} Theoretisch sind
   Foreground-Services eine Standard-Lösung. Praktisch killt jeder
   Hersteller anders. Multi-Device-Test ist die einzige
   Möglichkeit, das wirklich zu prüfen.
-\item \textbf{Methodische Disziplin schlägt Modell-Komplexität.}
+\item \emph{Methodische Disziplin schlägt Modell-Komplexität.}
   Der Wechsel von Random-Split zu Segment-Level-Split hatte mehr
   Einfluss auf das Ergebnis als jedes Hyperparameter-Tuning.
-\item \textbf{Negative Ergebnisse ehrlich darstellen ist genau so
+\item \emph{Negative Ergebnisse ehrlich darstellen ist genau so
   wertvoll wie positive.} Anfangs schien das Projekt zu
   \glqq{}funktionieren\grqq{} (MAE 0.5\,h). Erst durch saubere
-  Methodik kam heraus: TinyML funktioniert, aber nicht so
-  spektakulär wie auf den ersten Blick. Das ehrlich aufzuschreiben
-  ist anstrengender, aber wissenschaftlich korrekter.
+  Methodik kam heraus, dass dieser Wert ein Leakage-Artefakt war.
+  Das ehrlich aufzuschreiben ist anstrengender, aber wissenschaftlich
+  korrekter.
 \end{itemize}
 
 \vfill

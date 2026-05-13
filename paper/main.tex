@@ -58,7 +58,7 @@ sliding-window setups; on our data the inflation it causes ranges
 from $\sim$1.24$\times$ (multi-device) to $\sim$1.69$\times$
 (single-device subset), which we report as a methodological
 observation in its own right. On the leakage-free split, TinyML and
-Random Forest reach $C{=}0.66$ and $C{=}0.69$ against the training
+Random Forest reach $C{=}0.66$ and $C{=}0.68$ against the training
 target $y^{\text{extrap}}$, both significantly above the floor
 ($p_{\text{BH}} < 0.001$ over 15 pairwise tests with
 Benjamini--Hochberg correction); against the uncensored measured
@@ -102,14 +102,15 @@ installed applications. The companion method
 the returned estimate has been adapted to the specific device's usage
 history.
 
-A natural research question follows: \emph{can a third-party app, restricted
-to publicly available APIs, build a competitive on-device ML model?}
-A common architectural choice in this space is TinyML
---- small quantised neural networks (typically tens of kilobytes)
-designed for low-power edge devices~\cite{banbury2021mlperf}. While the
-TinyML literature largely targets microcontrollers, smartphones share two
-relevant properties: deployment constraints (model size matters for
-APK weight, latency matters for battery cost) and ubiquity.
+We ask: \emph{how well can a TinyML model running inside an
+Android app predict remaining battery life, compared to analytical
+baselines and Google's native API --- measured on accuracy and
+on-device efficiency?} TinyML here refers to small quantised neural
+networks (typically tens of kilobytes) designed for low-power edge
+devices~\cite{banbury2021mlperf}. While the TinyML literature largely
+targets microcontrollers, smartphones share two relevant properties:
+deployment constraints (model size matters for APK weight, latency
+matters for battery cost) and ubiquity.
 
 This paper provides an empirical answer for the smartphone case. We
 report a six-way head-to-head comparison on identical real-world data
@@ -480,7 +481,7 @@ the analytical baselines and $0.10$ below the Google~API's
 $C{=}0.85$ on that device. On the Xiaomi 2107113SG, the same model
 collapses to $C{=}0.59$. Random Forest behaves similarly: $0.81$ on
 Pixel~7~Pro, $0.63$ on Xiaomi. The two analytical baselines, by
-contrast, are stable in the $0.69$--$0.79$ band across all four
+contrast, are stable in the $0.65$--$0.79$ band across all four
 devices.
 
 \begin{table*}[t]
@@ -679,15 +680,16 @@ A bucket-level analysis on battery-level at prediction time
 (common subset, target $y^{\text{extrap}}$) shows that the
 Google~API's advantage is not uniform but concentrated in the longer
 horizons. At battery 75--100\,\%, where the longest remaining-time
-predictions sit, Google reaches $C{=}0.73$ and Linear $C{=}0.73$ versus
-$0.50$ (TinyML) and $0.57$ (RF). At battery 50--75\,\%, Google and the
+predictions sit, Google reaches $C{=}0.71$ and Linear $C{=}0.71$ versus
+$0.52$ (TinyML) and $0.57$ (RF). At battery 50--75\,\%, Google and the
 analytical baselines compress to $C{\approx}0.62\text{--}0.63$ and the
 gap to the ML models is smaller. At battery 0--25\,\%
 (near-empty, remaining time short), Random Forest unexpectedly leads
-($C{=}0.74$) while all other methods drop into the $0.53\text{--}0.57$ band.
-Bucketed on segment length, the 2--\SI{5}{\hour} bucket
-($n{=}820$ common) is where Google attains its peak $C{=}0.96$ on
-$y^{\text{extrap}}$, with all other methods at $C{=}0.87\text{--}0.91$.
+($C{=}0.74$) while Linear, Exponential and Google cluster in the
+$0.52\text{--}0.57$ band and TinyML drops below the mean-predictor
+floor ($C{=}0.34$). Bucketed on segment length, the 2--\SI{5}{\hour}
+bucket ($n{=}820$ common) is where Google attains its peak $C{=}0.96$
+on $y^{\text{extrap}}$, with all other methods at $C{=}0.85\text{--}0.90$.
 
 \subsection{Efficiency}
 Table~\ref{tab:efficiency} reports model size and inference latency for
@@ -695,8 +697,8 @@ the four model artefacts, measured on the development machine
 (CPU only, 1{,}000 inference repetitions per variant after 50 warm-up
 runs). The full-INT8 TFLite variant compresses the Keras model from
 \SI{109}{\kilo\byte} to \SI{14.4}{\kilo\byte} ($7.6\times$) and reduces
-single-inference latency from \SI{43.2}{\milli\second} to
-\SI{4.7}{\micro\second} ($\sim\!9{,}200\times$). The TinyML
+single-inference latency from \SI{39.0}{\milli\second} to
+\SI{3.3}{\micro\second} ($\sim\!12{,}000\times$). The TinyML
 \emph{technique} works as advertised; only the predictive value of the
 quantised model on this dataset does not.
 
@@ -711,10 +713,10 @@ warm-up runs.}
 \toprule
 Variant                  & Size (KB) & Avg latency \\
 \midrule
-Keras Float32            & 109.18    & \SI{47.1}{\milli\second} \\
-TFLite dynamic-range     & \phantom{0}15.99 & \SI{3.9}{\micro\second} \\
-TFLite float16           & \phantom{0}17.80 & \SI{3.7}{\micro\second} \\
-\textbf{TFLite full-INT8} (deployed) & \textbf{\phantom{0}14.35} & \textbf{\SI{4.5}{\micro\second}} \\
+Keras Float32            & 109.19    & \SI{39.0}{\milli\second} \\
+TFLite dynamic-range     & \phantom{0}15.99 & \SI{3.1}{\micro\second} \\
+TFLite float16           & \phantom{0}17.80 & \SI{2.9}{\micro\second} \\
+\textbf{TFLite full-INT8} (deployed) & \textbf{\phantom{0}14.35} & \textbf{\SI{3.3}{\micro\second}} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -745,7 +747,7 @@ future work in app-based mobile sensing report the splitting unit
 
 \paragraph{Both ML models learn target-specific signal, less so on the measured target.}
 On the multi-device test set against the training target $y^{\text{extrap}}$,
-TinyML reaches $C{=}0.66$ and Random Forest $C{=}0.69$, both above the
+TinyML reaches $C{=}0.66$ and Random Forest $C{=}0.68$, both above the
 mean-predictor floor at $p_{\text{BH}} < 0.001$. Against the
 uncensored measured target $y^{\text{real}}$, the same models reduce
 to $\Delta C{=}{+}0.001$ ($p_{\text{BH}}{=}0.82$, ns) and
@@ -765,7 +767,7 @@ learned model over $b/\dot b$ extrapolation.
 \paragraph{Google's API is on par with linear extrapolation on the typical horizon.}
 On the common subset, the Google~API is statistically
 \emph{indistinguishable} from the linear drain-rate baseline both on
-MAE ($\Delta{=}{+}0.07\,$h, $p_{\text{BH}}{=}0.55$) and on $C$
+MAE ($\Delta{=}{+}0.07\,$h, $p_{\text{BH}}{=}0.16$) and on $C$
 ($\Delta C{=}{+}0.009$, $p_{\text{BH}}{=}0.11$). This aggregate
 result, however, hides a structure that only emerges in a bucket
 analysis: of the 2{,}883 common-subset samples, 1{,}376 (47.7\,\%)
@@ -922,13 +924,14 @@ Beyond the constant \texttt{charging} feature, several other features
 in our dataset are not well-balanced. Across the 39{,}104 discharge
 data points in the merged dataset:
 \begin{itemize}
-\item \texttt{hotspot\_on} is positive in 7.1\,\% of samples; 99\,\%
-of those positive samples come from the Pixel~8~Pro
-(978 of 983 in the training split).
-\item \texttt{wifi\_on} is positive in 8.1\,\% of samples; the
-Pixel~8~Pro contributes the majority of WiFi-enabled samples
-(1{,}475 of 1{,}643 across all devices), while the other three
-devices stay below 1\,\% WiFi each.
+\item \texttt{hotspot\_on} is positive in 4.6\,\% of samples
+(1{,}816 of 39{,}104); 54\,\% of those positive samples come from
+the Pixel~8~Pro (978 of 1{,}816 across all devices).
+\item \texttt{wifi\_on} is positive in 4.2\,\% of samples
+(1{,}643 of 39{,}104); the Pixel~8~Pro contributes the
+overwhelming majority of WiFi-enabled samples (1{,}475 of 1{,}643,
+i.e.\ 89.8\,\% of all positives), while the other three devices stay
+below 1\,\% WiFi each.
 \item \texttt{active\_app\_category} is heavily skewed: the
 \emph{gaming} category (11.4\,\% of samples) is essentially
 Xiaomi-only (4{,}433 of 4{,}442 gaming samples). The
@@ -965,13 +968,14 @@ deployment logistics remain.
 % =====================================================================
 \section{Conclusion}
 % =====================================================================
-Our research question asked whether app-level TinyML can match the
-native Android~12 battery-discharge prediction on the two axes of
+Our research question asked how well an app-level TinyML model can
+predict remaining battery life compared to analytical baselines and
+the native Android~12 prediction API, on the two axes of
 \emph{accuracy} and \emph{efficiency}. The four-device leakage-free
 evaluation gives a separable answer on each axis.
 
 \paragraph{Accuracy.}
-TinyML and Random Forest reach $C{=}0.66$ and $C{=}0.69$ against the
+TinyML and Random Forest reach $C{=}0.66$ and $C{=}0.68$ against the
 training target $y^{\text{extrap}}$ ($p_{\text{BH}} < 0.001$ over the
 15-test family), suggesting that publicly accessible smartphone sensors
 carry some exploitable signal. The strength of that conclusion is
@@ -983,7 +987,7 @@ $\Delta C{=}{-}0.05$, $p_{\text{BH}}{<}0.001$). The two ML models do
 not match the top group either way: the linear drain-rate baseline,
 the per-segment exponential fit, and the Google~API are statistically
 tied at $C \approx 0.77$, and the Google~API is indistinguishable
-from the simple linear baseline both on MAE ($p_{\text{BH}}{=}0.55$)
+from the simple linear baseline both on MAE ($p_{\text{BH}}{=}0.16$)
 and $C$ ($\Delta C{=}{+}0.009$, $p_{\text{BH}}{=}0.11$) at the
 aggregate level. A bucket analysis
 (Section~\ref{sec:results-perdevice} and Discussion) shows that this
@@ -997,7 +1001,7 @@ in $C$.
 The TFLite quantisation pipeline behaves exactly as advertised. The
 deployed full-INT8 model occupies \SI{14.4}{\kilo\byte} and runs in
 single-microsecond latency on a CPU reference --- a $7.6\times$ size
-reduction and a $\sim$$\!10{,}000\times$ latency reduction over the
+reduction and a $\sim$$\!12{,}000\times$ latency reduction over the
 Keras Float32 reference. There is no meaningful efficiency cost to
 deploying the TinyML model; the open question on the accuracy axis
 is the only relevant trade-off.
@@ -1036,9 +1040,6 @@ typically completes in under twenty minutes on a laptop CPU
 runtime). The auto-generated report contains every numerical value
 quoted in this paper.
 
-% Force entire bibliography (including the "References" heading)
-% into the right-hand column of the last page
-\newpage
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 
