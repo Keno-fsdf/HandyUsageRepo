@@ -83,12 +83,15 @@ index, data leakage, Android.
 \section{Introduction}
 % =====================================================================
 Predicting the remaining battery life of a smartphone is a long-standing
-problem with two qualitatively different solution classes. \emph{Analytical}
+problem~\cite{kim2016accurate,li2018predicting} with two qualitatively
+different solution classes. \emph{Analytical}
 methods (e.g.\ the linear extrapolation used by most legacy ``Settings
-$\rightarrow$ Battery'' screens) project the recently observed drain rate
-into the future. \emph{Machine-learning} methods, in contrast, attempt to
-exploit context: which apps are active, how bright is the screen, what is
-the battery temperature.
+$\rightarrow$ Battery'' screens, or the runtime power-profiling of
+Kim \emph{et al.}~\cite{kim2016accurate}) project the recently observed
+drain rate into the future. \emph{Machine-learning} methods, in contrast,
+attempt to exploit context --- which apps are active, how bright is the
+screen, what is the battery temperature ---
+\cite{li2018predicting,floresmartin2024enhancing}.
 
 Since Android~12 (October~2021), the platform exposes a system
 estimator via
@@ -101,6 +104,15 @@ installed applications. The companion method
 \texttt{isBatteryDischargePredictionPersonalized()} indicates whether
 the returned estimate has been adapted to the specific device's usage
 history.
+
+Despite shipping since 2021, the accuracy of this system estimator
+has, to our knowledge, never been independently benchmarked against
+app-level alternatives on real-world data; nor does the TinyML
+literature (Section~\ref{sec:related}) treat the smartphone
+battery-prediction case, focusing instead on microcontroller-class
+hardware. This twofold gap --- an unquantified system baseline and an
+under-studied deployment target --- is what the present paper
+addresses.
 
 We ask: \emph{how well can a TinyML model running inside an
 Android app predict remaining battery life, compared to analytical
@@ -164,6 +176,7 @@ in a structured repository. A single command
 
 % =====================================================================
 \section{Related Work}
+\label{sec:related}
 % =====================================================================
 \paragraph{Smartphone battery prediction.}
 Li \emph{et al.}\cite{li2018predicting} present, to our knowledge, the
