@@ -1,257 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
-    android:background="#FAFAFA">
+    android:background="@color/screen_bg">
 
+    <!-- Top Bar mit App-Title + Settings-Icon -->
     <LinearLayout
+        android:id="@+id/mainTopBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:background="#FFFFFF"
+        android:elevation="2dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="14dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Titel -->
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="🔋 Battery Data Collector"
-            android:textSize="22sp"
+            android:layout_weight="1"
+            android:text="@string/app_name"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:textColor="@color/prediction_text" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sammelt alle 30s Akkudaten für TinyML Training"
-            android:textSize="13sp"
-            android:textColor="#666"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Prediction Box -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:background="#E8F5E9"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⚡ TinyML Vorhersage"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#2E7D32"
-                android:layout_marginBottom="4dp" />
-
-            <TextView
-                android:id="@+id/predictionText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Sammle Daten... (0/10)"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="#1B5E20" />
-
-            <TextView
-                android:id="@+id/predictionDetail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="12sp"
-                android:textColor="#4CAF50"
-                android:layout_marginBottom="12dp" />
-
-            <!-- Trennlinie -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#C8E6C9"
-                android:layout_marginBottom="10dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Vergleich aller Methoden"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:textColor="#2E7D32"
-                android:layout_marginBottom="6dp" />
-
-            <!-- Vergleichs-Zeile TinyML -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="2dp">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="🤖 TinyML (eigenes Modell)"
-                    android:textSize="13sp"
-                    android:textColor="#1B5E20" />
-                <TextView
-                    android:id="@+id/predTinyML"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="—"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="#1B5E20" />
-            </LinearLayout>
-
-            <!-- Vergleichs-Zeile Google API -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="2dp">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="🅖 Google (Android-API)"
-                    android:textSize="13sp"
-                    android:textColor="#2E7D32" />
-                <TextView
-                    android:id="@+id/predGoogle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="—"
-                    android:textSize="13sp"
-                    android:textColor="#2E7D32" />
-            </LinearLayout>
-
-            <!-- Vergleichs-Zeile Linear Baseline -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="10dp">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="📐 Linear (charge_counter)"
-                    android:textSize="13sp"
-                    android:textColor="#2E7D32" />
-                <TextView
-                    android:id="@+id/predLinear"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="—"
-                    android:textSize="13sp"
-                    android:textColor="#2E7D32" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btnRefresh"
-                android:layout_width="match_parent"
-                android:layout_height="36dp"
-                android:text="🔄  Jetzt aktualisieren"
-                android:textAllCaps="false"
-                android:textSize="12sp"
-                android:backgroundTint="#43A047"
-                style="@style/Widget.Material3.Button.TonalButton" />
-        </LinearLayout>
-
-        <!-- Status -->
-        <TextView
-            android:id="@+id/statusText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Status: Nicht gestartet"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:padding="12dp"
-            android:background="#E3F2FD"
-            android:layout_marginBottom="16dp" />
-
-        <TextView
-            android:id="@+id/countText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gesammelte Datenpunkte: 0"
-            android:textSize="15sp"
-            android:layout_marginBottom="20dp" />
-
-        <!-- Buttons -->
-        <Button
-            android:id="@+id/btnStart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="▶  Datensammlung starten"
-            android:textAllCaps="false"
-            android:layout_marginBottom="8dp" />
-
-        <Button
-            android:id="@+id/btnStop"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="⏹  Datensammlung stoppen"
-            android:textAllCaps="false"
-            android:backgroundTint="#E57373"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Permissions -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Berechtigungen"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
-
-        <Button
-            android:id="@+id/btnUsageStats"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📱  Nutzungsdatenzugriff aktivieren"
-            android:textAllCaps="false"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_marginBottom="8dp" />
-
-        <Button
-            android:id="@+id/btnBatteryOptimize"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="🔋  Batterie-Optimierung deaktivieren"
-            android:textAllCaps="false"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Export -->
-        <Button
-            android:id="@+id/btnExport"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📤  CSV exportieren / teilen"
-            android:textAllCaps="false"
-            android:backgroundTint="#4CAF50"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Daten-Vorschau -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Letzte Messungen:"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="4dp" />
-
-        <TextView
-            android:id="@+id/dataPreview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Keine Daten vorhanden"
-            android:textSize="10sp"
-            android:fontFamily="monospace"
-            android:padding="12dp"
-            android:background="#ECEFF1"
-            android:layout_marginBottom="16dp" />
-
+        <ImageButton
+            android:id="@+id/mainSettingsButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/settings_title"
+            android:src="@android:drawable/ic_menu_manage"
+            android:tint="@color/sensor_card_label" />
     </LinearLayout>
-</ScrollView>
+
+    <FrameLayout
+        android:id="@+id/mainFragmentContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/mainTopBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/mainBottomNav" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/mainBottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        app:menu="@menu/main_bottom_nav"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

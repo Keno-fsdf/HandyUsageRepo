@@ -236,31 +236,46 @@ class DataCollectorService : Service() {
 
         logger.log(data, sessionId)
 
-        // 5) Prediction per Broadcast an MainActivity senden
+        // 5) Prediction + alle Roh-Features per Broadcast an LiveFragment senden
         val broadcastIntent = Intent("com.batterypredictor.PREDICTION_UPDATE").apply {
             putExtra("prediction", prediction)
             putExtra("buffer_size", bufferSize)
             putExtra("battery_level", data.batteryLevel)
             putExtra("system_estimate", data.systemEstimateMin)
             putExtra("linear_baseline", linearBaselineH)
+            // Live-Sensor-Werte fuer den Algorithm-View
+            putExtra("brightness", data.brightness)
+            putExtra("screen_on", data.screenOn.toFloat())
+            putExtra("active_app_category", data.activeAppCategory.toFloat())
+            putExtra("wifi_on", data.wifiOn.toFloat())
+            putExtra("mobile_data_on", data.mobileDataOn.toFloat())
+            putExtra("charging", data.charging.toFloat())
+            putExtra("cpu_usage", data.cpuUsage)
+            putExtra("temperature", data.temperature)
+            putExtra("hotspot_on", data.hotspotOn.toFloat())
         }
         sendBroadcast(broadcastIntent)
 
-        // Notification mit Vorhersage
+        // Notification: Vorhersage + Confidence-Pille
+        val confidence = ConfidenceLevel.fromBufferAndBattery(bufferSize, data.batteryLevel)
+        val confTag = when (confidence) {
+            ConfidenceLevel.HIGH -> "\ud83d\udfe2 hoch"
+            ConfidenceLevel.MEDIUM -> "\ud83d\udfe1 mittel"
+            ConfidenceLevel.LOW -> "\ud83d\udd34 unsicher"
+        }
         val predText = if (prediction >= 0f) {
             val hours = prediction.toInt()
             val mins = ((prediction - hours) * 60).toInt()
-            "\u26a1 ${hours}h ${mins}min verbleibend"
+            "Akku noch ${hours}h ${mins}min  \u00b7  $confTag"
         } else if (predictor != null) {
-            "Sammle Daten... ($bufferSize/10)"
+            "Sammle Daten... ($bufferSize/10)  \u00b7  $confTag"
         } else {
             "Modell nicht geladen"
         }
+        val subText = "Akku ${data.batteryLevel.toInt()}%  \u00b7  ${logger.getCount()} Messungen"
 
         val nm = getSystemService(NotificationManager::class.java)
-        nm.notify(NOTIFICATION_ID, buildNotification(
-            "$predText | Akku: ${data.batteryLevel}% | ${logger.getCount()} Messungen"
-        ))
+        nm.notify(NOTIFICATION_ID, buildNotification(predText, subText))
     }
 
     // ---- Feature 1: Battery Level ----
@@ -552,18 +567,23 @@ class DataCollectorService : Service() {
         nm.createNotificationChannel(channel)
     }
 
-    private fun buildNotification(text: String = "Datensammlung aktiv..."): Notification {
+    private fun buildNotification(
+        text: String = "Datensammlung aktiv...",
+        subText: String? = null,
+    ): Notification {
         val openIntent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             this, 0, openIntent, PendingIntent.FLAG_IMMUTABLE
         )
 
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Battery Collector")
-            .setContentText(text)
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(text)
             .setSmallIcon(android.R.drawable.ic_menu_info_details)
             .setOngoing(true)
+            .setOnlyAlertOnce(true)
             .setContentIntent(pendingIntent)
-            .build()
+
+        if (subText != null) builder.setContentText(subText)
+        return builder.build()
     }
 }

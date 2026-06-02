@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tab_live"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="@string/tab_live" />
+    <item
+        android:id="@+id/tab_algorithm"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:title="@string/tab_algorithm" />
+    <item
+        android:id="@+id/tab_accuracy"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="@string/tab_accuracy" />
+</menu>

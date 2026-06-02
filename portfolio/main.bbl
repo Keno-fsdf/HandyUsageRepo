@@ -1,0 +1,27 @@
+\begin{thebibliography}{1}
+
+\bibitem{alajlan2022tinyml}
+Norah~N. Alajlan and Dina~M. Ibrahim.
+\newblock {TinyML}: Enabling of inference deep learning models on
+  ultra-low-power {IoT} edge devices for {AI} applications.
+\newblock {\em Micromachines}, 13(6):851, 2022.
+
+\bibitem{android2021powermanager}
+{Android Open Source Project}.
+\newblock {PowerManager.getBatteryDischargePrediction()}, 2021.
+\newblock Android API level 31 (Android 12).
+
+\bibitem{banbury2021mlperf}
+Colby Banbury, Vijay~Janapa Reddi, Peter Torelli, Jeremy Holleman, Nat
+  Jeffries, Csaba Kiraly, Pietro Montino, David Kanter, Sebastian Ahmed, Danilo
+  Pau, et~al.
+\newblock {MLPerf} {Tiny} benchmark.
+\newblock In {\em Proceedings of the Neural Information Processing Systems
+  Track on Datasets and Benchmarks}, 2021.
+
+\bibitem{breiman2001random}
+Leo Breiman.
+\newblock Random forests.
+\newblock {\em Machine Learning}, 45(1):5--32, 2001.
+
+\end{thebibliography}

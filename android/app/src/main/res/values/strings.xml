@@ -1,3 +1,112 @@
 <resources>
-    <string name="app_name">Battery Collector</string>
+    <string name="app_name">Akkuvorhersage</string>
+
+    <!-- Tabs -->
+    <string name="tab_live">Live</string>
+    <string name="tab_algorithm">Algorithmus</string>
+    <string name="tab_accuracy">Genauigkeit</string>
+
+    <!-- Algorithm Tab -->
+    <string name="alg_title">So entsteht deine Vorhersage</string>
+    <string name="alg_subtitle">In vier Schritten – komplett auf deinem Handy, ohne Internet.</string>
+    <string name="alg_step1_title">10 Sensoren werden gelesen</string>
+    <string name="alg_step1_body">Alle 30 Sekunden misst die App zehn Werte vom Handy: Akkustand, Bildschirm-Helligkeit, aktive App, WLAN/Mobilfunk, CPU-Auslastung, Temperatur und mehr.</string>
+    <string name="alg_step2_title">Letzte 5 Minuten als Verlauf</string>
+    <string name="alg_step2_body">Das Modell schaut nicht nur auf den aktuellen Moment, sondern auf die letzten zehn Messpunkte. So erkennt es Trends: \"Du nutzt das Handy seit fuenf Minuten intensiv.\"</string>
+    <string name="alg_step3_title">TinyML-Modell rechnet</string>
+    <string name="alg_step3_body">Ein winziges Neuronales Netz (Conv1D, 14,4 KB, INT8-quantisiert) verarbeitet den Verlauf. Eine Inferenz dauert etwa 5 Mikrosekunden – schneller als jeder Wimpernschlag.</string>
+    <string name="alg_step4_title">Restlaufzeit als Vorhersage</string>
+    <string name="alg_step4_body">Die fertige Vorhersage erscheint im Live-Tab und in der Notification – mit Confidence-Indikator, damit du siehst, wie sicher das Modell gerade ist.</string>
+
+    <string name="alg_usp_title">Was es besonders macht</string>
+    <string name="alg_usp_offline">Komplett offline – keine Daten verlassen dein Geraet</string>
+    <string name="alg_usp_size">14,4 KB Modell – kleiner als eine WhatsApp-Sprachnachricht</string>
+    <string name="alg_usp_universal">Funktioniert auf jedem Android – auch wo Googles Anzeige fehlt</string>
+
+    <string name="alg_flow_caption">10 Sensor-Werte fliessen alle 30 Sekunden durch das Modell – und werden zu deiner Vorhersage.</string>
+    <string name="alg_chart_section">Letzte 3 Stunden und Ausblick</string>
+    <string name="alg_chart_caption">Durchgezogen: tatsaechlicher Akkustand. Gestrichelt: was das Modell fuer die naechste Stunde sieht.</string>
+    <string name="alg_steps_section">In vier Schritten erklaert</string>
+    <string name="alg_arch_section">Modell-Architektur im Detail</string>
+    <string name="alg_arch_caption">So sieht das eigentliche Conv1D-Netz aus. Die Forward-Welle leuchtet von oben nach unten – so berechnet das Modell bei jeder neuen Messung eine Vorhersage.</string>
+
+    <!-- Onboarding -->
+    <string name="onb_slide0_title">Wofur du das brauchst</string>
+    <string name="onb_slide0_body">Eine ehrliche Restlaufzeit hilft immer dann, wenn die naechste Steckdose nicht in funf Minuten erreichbar ist. Und das ueberall, wo dein Hersteller (Xiaomi, Samsung, …) Googles eigene Anzeige nicht freigibt.</string>
+    <string name="onb_usecase_hiking">Beim Wandern</string>
+    <string name="onb_usecase_travel">Auf Reisen</string>
+    <string name="onb_usecase_commute">Im Pendel-Alltag</string>
+    <string name="onb_usecase_planning">Beim Tagesplanen</string>
+
+    <string name="onb_slide1_title">Wir messen 10 Dinge an deinem Handy</string>
+    <string name="onb_slide1_body">Alle 30 Sekunden schreibt die App leise im Hintergrund auf, was am Handy gerade passiert – Akkustand, Bildschirm-Helligkeit, welche App lauft, Temperatur und einige mehr. Komplett auf deinem Gerat, nichts geht in die Cloud.</string>
+
+    <string name="onb_slide2_title">Ein winziges Modell lernt dein Verhalten</string>
+    <string name="onb_slide2_body">Aus den gesammelten Daten entsteht ein TinyML-Modell, das gelernt hat, wie sich dein Akku unter verschiedenen Bedingungen verhalt. Es wird einmal am PC trainiert und wandert dann zuruck in die App.</string>
+
+    <string name="onb_slide3_title">Du siehst deine Restlaufzeit live</string>
+    <string name="onb_slide3_body">Das fertig gelernte Modell lauft komplett offline auf deinem Handy und sagt dir alle 30 Sekunden eine neue Restlaufzeit voraus. Du vergleichst direkt mit Googles eigener Schatzung.</string>
+
+    <string name="onb_size_title">So klein ist das Modell wirklich</string>
+    <string name="onb_size_ours">Dieses Modell: 14,4 KB</string>
+    <string name="onb_size_voicememo">WhatsApp-Sprachmemo: ~80 KB</string>
+    <string name="onb_size_llm">Typisches Sprachmodell: ~5 GB</string>
+
+    <string name="onb_next">Weiter</string>
+    <string name="onb_start">Los geht\'s</string>
+    <string name="onb_skip">Uberspringen</string>
+
+    <!-- Live Tab -->
+    <string name="live_prediction_label">Akku noch</string>
+    <string name="live_confidence_high">hohe Genauigkeit</string>
+    <string name="live_confidence_med">mittlere Genauigkeit</string>
+    <string name="live_confidence_low">noch unsicher</string>
+    <string name="live_sensors_label">Worauf das Modell gerade schaut</string>
+    <string name="live_buffer_label">Sammle Daten</string>
+
+    <!-- Accuracy Tab -->
+    <string name="acc_title">Wer war heute genauer?</string>
+    <string name="acc_our_model">Mein TinyML-Modell</string>
+    <string name="acc_google">Google API</string>
+    <string name="acc_linear">Linear-Baseline</string>
+    <string name="acc_no_data">Noch nicht genug Daten gesammelt – die App braucht ein paar Stunden, bis sie die Vorhersagen ehrlich vergleichen kann.</string>
+    <string name="acc_history_label">Letzte 7 Tage</string>
+
+    <!-- Sensor Labels -->
+    <string name="sensor_battery">Akkustand</string>
+    <string name="sensor_brightness">Helligkeit</string>
+    <string name="sensor_screen">Bildschirm</string>
+    <string name="sensor_app">Aktive App</string>
+    <string name="sensor_wifi">WLAN</string>
+    <string name="sensor_mobile">Mobile Daten</string>
+    <string name="sensor_charging">Ladekabel</string>
+    <string name="sensor_cpu">CPU-Last</string>
+    <string name="sensor_temp">Temperatur</string>
+    <string name="sensor_hotspot">Hotspot</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_collection_section">Datensammlung</string>
+    <string name="settings_collection_running">Service lauft seit %1$s</string>
+    <string name="settings_collection_stopped">Service ist gestoppt</string>
+    <string name="settings_collection_count">%1$d Datenpunkte gesammelt</string>
+    <string name="settings_permission_ok">Nutzungsdatenzugriff: erteilt</string>
+    <string name="settings_permission_missing">Nutzungsdatenzugriff fehlt</string>
+    <string name="settings_export">CSV exportieren</string>
+    <string name="settings_start">Datensammlung starten</string>
+    <string name="settings_stop">Datensammlung stoppen</string>
+    <string name="settings_usage_stats">Nutzungsdatenzugriff aktivieren</string>
+    <string name="settings_battery_opt">Akku-Optimierung deaktivieren</string>
+    <string name="settings_refresh">Jetzt neue Messung ausloesen</string>
+
+    <string name="settings_model_section">Modell</string>
+    <string name="settings_model_size">Modell-Groesse: 14,4 KB (INT8-quantisiert)</string>
+    <string name="settings_model_inference">Durchschnittliche Inferenz: ~5 µs</string>
+    <string name="settings_model_features">10 Sensor-Features x 10 Zeitschritte</string>
+
+    <string name="settings_about_section">Uber die App</string>
+    <string name="settings_about_text">Portfolio-Arbeit Vertiefung I (Mobile und Ubiquitare Anwendungen), THWS, Sommersemester 2026. Kombiniert eigene Datensammlung, TinyML-Modell und on-device Inferenz zu einer Akku-Vorhersage, die auf jedem Android-Gerat funktioniert – auch dort, wo Googles eigene Anzeige fehlt.</string>
+
+    <string name="settings_onboarding_section">Onboarding</string>
+    <string name="settings_show_onboarding">Onboarding noch einmal ansehen</string>
 </resources>

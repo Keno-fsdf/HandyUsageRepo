@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="32dp">
+
+    <TextView
+        android:id="@+id/slide1Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="📡"
+        android:textSize="72sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/slide1Title"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/slide1Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        android:text="@string/onb_slide1_title"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="@color/prediction_text"
+        app:layout_constraintTop_toBottomOf="@id/slide1Icon" />
+
+    <TextView
+        android:id="@+id/slide1Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/onb_slide1_body"
+        android:textSize="16sp"
+        android:textColor="@color/sensor_card_label"
+        app:layout_constraintTop_toBottomOf="@id/slide1Title" />
+
+    <!-- 10 kleine Sensor-Bubbles als visuelle Andeutung -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/slide1Body"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView style="@style/SensorBubble" android:text="🔋" />
+        <TextView style="@style/SensorBubble" android:text="🔆" />
+        <TextView style="@style/SensorBubble" android:text="📱" />
+        <TextView style="@style/SensorBubble" android:text="📶" />
+        <TextView style="@style/SensorBubble" android:text="🌡" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

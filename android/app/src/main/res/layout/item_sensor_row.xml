@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/bg_card"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="14dp">
+
+    <TextView
+        android:id="@+id/sensorEmoji"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/sensorLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:textColor="@color/sensor_card_label"
+        android:textSize="14sp" />
+
+    <!-- Balken-Container (nur fuer numerische Sensoren sichtbar) -->
+    <FrameLayout
+        android:id="@+id/sensorBar"
+        android:layout_width="80dp"
+        android:layout_height="6dp"
+        android:layout_marginEnd="12dp"
+        android:background="@color/sensor_bar_inactive">
+
+        <View
+            android:id="@+id/sensorBarFull"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@color/sensor_bar_active" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/sensorValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="50dp"
+        android:gravity="end"
+        android:text="—"
+        android:textColor="@color/sensor_card_value"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+</LinearLayout>

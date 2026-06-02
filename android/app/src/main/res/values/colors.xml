@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Markenfarben (THWS-Orange als Akzent) -->
+    <color name="brand_primary">#F6821E</color>
+    <color name="brand_primary_dark">#C56000</color>
+    <color name="brand_accent">#1B5E20</color>
+
+    <!-- Vorhersage-Karte -->
+    <color name="prediction_bg">#F1F8E9</color>
+    <color name="prediction_text">#1B5E20</color>
+    <color name="prediction_subtext">#558B2F</color>
+
+    <!-- Sensor-Karten -->
+    <color name="sensor_card_bg">#FFFFFF</color>
+    <color name="sensor_card_label">#424242</color>
+    <color name="sensor_card_value">#212121</color>
+    <color name="sensor_bar_active">#43A047</color>
+    <color name="sensor_bar_inactive">#E0E0E0</color>
+
+    <!-- Confidence Badges -->
+    <color name="confidence_high_bg">#E8F5E9</color>
+    <color name="confidence_high_text">#2E7D32</color>
+    <color name="confidence_med_bg">#FFF8E1</color>
+    <color name="confidence_med_text">#EF6C00</color>
+    <color name="confidence_low_bg">#FFEBEE</color>
+    <color name="confidence_low_text">#C62828</color>
+
+    <!-- Accuracy / Vergleich -->
+    <color name="acc_winner_bg">#E8F5E9</color>
+    <color name="acc_runner_bg">#FAFAFA</color>
+    <color name="acc_loser_bg">#FAFAFA</color>
+
+    <!-- Settings -->
+    <color name="settings_section_bg">#FFFFFF</color>
+    <color name="settings_section_label">#616161</color>
+    <color name="settings_divider">#EEEEEE</color>
+
+    <!-- Screen-Background -->
+    <color name="screen_bg">#FAFAFA</color>
+    <color name="card_outline">#E0E0E0</color>
+</resources>

@@ -171,6 +171,126 @@ Auf Pixel-Geräten nutzt der Settings-Screen diesen Wert; auf
 Geräten anderer Hersteller (Xiaomi, Samsung) wird er meist gar
 nicht angezeigt, obwohl die API verfügbar ist.
 
+\subsection{Alleinstellungsmerkmal}
+\label{sec:usp}
+
+Drei Aspekte unterscheiden den hier verfolgten Ansatz von vergleichbaren
+Akku-Vorhersage-Lösungen und prägen die Architektur der gesamten Arbeit:
+
+\begin{enumerate}
+\item \textbf{Schließt eine Lücke, die selbst Google offen lässt.}
+  Die seit Android~12 verfügbare
+  \code{PowerManager.getBatteryDischargePrediction()}-API liefert
+  zwar einen ML-basierten Wert, wird aber von den meisten
+  Hersteller-Launchern (Xiaomi, Samsung) gar nicht angezeigt. Die
+  App stellt eine eigene, vergleichbare Vorhersage \emph{auf jedem
+  Gerät} bereit -- unabhängig davon, ob der Hersteller die
+  System-API in seiner Oberfläche freigibt.
+
+\item \textbf{Vollständig on-device ohne Cloud-Anbindung.} Das
+  quantisierte TFLite-Modell ist mit 14{,}4\,KB klein genug, um
+  auf jeder Android-Version ohne nennenswerten Speicher- oder
+  Energie-Overhead zu laufen. Sämtliche Sensordaten verlassen das
+  Gerät nicht -- es entstehen weder Cloud-Kosten noch
+  Datenschutz-Implikationen.
+
+\item \textbf{Vollständiger MLOps-Zyklus statt isolierter
+  Inferenz.} Daten werden in der App gesammelt, am PC trainiert
+  und das fertige Modell wieder in die App zurück-deployt. Die App
+  ist damit nicht nur Konsument eines vortrainierten Modells,
+  sondern Teil einer schließbaren Trainings-Schleife, die
+  geräte- und nutzerspezifisch nachjustiert werden kann.
+\end{enumerate}
+
+\subsection{Konkrete Anwendungsszenarien}
+\label{sec:szenarien}
+
+Damit klar wird, fuer wen das ueberhaupt relevant ist -- vier
+Alltagssituationen, in denen eine ehrliche Restlaufzeit messbar
+hilft. Allen gemeinsam: die naechste Steckdose ist eben nicht in
+fuenf Minuten erreichbar.
+
+\begin{itemize}
+\item \textbf{Beim Wandern oder auf Mehrtagestouren.} Eine
+  Restlaufzeit, der man trauen kann, entscheidet, ob man unterwegs
+  noch die Karte oeffnen kann oder lieber den Flugmodus aktiviert.
+  Pixel-Nutzer haben hier Googles Schaetzung. Wer ein
+  Xiaomi/Samsung/Motorola benutzt, hat sie nicht --- die App
+  schliesst genau diese Luecke.
+\item \textbf{Auf Reisen ohne sichere Ladequelle.} Im Zug, im
+  Flugzeug, im Hotelzimmer ohne freie Steckdose. Statt nervoes
+  alle zehn Minuten zu pruefen, gibt eine verlaessliche Schaetzung
+  Planungssicherheit (z.\,B. ob man Filme bis zur Ankunft schauen
+  kann).
+\item \textbf{Im Pendel-Alltag.} \glqq{}Reicht der Akku noch fuer
+  den Heimweg, oder muss ich im Buero noch laden?\grqq{}\ Eine
+  ehrliche Restlaufzeit am Vormittag erlaubt die richtige
+  Entscheidung am Mittag.
+\item \textbf{Beim aktiven Tagesplanen.} Wer das Handy fuer
+  Navigation, Musik und Foto braucht (Konzert, Festival,
+  Stadtfuehrung), nutzt das Geraet wesentlich aggressiver als an
+  einem normalen Bueroarbeitstag. Eine Vorhersage, die genau dieses
+  Verhalten kennt, ist hier deutlich nuetzlicher als ein generischer
+  Durchschnitt.
+\end{itemize}
+
+In jedem dieser Faelle ist der Mehrwert nicht abstrakt, sondern
+direkt erlebbar: weniger Ladestress, weniger spontane Notwendigkeit
+zum Powerbank-Anschluss, weniger \glqq{}haette ich das frueher
+gewusst\grqq{}-Momente. Ein interner Onboarding-Screen der App greift
+genau diese Beispiele auf, damit der Nutzen schon beim ersten Start
+greifbar ist.
+
+\subsection{Mehrwert aus Nutzer- und Marktsicht}
+\label{sec:mehrwert}
+
+Aus einer BWL-orientierten Sicht laesst sich die App ueber vier
+einfache Argumente legitimieren -- nicht weil verkauft werden muss,
+sondern weil die Loesung in jeder dieser Dimensionen sauber
+positioniert ist:
+
+\begin{itemize}
+\item \textbf{Klar definierter Mehrwert beim Nutzer.}
+  Der Nutzen ist nicht abstrakt, sondern eine direkte
+  Reduktion von Reibung im Alltag: weniger
+  \glqq{}reicht der Akku noch?\grqq{}-Momente, weniger spontaner
+  Powerbank-Kauf, bessere Planung von Zeitfenstern ohne
+  Steckdose. Wer das einmal erlebt hat -- Stichwort Pixel-Nutzer,
+  die sich an die Vorhersage gewoehnt haben -- vermisst sie
+  spuerbar auf jedem anderen Geraet.
+
+\item \textbf{Echte Marktluecke statt Mich-Auch-Produkt.}
+  Hersteller-Statistiken (StatCounter, Mai~2026) sehen Samsung
+  bei rund 35\,\% und Xiaomi bei rund 13\,\% des
+  globalen Android-Markts -- beides Hersteller, deren
+  Standard-Oberflaeche die Google-API nicht anzeigt. Die
+  Lueckenfueller-Funktion adressiert also einen substanziellen
+  Anteil aller Android-Nutzer und ist keine reine
+  Pixel-Spielerei.
+
+\item \textbf{Skalierbar ohne laufende Kosten.}
+  Weil das Modell vollstaendig auf dem Geraet laeuft, faellt
+  kein Server-Betrieb an. Eine Verteilung an 1.000 oder 10.000
+  Nutzer kostet exakt das gleiche wie an einen einzelnen --
+  naemlich nichts. Damit ist die Loesung untypisch fuer ein
+  AI-Produkt: kein Cloud-Compute, kein API-Call pro Vorhersage,
+  keine variable Infrastruktur-Komponente in der Kostenrechnung.
+
+\item \textbf{Niedrige Adoption-Huerde.}
+  Kein Account, kein Abo, keine Cloud-Anmeldung. Der Drei-Slide-
+  Onboarding-Flow ist in unter 90~Sekunden durchgespielt und
+  liefert das Wertversprechen bereits beim ersten Tap (statt
+  erst nach mehreren Sitzungen). Die typische Drop-out-Kurve in
+  Onboarding-Studien zeigt: jede zusaetzliche Sekunde vor dem
+  ersten Aha-Moment kostet messbar Adoption.
+\end{itemize}
+
+Diese vier Punkte zusammen erklaeren, warum es sich nicht um eine
+weitere App in einem ueberlaufenen Markt handelt, sondern um eine
+sehr klar positionierte Antwort auf ein konkretes Problem -- mit
+einer Kostenstruktur, die einem normalen App-Geschaeftsmodell
+deutlich ueberlegen ist.
+
 \subsection{Zielsetzung}
 
 Ziel ist eine Android-App, die
@@ -235,16 +355,16 @@ Hauptkapiteln.
 \toprule
 \textbf{Kennzahl} & \textbf{Wert} \\
 \midrule
-Bearbeitungszeit          & 7 Wochen, $\approx$\,120\,h Eigenleistung \\
-Code-Umfang gesamt        & $\approx$\;4.350 Zeilen (Kotlin + Python) \\
-Android-App               & 6 Kotlin-Module (Activity, Service, Logger, Predictor, Receiver, DataPoint) \\
+Bearbeitungszeit          & 7 Wochen, $\approx$\,135\,h Eigenleistung \\
+Code-Umfang gesamt        & $\approx$\;5.600 Zeilen (Kotlin + Python + XML) \\
+Android-App               & 18 Kotlin-Module (App-Lifecycle, Service, Daten, UI-Tabs + Onboarding + Settings, Predictor, Confidence, Accuracy, Algorithm-View + drei Custom-Visualisierungen inkl. Modell-Architektur) \\
 Python-Pipeline           & 25 Module in zwei Schichten (\code{methods/}, \code{evaluation/}) \\
 Test-Geräte               & 4 (Xiaomi 2107113SG + Pixel 7 / 8 / 9 Pro) \\
 Mitwirkende               & 3 Familienmitglieder für APK-Rollout und Pixel-Datensammlung \\
 Feld-Sammlung             & 45 Tage Dauerbetrieb, 180 Service-Sessions \\
 Datensatz                 & 66.001 Messpunkte $\times$ 10 Features \\
 TFLite-Modell             & 14.4\,KB INT8-quantisiert, $\sim$\,5\,$\mu$s pro Inferenz \\
-App-Vergleich in der UI   & 3 Werte (TinyML on-device, Google-API, Linear-Baseline) \\
+App-UI                    & Vier-Slide-Onboarding mit Use-Cases + Modell-Groessen-Vergleich, drei Tabs (Live / Algorithmus / Genauigkeit), Settings-Screen mit Onboarding-Replay \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -332,22 +452,44 @@ Abbildung~\ref{fig:architektur_gesamt} auf der folgenden Seite.
 
 \subsection{Android-App im Detail}
 
-Die App ist in sechs Kotlin-Dateien gegliedert:
+Die App ist in achtzehn Kotlin-Dateien gegliedert, sauber getrennt
+in App-Lifecycle, Datenerhebungs-Service, Modell-Inferenz und
+UI-Bausteine:
 
 \begin{table}[H]
 \centering
 \caption{Module der Android-App}
 \label{tab:android_module}
-\begin{tabular}{lp{9cm}}
+\small
+\begin{tabular}{lp{8.5cm}}
 \toprule
 \textbf{Datei} & \textbf{Aufgabe} \\
 \midrule
-\datei{MainActivity.kt}        & UI mit Start/Stopp/Export-Buttons, zeigt aktuelle Vorhersage \\
-\datei{DataCollectorService.kt}& Foreground-Service, sammelt alle 30 Sekunden Daten \\
-\datei{BatteryDataPoint.kt}    & Datenklasse für einen Messpunkt mit CSV-Serialisierung \\
-\datei{BatteryDataLogger.kt}   & Schreibt CSV in \code{filesDir}, behandelt Schema-Drift \\
-\datei{BatteryPredictor.kt}    & TFLite-Interpreter mit StandardScaler-Normalisierung \\
-\datei{BootReceiver.kt}        & Startet den Service nach Geräte-Neustart \\
+\multicolumn{2}{l}{\textit{Datenerhebung und Modell}} \\
+\datei{DataCollectorService.kt} & Foreground-Service, sammelt alle 30 Sekunden Daten und sendet Broadcasts an die UI \\
+\datei{BatteryDataPoint.kt}     & Datenklasse fuer einen Messpunkt mit CSV-Serialisierung \\
+\datei{BatteryDataLogger.kt}    & Schreibt CSV in \code{filesDir}, behandelt Schema-Drift und Legacy-Migration \\
+\datei{BatteryPredictor.kt}     & TFLite-Interpreter mit StandardScaler-Normalisierung \\
+\datei{BootReceiver.kt}         & Startet den Service nach Geraete-Neustart \\
+\midrule
+\multicolumn{2}{l}{\textit{App-Lifecycle und Onboarding}} \\
+\datei{MainActivity.kt}         & Tab-Container mit Bottom-Navigation, Settings-Icon, Onboarding-Weiche \\
+\datei{OnboardingActivity.kt}   & Drei-Slide-Erstkontakt mit Versprechen und Modell-Groessen-Vergleich (14,4\,KB) \\
+\datei{OnboardingPagerAdapter.kt} & ViewPager2-Adapter fuer die Onboarding-Slides \\
+\midrule
+\multicolumn{2}{l}{\textit{UI-Tabs (Hauptbuehne)}} \\
+\datei{LiveFragment.kt}         & Hauptvorhersage gross, Confidence-Pille, Live-Anzeige der 10 Sensor-Werte als animierte Karten \\
+\datei{AlgorithmFragment.kt}    & Erklaert in vier Schritten + USP-Block, wie aus Sensoren die Vorhersage wird; bindet die zwei Visualisierungs-Views ein \\
+\datei{DataflowView.kt}         & Custom Canvas-View: animierter Datenfluss von 10 pulsierenden Sensoren durch ein leuchtendes TinyML-Modell zur Vorhersage \\
+\datei{BatteryHistoryChart.kt}  & Custom Canvas-View: Sparkline der letzten 3 Stunden Akkuverlauf + gestrichelte Vorhersage-Extension fuer die naechste Stunde \\
+\datei{ConvLayerView.kt}        & Custom Canvas-View: visualisiert die Conv1D-Architektur selbst -- Input-Matrix, 16 Feature-Maps, Pooling, Dense-Output mit pulsierender Forward-Pass-Animation \\
+\datei{AccuracyFragment.kt}     & Genauigkeits-Tab mit 3-Wege-Score (TinyML / Google / Linear) \\
+\datei{AccuracyComputer.kt}     & Liest die CSV-Daten und berechnet den MAE der drei Methoden im letzten Discharge-Lauf \\
+\midrule
+\multicolumn{2}{l}{\textit{Infrastruktur-UI}} \\
+\datei{SettingsActivity.kt}     & Service-Status, Permissions, CSV-Export, Modell-Info -- bewusst hinter dem Zahnrad-Icon \\
+\datei{ConfidenceBadge.kt}      & Wiederverwendbare Pille mit Punkt und Label (gruen / gelb / rot) \\
+\datei{ConfidenceLevel.kt}      & Enum + Heuristik (Buffer-Groesse + Akkustand) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -503,6 +645,50 @@ Upload, keinen Server und keine Telemetrie.
 \end{tabular}
 \end{table}
 
+\paragraph{Was der Nutzer aktiv freischalten muss.}
+Drei dieser Permissions kann der Nutzer Android nicht einfach
+durchwinken -- sie brauchen ein explizites Antippen, weil sie weit
+mehr koennen als die App tatsaechlich braucht. Genau das ist auch
+ein wichtiger Datenschutz-Mechanismus von Android. Die App fuehrt
+den Nutzer per Button-Klick direkt in die jeweils richtige
+Systemeinstellung:
+
+\begin{table}[H]
+\centering
+\caption{Berechtigungen mit Nutzer-Aktion}
+\label{tab:user_permissions}
+\small
+\begin{tabular}{p{3.8cm}p{4.0cm}p{6.5cm}}
+\toprule
+\textbf{Berechtigung} & \textbf{Wie wird sie erteilt?} & \textbf{Warum braucht die App sie?} \\
+\midrule
+\textbf{Benachrichtigungen} & Standard-Dialog beim ersten Start (ab Android~13) &
+  Foreground-Service braucht Notification, ueber die er sichtbar
+  ist; ohne POST\_NOTIFICATIONS startet der Service gar nicht. \\
+\textbf{Nutzungsdatenzugriff} & Manuell in den Systemeinstellungen via Button \glqq{}Nutzungsdaten\-zugriff aktivieren\grqq{} &
+  Damit die App weiss, welche App-Kategorie gerade aktiv ist
+  (Social, Video, Spiel, ...) -- eines der zehn Features.
+  Ohne Aktivierung faellt das Feature einfach auf \glqq{}Leerlauf\grqq{}
+  zurueck und die App laeuft trotzdem. \\
+\textbf{Akku-Optimierung deaktivieren} & Standard-Dialog via Button \glqq{}Akku-Optimierung deaktivieren\grqq{} &
+  Damit der Service auch nach Stunden Inaktivitaet nicht von Doze
+  oder herstellerseitigen Aggressive-Killer-Regeln (vor allem MIUI)
+  unterbrochen wird. Auf Pixel-Geraeten weniger kritisch. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Wo der Nutzer das findet.}
+Alle drei Buttons sind im \emph{Settings}-Screen (Zahnrad-Icon
+oben rechts) gebuendelt -- in der Sektion \glqq{}Berechtigungen\grqq{}
+mit den Beschriftungen \glqq{}Nutzungsdatenzugriff aktivieren\grqq{} und
+\glqq{}Akku-Optimierung deaktivieren\grqq{}. Ein Tap genuegt, dann
+landet der Nutzer direkt auf der passenden System-Einstellung
+(\code{ACTION\_USAGE\_ACCESS\_SETTINGS} bzw.\
+\code{ACTION\_REQUEST\_IGNORE\_BATTERY\_OPTIMIZATIONS}). Der Status
+\glqq{}erteilt\grqq{} bzw.\ \glqq{}fehlt\grqq{} wird im Settings-Screen
+direkt darueber angezeigt.
+
 \subsubsection*{Beim Verteilen in der Familie}
 
 Für die drei Pixel-Geräte habe ich die App-APK an drei
@@ -544,12 +730,79 @@ tatsächlich noch läuft, ohne dass er die Notification öffnen muss.
     Phone.}
     \label{fig:app_prediction}
 \end{subfigure}
-\caption{Main Activity der Battery Data Collector App auf dem
-Xiaomi 2107113SG (Redmi Note 10 Pro). Links: erste Sekunden nach
-Service-Start. Rechts: dasselbe Gerät eine Minute später mit fertiger
+\caption{Frueher Stand der App auf dem Xiaomi 2107113SG: eine
+einzige Activity, zwei Zustaende (Aufwaermphase / aktive Vorhersage).
+Diese Single-Screen-Version diente waehrend der ersten Wochen der
+Datensammlung. Links: erste Sekunden nach Service-Start. Rechts:
+dasselbe Geraet eine Minute spaeter mit fertiger
 On-Device-Vorhersage.}
 \label{fig:app_screenshots}
 \end{figure}
+
+\paragraph{Finale UI nach UI-Refactor.}
+Die in Abbildung~\ref{fig:app_screenshots} gezeigte Single-Screen-
+Variante hat die Datensammlung getragen, war fuer eine
+Praesentations-taugliche App aber zu rau. Im Zuge des Portfolio-
+Abschlusses wurde die UI vollstaendig ueberarbeitet, mit klarem
+Fokus auf das eine USP-Feature (eigene Vorhersage transparent
+sichtbar machen):
+
+\begin{itemize}
+\item \emph{Drei-Slide-Onboarding} beim ersten Start. Erklaert in
+  einfachen Worten, was die App tut, und zeigt im dritten Slide
+  einen Groessen-Vergleich \glqq{}Unser Modell: 14,4\,KB --
+  WhatsApp-Sprachmemo: $\sim$\,80\,KB -- typisches Sprachmodell:
+  $\sim$\,5\,GB\grqq{} als Wow-Element.
+\item \emph{Tab \glqq{}Live\grqq{}.} Die Hauptbuehne der App.
+  Vorhersage prominent oben, direkt darunter eine
+  \emph{Confidence-Pille} (gruen / gelb / rot) und ein Live-Block
+  mit allen zehn Sensoren als animierte Karten -- der Nutzer
+  \glqq{}sieht dem Modell beim Denken zu\grqq{}.
+\item \emph{Tab \glqq{}Algorithmus\grqq{}.} Eigener Tab fuer die
+  Erklaerung des USP-Features. Drei aufeinander aufbauende
+  Visualisierungen:
+  \begin{itemize}
+  \item \emph{Datenfluss} -- zehn pulsierende Sensoren links,
+    leuchtende TinyML-Box in der Mitte, fliessende Partikel
+    hinueber zur Vorhersage rechts (high-level Ueberblick).
+  \item \emph{Modell-Architektur} -- direkt darunter die
+    eigentlichen Conv1D-Schichten als Detail-Ansicht: Input-Matrix
+    10\,$\times$\,10, 16~Feature-Maps, 16 gemittelte Pool-Werte,
+    ein Dense-Output. Eine sequentielle Forward-Pass-Animation
+    laesst eine \glqq{}Welle\grqq{} von oben nach unten durch die
+    Schichten laufen, damit nachvollziehbar wird, wie das Modell
+    intern rechnet.
+  \item \emph{Live-Sparkline} der letzten drei Stunden Akkuverlauf
+    mit gestrichelter Vorhersage-Extension fuer die naechste
+    Stunde (praktische Anwendung des Modells in Echtzeit).
+  \end{itemize}
+  Danach die textuellen vier nummerierten Schritte
+  (Sensoren $\to$ Sliding-Window $\to$ TinyML $\to$ Vorhersage)
+  und ein USP-Block am Ende (komplett offline, 14,4\,KB, jedes
+  Android). Macht den Algorithmus selbst zu einem sichtbaren,
+  animierten App-Element statt nur Black-Box-Output.
+\item \emph{Tab \glqq{}Genauigkeit\grqq{}.} Zeigt einen
+  3-Wege-Score \glqq{}Wer war heute genauer?\grqq{}\ mit Medaillen
+  (eigenes Modell vs. Google-API vs. Linear-Baseline), berechnet
+  ueber den letzten beobachteten Discharge-Lauf.
+\item \emph{Settings hinter dem Zahnrad.} Alle Infrastruktur-
+  Bedienelemente (Service-Status mit Laufzeit, Permissions-Check,
+  Start/Stopp, CSV-Export, Modell-Info-Karte) sind bewusst aus
+  der Hauptbuehne genommen, damit der Nutzer beim Oeffnen der
+  App genau \emph{ein} Feature sieht und nicht ein Feature-Buffet.
+\item \emph{Erweiterte Notification.} Statt nur \glqq{}Akku noch
+  X\,h Y\,min\grqq{} steht in der Sperrbildschirm-Anzeige jetzt
+  zusaetzlich die Confidence-Pille -- die Vorhersage hat eine
+  Verlaesslichkeits-Aussage immer mit dabei.
+\end{itemize}
+
+Die Refactor-Entscheidung folgt explizit den etablierten Mobile-
+Onboarding- und Explainable-AI-Best-Practices: drei Slides statt
+fuenf (App-Onboarding-Studien zeigen einen deutlichen Abfall der
+Completion-Rate ab dem fuenften Schritt), Confidence als visueller
+Indikator statt nackter Zahl, das eigentliche Feature direkt auf
+der Hauptbuehne und Infrastruktur-Knoepfe in einem separaten
+Settings-Screen.
 
 \newpage
 
@@ -850,12 +1103,13 @@ laufen).
 \toprule
 \textbf{Bereich} & \textbf{Zeilen (ohne Leerzeilen)} \\
 \midrule
-Android-App (6 Kotlin-Dateien)                       & $\approx$\;850 \\
+Android-App Kotlin (14 Dateien)                      & $\approx$\;1.450 \\
+Android-App Ressourcen (XML-Layouts + Drawables)     & $\approx$\;650 \\
 Python-Pipeline (\code{methods/}, 13 Module)         & $\approx$\;1.150 \\
 Python-Auswertung (\code{evaluation/}, 12 Module)    & $\approx$\;2.050 \\
 Konfiguration und Orchestrator                       & $\approx$\;300 \\
 \midrule
-\textbf{Summe}                                       & \textbf{$\approx$\;4.350} \\
+\textbf{Summe}                                       & \textbf{$\approx$\;5.600} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -978,10 +1232,14 @@ App-Kontext drumherum, Folie 1 und 8 sind Rahmen.
 \subsubsection*{Woche 1 (KW 13: 23.--29.\,März)}
 
 \textbf{Setup und erste Datensammlung.}
-Repo angelegt, Android-Projekt aufgesetzt, erste Version des
-\code{DataCollectorService} geschrieben. Schon am 25.\,März lief
-die erste Messung auf dem Xiaomi durch. Hauptproblem in dieser
-Woche: die \code{PACKAGE\_USAGE\_STATS}-Permission ist nicht via
+Direkt nach der Auftakt-Sitzung der Vertiefung das Repo angelegt
+und das Android-Projekt aufgesetzt. Erste Version des
+\code{DataCollectorService} noch waehrend der Vorlesungs-Stunde
+zu Foreground-Services live mit Claude geprototypt -- so konnte
+ich die Service-Lifecycle-Theorie aus der Folie direkt am
+laufenden Code nachvollziehen. Schon am 25.\,März lief die erste
+Messung auf dem Xiaomi durch. Hauptproblem in dieser Woche: die
+\code{PACKAGE\_USAGE\_STATS}-Permission ist nicht via
 Standard-Dialog vergebbar -- der Nutzer muss in den Einstellungen
 manuell ankreuzen. Ich habe deshalb einen Button in der App
 eingebaut, der direkt zum \code{ACTION\_USAGE\_ACCESS\_SETTINGS}
@@ -989,7 +1247,8 @@ springt.
 
 \subsubsection*{Woche 2 (KW 14: 30.\,März -- 5.\,April)}
 
-\textbf{Service-Robustheit.}
+\textbf{Service-Robustheit -- und parallel Statistik-Grundlagen
+aufgefrischt.}
 Datensammlung bricht beim Wegwischen aus der App-Übersicht ab.
 Drei Tage damit verbracht herauszufinden, wie man auf
 Xiaomi-MIUI einen Service vor dem Aggressive-Killing schützt.
@@ -998,6 +1257,14 @@ Lösung: \code{onTaskRemoved} $\to$
 1 Sekunde später wieder. Plus \code{BootReceiver} damit nach
 Neustart automatisch weitergesammelt wird.
 
+Parallel zu den langen Debugging-Abenden habe ich einige Stunden
+investiert, um Statistik-Grundlagen aufzufrischen, die ich fuer
+die spaetere Modell-Auswertung brauche: Cross-Validation,
+Train/Test/Validation-Splits, Data-Leakage-Mechanismen und
+Confounder-Erkennung. Zum damaligen Zeitpunkt fuehlte sich das wie
+ein Umweg an. Eine Woche spaeter zeigte sich, dass genau diese
+Auffrischung den entscheidenden Aha-Moment ermoeglicht hat.
+
 \subsubsection*{Woche 3 (KW 15: 6.--12.\,April)}
 
 \textbf{Erstes Modell, erste Auswertung -- erstes Erschrecken.}
@@ -1005,15 +1272,21 @@ Genug Daten zusammen ($\sim$11.000 Messpunkte), erstes Training
 durchgelaufen, MAE 0.53\,h. Habe das stolz aufgeschrieben. Dann
 stutzig geworden: warum ist das so viel besser als die
 Google-API? Beim Nachprüfen festgestellt, dass das ein klassisches
-Data-Leakage-Artefakt vom Random-Split war. Pipeline auf
-Segment-Level-Split umgestellt $\to$ MAE wird zu 9.96\,h. Das war
-der methodische Wendepunkt der Arbeit.
-Am 12.\,April App-APK an ein Familienmitglied mit Pixel~7~Pro
-weitergegeben.
+Data-Leakage-Artefakt vom Random-Split war -- exakt das Muster,
+das ich eine Woche zuvor in den Statistik-Grundlagen wiederholt
+hatte. Pipeline auf Segment-Level-Split umgestellt $\to$ MAE wird
+zu 9.96\,h. Das war der methodische Wendepunkt der Arbeit.
+
+Diese Phase habe ich besonders eng mit Claude im Desktop-App-Modus
+gearbeitet: jede Pipeline-Aenderung wurde gegen die alten
+Ergebnisse gegenchecked, mit gegenseitigem Auditieren der
+Trainings-Logs. Am 12.\,April App-APK an ein Familienmitglied mit
+Pixel~7~Pro weitergegeben.
 
 \subsubsection*{Woche 4 (KW 16: 13.--19.\,April)}
 
-\textbf{Multi-Device wird real.}
+\textbf{Multi-Device wird real -- und parallel Computer-Vision-
+und Embedded-ML-Stoff durchgegangen.}
 APK an zwei weitere Familienmitglieder verteilt (Pixel~8~Pro,
 Pixel~9~Pro~XL). Wichtig vor allem die Aufklärung darüber, was
 genau gesammelt wird -- ich habe einen Mini-Datenschutz-Hinweis
@@ -1022,6 +1295,16 @@ zugestimmt. Parallel das CSV-Schema erweitert
 (\code{system\_personalized}, \code{linear\_baseline\_h}) und den
 Logger so gebaut, dass er bei Schema-Wechsel die alte Datei
 sicher parkt.
+
+Diese Woche wollte ich frueh genug verstehen, welche Stellschrauben
+es bei der spaeteren Modell-Konvertierung gibt. Habe deshalb
+einige Abende mit Computer-Vision- und Embedded-ML-Material
+gegrindet, vor allem zu INT8-Quantisierung, Post-Training-
+Quantization und der Frage, was eigentlich auf Mobile passiert,
+wenn ein Float32-Modell auf INT8 gequetscht wird. Hat spaeter den
+TFLite-Konvertierungs-Schritt deutlich beschleunigt -- ich wusste
+schon, was per-channel- vs.~per-tensor-Quantization bedeutet,
+bevor mir die TFLite-Doku das erzaehlen musste.
 
 \subsubsection*{Woche 5 (KW 17: 20.--26.\,April)}
 
@@ -1032,6 +1315,13 @@ Sanity-Modelle hinzugefügt, weil ein
 \glqq{}TinyML schlägt nichts\grqq{} wenig aussagekräftig wäre,
 ohne zu zeigen womit es überhaupt verglichen wird. Dazu noch die
 analytischen Baselines (Linear, Exponential) implementiert.
+
+Diese Woche viel mit Claude im Sandbox-Container gearbeitet:
+zwei der drei Baseline-Implementierungen sind kleine, gut
+isolierte Skripte gewesen -- ideal um sie im Auto-Approve-Modus
+laufen zu lassen, waehrend ich parallel an der eigentlichen
+Auswertungs-Logik weitergearbeitet habe. Der Effekt ist spuerbar
+gewesen: zwei parallele Threads statt einer linearen Sequenz.
 
 \subsubsection*{Woche 6 (KW 18: 27.\,April -- 3.\,Mai)}
 
@@ -1046,15 +1336,172 @@ bestätigt, die Datensammlung über mehrere Geräte hinweg auszudehnen.
 
 \subsubsection*{Woche 7 (KW 19/20: 4.--11.\,Mai)}
 
-\textbf{Konsolidierung und Dokumentation.}
+\textbf{Konsolidierung, UI-Refactor und Dokumentation.}
 Pixel-Datensammlung beendet (10.\,Mai). Die Per-Device-Auswertung
 zeigte deutlich unterschiedliche Modell-Performance je nach Gerät;
 beim Hineinschauen in die Datenverteilung wurde der Grund sichtbar:
 auf dem Xiaomi war der Akku 88\,\% der Zeit über 75\,\%, also
-kaum Entlade-Dynamik zum Lernen vorhanden. Diese Woche viel Zeit
-in die Aufbereitung beider Abgabe-Dokumente (Portfolio und
-separates Paper) gesteckt, in Pipeline-Konsistenz-Checks und in
-das Schreiben dieses Erfahrungsberichts.
+kaum Entlade-Dynamik zum Lernen vorhanden.
+
+\textbf{UI-Refactor (letzte Tage vor Abgabe).} Der bisherige
+Single-Screen-Stand der App war fuer eine reine
+Datensammlungs-Phase ausreichend, fuer die Verteidigung aber zu
+schwach. In den letzten Tagen vor Abgabe deshalb noch ein
+ueberschaubarer aber inhaltlich entscheidender Refactor durch:
+
+\begin{itemize}
+\item Drei-Slide-Onboarding inklusive Modell-Groessen-Vergleich
+  als Wow-Moment beim ersten Start.
+\item Trennung der App in zwei klar getrennte Tabs (\emph{Live}
+  mit Vorhersage + Confidence-Pille + den 10 Live-Sensoren,
+  \emph{Genauigkeit} mit dem 3-Wege-Score zwischen eigenem Modell,
+  Google und Linear-Baseline).
+\item Alle Infrastruktur-Buttons in eine separate
+  \emph{Settings}-Activity hinter ein Zahnrad-Icon ausgelagert,
+  damit die Hauptbuehne der App das eigene Hauptfeature traegt
+  und kein Knopf-Buffet wird.
+\item Confidence-Anzeige sowohl im Live-Tab als auch in der
+  Notification, damit der Vorhersage immer eine Verlaesslichkeits-
+  Information beiliegt.
+\end{itemize}
+
+Dieser Refactor lief vollstaendig im Sandbox-Container mit
+Claude im Auto-Approve-Modus: viele wiederholte XML-Layout-Edits,
+neue Fragments, neue Drawables. Genau die Art von Arbeit, die
+mit manueller Bestaetigung pro Datei haendisch erschoepfend
+gewesen waere, im Container aber durchlaufen konnte, waehrend ich
+parallel am Portfolio weitergeschrieben habe.
+
+Den Rest der Woche viel Zeit in die Aufbereitung beider Abgabe-
+Dokumente (Portfolio und separates Paper) gesteckt, in Pipeline-
+Konsistenz-Checks und in das Schreiben dieses Erfahrungsberichts.
+
+\subsection{Schluessel-Entscheidungen, Fehler und Trade-offs}
+\label{sec:entscheidungen}
+
+Ein Teil der Glaubwuerdigkeit dieser Arbeit liegt nicht in dem,
+was am Ende funktioniert, sondern in den Entscheidungen, die
+unterwegs gegen das Naheliegende getroffen wurden. Dieser Abschnitt
+macht die wichtigsten davon explizit -- inklusive der Fehler, die
+mich dorthin gefuehrt haben.
+
+\paragraph{Die Story in vier Wendepunkten.}
+Vier Momente haben den Verlauf des Projekts inhaltlich gepraegt.
+Sie sind in Abbildung~\ref{fig:storyline} chronologisch eingezeichnet.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    every node/.style={font=\footnotesize},
+    box/.style={
+        rectangle, draw, rounded corners=4pt,
+        minimum height=1.0cm, text width=2.6cm, align=center,
+        font=\footnotesize\bfseries,
+    },
+    okbox/.style={box, fill=thwsorange!15},
+    badbox/.style={box, fill=red!10},
+    arrow/.style={-{Stealth[length=3mm]}, thick, thwsgrau},
+    lbl/.style={font=\scriptsize\itshape, text=gray!70!black},
+]
+
+% Zeitachse
+\draw[arrow] (-0.5,0) -- (15.5,0);
+\foreach \x/\w in {0.5/W1, 2.5/W2, 4.5/W3, 6.5/W4, 8.5/W5, 10.5/W6, 12.5/W7, 14.5/Abgabe}
+    \node[below, lbl] at (\x,-0.15) {\w};
+
+% Wendepunkte
+\node[okbox, anchor=south] (p1) at (2.5, 0.4)
+    {Stats-Grund\-lagen aufgefrischt};
+\node[lbl, below=0.0cm of p1] {wirkt erst spaeter};
+
+\node[badbox, anchor=south] (p2) at (5.5, 1.8)
+    {Leakage-Schock: MAE 0,53\,h ist Fake};
+\node[lbl, below=0.0cm of p2] {Random-Split $\to$ Segment-Split};
+
+\node[okbox, anchor=south] (p3) at (8.5, 1.8)
+    {Multi-Device statt Single-Device};
+\node[lbl, below=0.0cm of p3] {Xiaomi-only zu wenig Dynamik};
+
+\node[okbox, anchor=south] (p4) at (13, 0.4)
+    {UI-Refactor in 2-Tabs + Onboarding};
+\node[lbl, below=0.0cm of p4] {Single-Screen war zu rau};
+
+% Verbindungslinien (Story)
+\draw[arrow, dashed] (p1.east) to[bend left=10] (p2.west);
+\draw[arrow] (p2.east) to[bend right=10] (p3.west);
+\draw[arrow] (p3.east) to[bend left=10] (p4.west);
+
+\end{tikzpicture}
+\caption{Die vier Wendepunkte der Projekt-Story. Orange: bewusste
+Entscheidung, Rot: vermiedener Irrtum. Gestrichelte Linien
+deuten an, dass sich der Stats-Aufwand in Woche 2 erst eine Woche
+spaeter beim Leakage-Schock auszahlt.}
+\label{fig:storyline}
+\end{figure}
+
+\paragraph{Die wichtigsten Entscheidungen im Detail.}
+Die folgende Tabelle macht acht zentrale Stell-Entscheidungen
+sichtbar, inklusive der jeweils verworfenen Alternative.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Schluessel-Entscheidungen und verworfene Alternativen}
+\label{tab:entscheidungen}
+\begin{tabular}{p{2.2cm}p{4.2cm}p{4.2cm}p{4.0cm}}
+\toprule
+\textbf{Wann} & \textbf{Was gewaehlt} & \textbf{Alternative verworfen} & \textbf{Warum so} \\
+\midrule
+Konzeption & Eigene Daten + on-device Modell &
+  Vorhandener Datensatz, Cloud-Modell &
+  Liefert echten Real-World-Bezug und volle MLOps-Schleife \\
+W1 & 10 Features pro Messpunkt &
+  3--4 \glqq{}sichere\grqq{} oder 20+ &
+  Kompromiss aus Vollstaendigkeit und Speicher-Overhead \\
+W2 & Statistik-Grundlagen parallel auffrischen &
+  Erst loslegen, Theorie spaeter &
+  Hat den Aha-Moment in W3 erst moeglich gemacht \\
+W3 & Segment-Level-Split &
+  Random-Split (initial) &
+  Random war Data-Leakage; MAE wurde von Fake-0,53\,h zu echtem 9,96\,h \\
+W3--4 & Multi-Device-Datensammlung &
+  Nur Xiaomi (eigenes Geraet) &
+  Xiaomi-Daten zu 88\,\% ueber 75\,\% -- zu wenig Entlade-Dynamik \\
+W5 & INT8-Quantisierung (14,4\,KB) &
+  Float32-Modell ($\sim$\,50\,KB) &
+  TFLite-INT8 reicht in der Genauigkeit, ist deutlich kleiner \\
+W7 & Ein Hauptfeature stolz, 2 Tabs + Settings &
+  Single-Screen mit allen Funktionen &
+  Feature-Buffet verwirrt; klare Story besser fuer Verteidigung \\
+W7 & Feature-Importance-Anzeige verworfen &
+  Bar-Chart der Sensor-Wichtigkeit &
+  battery\_level dominiert zu stark -- waere entlarvend statt sexy \\
+Durchgaengig & KI-Modus zweigeteilt &
+  Nur Desktop-App-Modus &
+  Container kapselt Risiko fuer massive Auto-Refactors \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Was ich rueckblickend anders gemacht haette.}
+Drei ehrliche Lerneffekte aus dem Verlauf -- bewusst keine
+nachtraegliche Glaettung der Geschichte:
+
+\begin{itemize}
+\item \emph{Frueher Multi-Device.} Die Xiaomi-only-Phase in den
+  ersten drei Wochen hat methodisch wenig gebracht. Haette ich
+  von Anfang an parallele Datensammlung auf mindestens zwei
+  Geraeten organisiert, waere der Verteilungs-Aha-Moment
+  (Akku zu 88\,\% ueber 75\,\%) zwei Wochen frueher gekommen.
+\item \emph{UI-Investition nicht so spaet.} Der UI-Refactor in
+  Woche 7 war fuer die Verteidigung essenziell, lief aber unter
+  Zeitdruck. Eine \glqq{}30-Minuten-UI-Pflege\grqq{} pro Woche
+  haette das verteilt und entspannter gemacht.
+\item \emph{Statistik-Grundlagen frueher.} Die in W2
+  aufgefrischten Grundlagen (Cross-Validation, Leakage) waren
+  goldwert. Idealerweise haette ich sie nicht aus Reflex in
+  Woche 2 nachgeholt, sondern schon vor Projekt-Start dabeigehabt.
+\end{itemize}
 
 \subsection{Gesamt-Aufwand}
 
@@ -1068,14 +1515,14 @@ das Schreiben dieses Erfahrungsberichts.
 \textbf{Woche} & \textbf{Hauptaufwand} & \textbf{Stunden} \\
 \midrule
 1 & App-Grundgerüst + Permissions                  & $\sim$\;15 \\
-2 & Service-Robustheit auf MIUI                    & $\sim$\;18 \\
+2 & Service-Robustheit auf MIUI + Statistik-Auffrischung & $\sim$\;21 \\
 3 & Trainings-Pipeline + Leakage-Aha-Moment        & $\sim$\;20 \\
-4 & Schema-Migration + APK-Verteilung              & $\sim$\;10 \\
+4 & Schema-Migration + APK-Verteilung + Embedded-ML-Grund\-lagen & $\sim$\;13 \\
 5 & 6-Wege-Vergleich + analytische Baselines       & $\sim$\;18 \\
 6 & Auswertungs-Skripte + Daten-Diagnose           & $\sim$\;15 \\
-7 & Portfolio/Paper schreiben + Audits             & $\sim$\;25 \\
+7 & Portfolio/Paper schreiben + Audits + UI-Refactor & $\sim$\;33 \\
 \midrule
-\textbf{Summe} & & \textbf{$\approx$\,120\,h} \\
+\textbf{Summe} & & \textbf{$\approx$\,135\,h} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1125,6 +1572,33 @@ Dieser Abschnitt ist bewusst transparent gehalten.
   geräte-spezifisches Debugging (MIUI-Service-Stirbt-Problem).
 \end{itemize}
 
+\textbf{Setup und Sicherheits-Rahmen der KI-Nutzung.}
+Die KI lief in zwei klar getrennten Modi, je nach Risiko der
+Aufgabe:
+
+\begin{itemize}
+\item \emph{Desktop-App-Modus (mit manueller Bestaetigung).}
+  Verwendet fuer die meisten Aufgaben am Haupt-Code:
+  Refactoring, Schreibhilfe, Code-Review, Audit-Runden. Jede Datei-
+  und Shell-Aktion musste explizit bestaetigt werden -- der Mehr-
+  Aufwand ist die Versicherung gegen versehentliche Schaeden am
+  Hauptprojekt.
+\item \emph{Sandbox-Container mit Auto-Approve.} Verwendet fuer
+  riskantere oder experimentelle Aufgaben (z.\,B. Aufsetzen
+  unbekannter Pipelines, breite Code-Suchen auf fremden Repos).
+  Hier lief Claude in einem Docker-Container mit eingeschraenktem
+  Datei- und Netzwerk-Zugriff -- nur das jeweilige Projekt war
+  sichtbar, und nur eine kleine Domain-Whitelist (Anthropic API,
+  GitHub, PyPI, npm) erreichbar. So konnte die KI eigenstaendig
+  arbeiten, ohne dass ein potenzieller Fehler auf das Host-System
+  durchschlagen konnte.
+\end{itemize}
+
+Genutzt wurde \textbf{Claude Pro} (Subscription), nicht der
+API-Zugang. Der Subscription-Modus deckelt das Budget automatisch
+ueber Zeitfenster -- ein zusaetzlicher Schutz gegen unbeabsichtigte
+Endlos-Schleifen.
+
 \textbf{Bilanz.}
 Realistisch eingeschätzt: ohne KI-Unterstützung hätte ich das
 Projekt in dieser Tiefe nicht in sieben Wochen geschafft. Die KI
@@ -1135,30 +1609,122 @@ was gemacht wird, das Verstehen der Ergebnisse, das Verteidigen von
 Trade-offs, und vor allem die handfeste Geräte-Logistik und das
 Debugging vor Ort.
 
+\subsection{Was passiert im Inneren -- in einfachen Worten}
+\label{sec:einordnung}
+
+Damit das Projekt nicht als Black-Box wirkt, hier eine bewusst
+nicht-technische Beschreibung dessen, was die App tatsächlich tut.
+Wer Akkuanzeigen kennt, hat in 60~Sekunden den ganzen Mechanismus
+verstanden:
+
+\begin{enumerate}
+\item \textbf{Daten sammeln (Beobachten):} Alle 30~Sekunden schreibt
+  die App zehn Werte vom Handy auf -- zum Beispiel den aktuellen
+  Akkustand, die Bildschirm-Helligkeit, ob gerade YouTube läuft, die
+  Temperatur des Geräts und einige mehr. Das ist nichts anderes,
+  als wenn man stündlich Tagebuch über sein eigenes Verhalten
+  schreiben würde. Über mehrere Wochen entsteht so eine Tabelle
+  mit über 66.000~Zeilen.
+\item \textbf{Muster lernen (Training auf dem PC):} Diese Tabelle
+  wird auf den Laptop kopiert und einem kleinen Programm (dem
+  \glqq{}Modell\grqq{}) gezeigt. Das Programm lernt Zusammenhänge
+  wie: \emph{Wenn die Helligkeit hoch ist, YouTube läuft und die
+  Temperatur 38\,$^\circ$C beträgt, dann hält der Akku noch
+  ungefähr 2~Stunden.} Es lernt diese Zusammenhänge nicht aus
+  Büchern, sondern indem es die Tabelle viele Male durchrechnet
+  und seine Vorhersagen mit dem tatsächlichen Akku-Verlauf
+  abgleicht.
+\item \textbf{Im Alltag vorhersagen (Modell zurück im Handy):} Das
+  fertig gelernte Modell ist nur 14,4\,KB groß -- kleiner als ein
+  WhatsApp-Sprachmemo. Es wandert zurück in die App, läuft dort
+  ohne Internetverbindung und sagt im Hintergrund alle 30~Sekunden
+  eine neue Restlaufzeit voraus. Zum Vergleich zeigt die App
+  gleichzeitig Googles eigene Vorhersage und einen ganz simplen
+  Wert nach dem Motto \glqq{}so wie es bisher lief, läuft es weiter\grqq{}.
+\end{enumerate}
+
+\textbf{Warum genau diese Aufteilung?} Die drei Schritte sind
+absichtlich auf zwei Geräte aufgeteilt (Handy für Schritte~1 und~3,
+PC für Schritt~2). Das hat zwei Gründe:
+
+\begin{itemize}
+\item Auf dem Handy ist das Trainieren des Modells zu rechenintensiv
+  -- es würde den Akku stark belasten und Stunden dauern. Auf dem
+  PC ist es in wenigen Minuten erledigt.
+\item Das fertige Modell ist dafür so klein, dass es im Handy
+  problemlos im Hintergrund läuft, ohne dass der Nutzer etwas
+  davon merkt. Diese Asymmetrie -- \emph{trainieren ist teuer,
+  vorhersagen ist billig} -- ist typisch für ML-Systeme und der
+  Grund, warum es überhaupt sinnvoll ist, ein Modell auf einem
+  Gerät einzusetzen.
+\end{itemize}
+
+\textbf{Verortung im Kurs \glqq{}Mobile und Ubiquitäre Anwendungen\grqq{}.}
+Die Arbeit berührt drei Themen der Vorlesung direkt:
+
+\begin{itemize}
+\item \emph{Sensoren und Datenerhebung am mobilen Endgerät} --
+  die App liest zehn unterschiedliche Android-Signale aus und
+  zeigt, welche Permissions und APIs dafür nötig sind.
+\item \emph{Background-Services und Lebenszyklus} -- ein
+  Foreground-Service hält die Datensammlung am Laufen, auch wenn
+  die App vom Nutzer aus dem Speicher gewischt wird. Hier wird
+  das im Kurs behandelte Service-Konzept ganz konkret durchgespielt.
+\item \emph{Anwendungsbezogene Auswertung mobiler Daten} -- statt
+  die Daten zu sammeln und in der Cloud zu verarbeiten, bleibt
+  alles auf dem Gerät. Das ist eine bewusste Design-Entscheidung
+  zugunsten des Nutzers, nicht der Bequemlichkeit des Entwicklers.
+\end{itemize}
+
+Wer aus dem Portfolio nur eine Sache mitnehmen soll, dann diese:
+\emph{Das Projekt nimmt eine Standard-App-Funktion (Akkuanzeige),
+löst sie mit eigenen Daten und eigenem Modell, und legt dabei jeden
+Zwischenschritt offen.}
+
 \subsection{Abschluss-Reflexion}
 
 \textbf{Was funktioniert (Stand 11.\,Mai 2026):}
 
 \begin{itemize}
-\item Android-App läuft stabil im Hintergrund auf vier
-  verschiedenen Geräten über mehrere Wochen.
-\item TFLite-Modell ist 14.4\,KB groß, läuft auf der CPU des
-  Phones in $\sim$\,5\,$\mu$s pro Inferenz.
-\item Datensammlung umfasst 66.001 Messpunkte, sauber per
-  Share-Intent exportiert.
-\item Trainings- und Auswertungs-Pipeline reproduzierbar via einem
-  Befehl (\code{python run\_pipeline.py}).
+\item \emph{Bewaehrung im Realbetrieb.} Die App lief 45~Tage am
+  Stueck auf vier verschiedenen Geraeten unter realer Alltags-
+  Nutzung -- kein Crash, kein Daten-Verlust. Der
+  Foreground-Service hat ueber Boot-Reboots und das versehentliche
+  Wegwischen aus dem Recent-Apps-Menue hinweg selbstaendig
+  wieder gestartet. Diese 180~ungeplant getesteten Restart-Pfade
+  sind das eigentliche Funktions-Argument fuer eine App, die im
+  Hintergrund laufen soll.
+\item \emph{Drei unabhaengige Tester.} Drei Familienmitglieder
+  haben die App mehrere Wochen lang ohne Eingreifen genutzt -- die
+  App musste also bedienbar genug sein, um ohne Anleitung im
+  Alltag zu funktionieren. Die UI mit Onboarding und 2-Tab-Layout
+  (Live-Vorhersage + Genauigkeits-Tab) hat dieses Feldtest
+  bestanden.
+\item \emph{Modell-Performance.} TFLite-Modell mit 14,4\,KB,
+  Inferenz in $\sim$\,5\,$\mu$s pro Vorhersage -- auch auf den
+  aelteren Test-Geraeten ohne spuerbaren Energie-Overhead.
+\item \emph{Datensammlung.} 66.001~Messpunkte, sauber per Share-
+  Intent exportiert, mit dokumentierter CSV-Schnittstelle zur
+  Auswertungs-Pipeline.
+\item \emph{Reproduzierbarkeit.} Trainings- und Auswertungs-
+  Pipeline laeuft mit einem einzigen Befehl
+  (\code{python run\_pipeline.py}) -- der gesamte Weg von Rohdaten
+  zum fertigen TFLite-Modell ist transparent und nachvollziehbar.
 \end{itemize}
 
 \textbf{Was noch nicht ideal ist:}
 
 \begin{itemize}
-\item Die App-UI ist zweckmäßig, aber nicht hübsch. Material-3 ist
-  nur das Default-Theme.
 \item Die Scaler-Werte werden per Skript aus dem Python-Modell ins
-  Kotlin kopiert -- ein automatischer Build-Step wäre eleganter.
-\item Es gibt kein In-App-Onboarding für die UsageStats-Permission,
-  nur einen Button-Hinweis.
+  Kotlin kopiert -- ein automatischer Build-Step waere eleganter.
+\item Die Confidence-Anzeige in der App basiert aktuell auf einer
+  einfachen Heuristik (Buffer-Groesse + Akkustand). Eine echte
+  Quantil-Ausgabe direkt aus dem Modell waere wissenschaftlich
+  sauberer.
+\item Der Genauigkeits-Vergleich der drei Methoden (eigenes Modell
+  vs.~Google vs.~Linear) im Genauigkeits-Tab basiert auf dem
+  letzten Discharge-Lauf -- ein laengerer Verlauf ueber mehrere
+  Tage waere aussagekraeftiger.
 \end{itemize}
 
 \textbf{Was ich aus dem Projekt mitnehme:}
@@ -1178,6 +1744,74 @@ Debugging vor Ort.
   Das ehrlich aufzuschreiben ist anstrengender, aber wissenschaftlich
   korrekter.
 \end{itemize}
+
+\subsection{Grenzen der Arbeit und Ausblick}
+\label{sec:limitations}
+
+\textbf{Wo die Arbeit ehrlicherweise an Grenzen stößt:}
+
+\begin{itemize}
+\item \emph{Wenige Test-Geräte.} Vier Geräte (ein Xiaomi, drei
+  Pixel) reichen, um zu zeigen, dass die Pipeline funktioniert.
+  Sie reichen aber nicht, um eine allgemeine Aussage wie
+  \glqq{}auf Xiaomi-Geräten arbeitet das Modell besser als auf
+  Pixel\grqq{} belastbar zu treffen -- dafür bräuchte es deutlich
+  mehr Geräte pro Hersteller.
+\item \emph{Beobachtungszeitraum.} 45~Tage zeigen das
+  Akku-Verhalten im Frühjahr 2026. Saisonale Effekte (Kälte im
+  Winter senkt die Akku-Kapazität messbar) sind nicht abgedeckt.
+  Eine Erhebung über ein ganzes Jahr würde das Modell robuster
+  machen.
+\item \emph{Nutzungsmuster der Test-Personen.} Drei der vier
+  Geräte gehören Familienmitgliedern mit ähnlichem Nutzungsverhalten
+  (Erwachsene, durchschnittliche Smartphone-Nutzung). Ein
+  Vergleich mit z.\,B.\ Jugendlichen (Gaming, dauerhaftes Streamen)
+  oder Senioren (sehr wenig Nutzung) wäre aufschlussreich, war
+  im Zeitrahmen aber nicht zu leisten.
+\item \emph{Googles Vergleichswert ist eine Black-Box.} Die App
+  vergleicht ihre eigene Vorhersage mit Googles API, aber wie
+  Google intern rechnet, ist nicht öffentlich. Ein \emph{fairer}
+  Vergleich ist daher nur eingeschränkt möglich; man vergleicht
+  Ergebnis gegen Ergebnis, nicht Methode gegen Methode.
+\end{itemize}
+
+\textbf{Logische nächste Schritte:}
+
+\begin{itemize}
+\item \emph{Algorithmus-Ansicht in der App.} Aktuell zeigt die App
+  nur die drei Vorhersage-Zahlen. Eine zusätzliche Ansicht würde
+  live darstellen, welche der zehn Sensoren gerade den größten
+  Einfluss auf die Vorhersage haben (\glqq{}Helligkeit zieht
+  aktuell am stärksten\grqq{}). Das macht den Algorithmus für den
+  Nutzer nachvollziehbar -- man sieht dem Modell beim Denken zu --
+  und ist genau die Transparenz, die einer App mit
+  ML-Komponente gut steht.
+\item \emph{Automatisches Nachtrainieren.} Aktuell wird das Modell
+  manuell auf dem PC neu trainiert. Sinnvoll wäre ein Mechanismus,
+  der das z.\,B.\ einmal pro Woche im Hintergrund anstößt, sobald
+  genug neue Daten vorliegen -- so passt sich das Modell ohne
+  Zutun an Änderungen im Nutzungsverhalten an.
+\item \emph{Training direkt auf dem Handy.} Die nächste, technisch
+  reizvolle Stufe wäre, das Lernen nicht mehr am PC zu machen,
+  sondern jedes Handy lokal an seinem eigenen Verhalten lernen zu
+  lassen -- ohne dass Daten das Gerät jemals verlassen. Das ist
+  konzeptionell anspruchsvoll, würde aber den Datenschutz-Vorteil
+  perfekt machen.
+\item \emph{Breitere Studie.} Mit der vorhandenen App wäre eine
+  Erhebung mit 20--50 Teilnehmern technisch problemlos möglich.
+  Was dann zusätzlich nötig wäre: eine kleine Datenschutz-Erklärung
+  und ein verständliches Onboarding für die Probanden, sowie die
+  Klärung des Datenschutz-Status mit der Hochschule.
+\end{itemize}
+
+\textbf{Übergeordnetes Fazit zur Meta-Ebene.} Das Projekt behauptet
+nicht, dass das eigene Modell objektiv besser ist als Googles. Es
+zeigt, \emph{dass} und \emph{wie} man als einzelner Student in sieben
+Wochen ein vollständiges System aus App, Datensammlung und
+Vorhersage-Modell aufbauen kann -- und ehrlich auswertet, wo das
+eigene Modell besser und wo es schlechter abschneidet. Diese
+\emph{Nachvollziehbarkeit jedes Zwischenschritts} ist der eigentliche
+Wert -- nicht eine punktgenaue Genauigkeits-Zahl.
 
 \vfill
 

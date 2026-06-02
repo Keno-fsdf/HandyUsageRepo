@@ -46,6 +46,15 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
+    // ViewPager2 fuer das Onboarding
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+
+    // Fragment-API fuer die Tab-Architektur
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+
+    // GridLayout fuer das 2x2 Use-Case-Grid im Onboarding
+    implementation("androidx.gridlayout:gridlayout:1.0.0")
+
     // TFLite Inference
     implementation("org.tensorflow:tensorflow-lite:2.14.0")
 }
