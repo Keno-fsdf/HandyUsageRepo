@@ -377,6 +377,77 @@ App-UI                    & Vier-Slide-Onboarding mit Use-Cases + Modell-Größe
 \section{Architekturmodell}
 \label{sec:architektur}
 
+\subsection{Was passiert im Inneren -- in einfachen Worten}
+\label{sec:einordnung}
+
+Bevor wir technisch werden: hier eine bewusst nicht-technische
+Beschreibung dessen, was die App tatsächlich tut. Wer Akkuanzeigen
+kennt, hat in 60~Sekunden den ganzen Mechanismus verstanden:
+
+\begin{enumerate}
+\item \textbf{Daten sammeln (Beobachten):} Alle 30~Sekunden schreibt
+  die App zehn Werte vom Handy auf -- zum Beispiel den aktuellen
+  Akkustand, die Bildschirm-Helligkeit, ob gerade YouTube läuft, die
+  Temperatur des Geräts und einige mehr. Das ist nichts anderes,
+  als wenn man stündlich Tagebuch über sein eigenes Verhalten
+  schreiben würde. Über mehrere Wochen entsteht so eine Tabelle
+  mit über 66.000~Zeilen.
+\item \textbf{Muster lernen (Training auf dem PC):} Diese Tabelle
+  wird auf den Laptop kopiert und einem kleinen Programm (dem
+  \glqq{}Modell\grqq{}) gezeigt. Das Programm lernt Zusammenhänge
+  wie: \emph{Wenn die Helligkeit hoch ist, YouTube läuft und die
+  Temperatur 38\,$^\circ$C beträgt, dann hält der Akku noch
+  ungefähr 2~Stunden.} Es lernt diese Zusammenhänge nicht aus
+  Büchern, sondern indem es die Tabelle viele Male durchrechnet
+  und seine Vorhersagen mit dem tatsächlichen Akku-Verlauf
+  abgleicht.
+\item \textbf{Im Alltag vorhersagen (Modell zurück im Handy):} Das
+  fertig gelernte Modell ist nur 14,4\,KB groß -- kleiner als ein
+  WhatsApp-Sprachmemo. Es wandert zurück in die App, läuft dort
+  ohne Internetverbindung und sagt im Hintergrund alle 30~Sekunden
+  eine neue Restlaufzeit voraus. Zum Vergleich zeigt die App
+  gleichzeitig Googles eigene Vorhersage und einen ganz simplen
+  Wert nach dem Motto \glqq{}so wie es bisher lief, läuft es weiter\grqq{}.
+\end{enumerate}
+
+\textbf{Warum genau diese Aufteilung?} Die drei Schritte sind
+absichtlich auf zwei Geräte aufgeteilt (Handy für Schritte~1 und~3,
+PC für Schritt~2). Das hat zwei Gründe:
+
+\begin{itemize}
+\item Auf dem Handy ist das Trainieren des Modells zu rechenintensiv
+  -- es würde den Akku stark belasten und Stunden dauern. Auf dem
+  PC ist es in wenigen Minuten erledigt.
+\item Das fertige Modell ist dafür so klein, dass es im Handy
+  problemlos im Hintergrund läuft, ohne dass der Nutzer etwas
+  davon merkt. Diese Asymmetrie -- \emph{trainieren ist teuer,
+  vorhersagen ist billig} -- ist typisch für ML-Systeme und der
+  Grund, warum es überhaupt sinnvoll ist, ein Modell auf einem
+  Gerät einzusetzen.
+\end{itemize}
+
+\textbf{Verortung im Kurs \glqq{}Mobile und Ubiquitäre Anwendungen\grqq{}.}
+Die Arbeit berührt drei Themen der Vorlesung direkt:
+
+\begin{itemize}
+\item \emph{Sensoren und Datenerhebung am mobilen Endgerät} --
+  die App liest zehn unterschiedliche Android-Signale aus und
+  zeigt, welche Permissions und APIs dafür nötig sind.
+\item \emph{Background-Services und Lebenszyklus} -- ein
+  Foreground-Service hält die Datensammlung am Laufen, auch wenn
+  die App vom Nutzer aus dem Speicher gewischt wird. Hier wird
+  das im Kurs behandelte Service-Konzept ganz konkret durchgespielt.
+\item \emph{Anwendungsbezogene Auswertung mobiler Daten} -- statt
+  die Daten zu sammeln und in der Cloud zu verarbeiten, bleibt
+  alles auf dem Gerät. Das ist eine bewusste Design-Entscheidung
+  zugunsten des Nutzers, nicht der Bequemlichkeit des Entwicklers.
+\end{itemize}
+
+Wer aus dem Portfolio nur eine Sache mitnehmen soll, dann diese:
+\emph{Das Projekt nimmt eine Standard-App-Funktion (Akkuanzeige),
+löst sie mit eigenen Daten und eigenem Modell, und legt dabei jeden
+Zwischenschritt offen.}
+
 \subsection{Gesamtarchitektur im Überblick}
 
 Das System gliedert sich in zwei klar getrennte Hälften, die durch
@@ -700,17 +771,25 @@ sie sie aktiv per Share-Intent verschicken, und dass keinerlei
 Auto-Upload oder Hintergrund-Übertragung stattfindet. Eine
 Einwilligung hat jeder per WhatsApp bestätigt.
 
-\subsection{Die App in Aktion}
+\subsection{Die App in Aktion -- Bedienungsanleitung mit Screenshots}
+\label{sec:bedienung}
+
+Die App hat im Lauf des Projekts zwei deutlich unterschiedliche
+Gesichter gehabt: einen funktionalen Single-Screen-Stand während
+der Datensammlung und die heutige drei-Tab-UI nach dem
+Abschluss-Refactor. Diese Sektion zeigt beides -- zuerst eine
+kurze historische Einordnung mit den Original-Screenshots aus
+der Sammlungs-Phase, dann eine vollständige Bedienungsanleitung
+des finalen Stands.
+
+\subsubsection*{Historische Single-Screen-Phase}
 
 Abbildung~\ref{fig:app_screenshots} zeigt die Main Activity der App
-auf dem Xiaomi 2107113SG zu zwei Zeitpunkten: einmal direkt nach
-dem Service-Start (Modell sammelt erst zehn Datenpunkte, also
-fünf Minuten Aufwärmphase) und einmal mit aktiver TinyML-Vorhersage.
-Der Datenpunkt-Zähler im unteren Bereich zeigt die Anzahl der vom
-Service aufgezeichneten Messpunkte (inkl.\ Lade-Phasen, die später
-bei der Auswertung herausgefiltert werden) und ist ein wichtiges
-UX-Element: er gibt dem Nutzer Feedback, dass der Service
-tatsächlich noch läuft, ohne dass er die Notification öffnen muss.
+auf dem Xiaomi 2107113SG in der ersten Projekt-Hälfte. Eine einzige
+Activity mit Start/Stop-Buttons, Live-Vorhersage und
+Datenpunkt-Zähler. Diese Variante war ausreichend, um die
+Datensammlung zu betreiben, aber für eine Verteidigung zu rau --
+deshalb der UI-Refactor in Woche~7.
 
 \begin{figure}[H]
 \centering
@@ -730,32 +809,190 @@ tatsächlich noch läuft, ohne dass er die Notification öffnen muss.
     Phone.}
     \label{fig:app_prediction}
 \end{subfigure}
-\caption{Früher Stand der App auf dem Xiaomi 2107113SG: eine
-einzige Activity, zwei Zustände (Aufwärmphase / aktive Vorhersage).
-Diese Single-Screen-Version diente während der ersten Wochen der
-Datensammlung. Links: erste Sekunden nach Service-Start. Rechts:
-dasselbe Gerät eine Minute später mit fertiger
-On-Device-Vorhersage.}
+\caption{Single-Screen-Stand der App während der Datensammlungs-Phase.}
 \label{fig:app_screenshots}
 \end{figure}
 
-\paragraph{Finale UI nach UI-Refactor.}
-Die in Abbildung~\ref{fig:app_screenshots} gezeigte Single-Screen-
-Variante hat die Datensammlung getragen, war für eine
-Präsentations-taugliche App aber zu rau. Im Zuge des Portfolio-
-Abschlusses wurde die UI vollständig überarbeitet, mit klarem
-Fokus auf das eine USP-Feature (eigene Vorhersage transparent
-sichtbar machen):
+\subsubsection*{Finale UI nach UI-Refactor}
+
+Im Zuge des Portfolio-Abschlusses wurde die UI vollständig
+überarbeitet, mit klarem Fokus auf das eine USP-Feature (eigene
+Vorhersage transparent sichtbar machen). Der Refactor folgt
+explizit den etablierten Mobile-Onboarding- und Explainable-AI-
+Best-Practices: vier Slides statt fünf (App-Onboarding-Studien
+zeigen einen deutlichen Abfall der Completion-Rate ab dem fünften
+Schritt), Confidence als visueller Indikator statt nackter Zahl,
+das eigentliche Feature direkt auf der Hauptbühne und
+Infrastruktur-Knöpfe in einem separaten Settings-Screen.
+
+\paragraph{Welcome-Bildschirm: Onboarding (vier Slides).}
+Beim allerersten Öffnen wird automatisch das vierteilige Onboarding
+gezeigt. Slide~1 verortet den Nutzen anhand vier Alltagssituationen,
+Slide~2--3 erklären das \glqq{}Sammeln $\to$ Lernen $\to$
+Vorhersagen\grqq{}-Prinzip in einfachen Worten, Slide~4 zeigt den
+Modell-Größen-Vergleich als Wow-Moment.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{11_onb_slide0.png}
+    \caption{Slide~1: Vier Anwendungsszenarien als 2$\times$2-Grid
+    (Wandern, Reisen, Pendel-Alltag, Tagesplanen).}
+\end{subfigure}\hfill
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{14_onb_slide3.png}
+    \caption{Slide~4: Modell-Größen-Vergleich. Unser Modell (14,4\,KB)
+    in Orange, daneben WhatsApp-Sprachmemo und ein typisches
+    Sprachmodell.}
+\end{subfigure}
+\caption{Onboarding-Slides 1 und 4. Slides~2 und~3 dazwischen
+erklären Sensoren und PC-Training.}
+\label{fig:screens_onboarding}
+\end{figure}
+
+\paragraph{Tab \glqq{}Live\grqq{}: das Hauptfeature.}
+Direkt nach dem Onboarding (oder bei jedem späteren Öffnen) landet
+der Nutzer im Live-Tab. Oben groß die Restlaufzeit (oder ein
+expliziter Status \glqq{}Lädt\grqq{} / \glqq{}Voll\grqq{} mit
+passender Sub-Erklärung), darunter alle zehn Live-Sensoren als
+animierte Karten -- die Hauptbühne der App.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\linewidth]{01_live.png}
+\caption{Live-Tab im Zustand \glqq{}Lädt\grqq{}: das Label
+oben (\glqq{}STATUS\grqq{}) wechselt dynamisch, damit nicht
+\glqq{}AKKU NOCH Lädt\grqq{} entsteht. Confidence-Pille ist
+in diesem Zustand bewusst ausgeblendet (Vorhersage pausiert).}
+\label{fig:screen_live}
+\end{figure}
+
+\paragraph{Tab \glqq{}Algorithmus\grqq{}: die drei Visualisierungen.}
+Der mittlere Tab erklärt, wie der Algorithmus tatsächlich
+funktioniert. Drei eigene Custom-Canvas-Views, die alle live laufen.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{02_algorithm_top.png}
+    \caption{Oben: animierter Datenfluss von zehn pulsierenden
+    Sensoren durch die TinyML-Box zur Vorhersage rechts.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{03_algorithm_arch.png}
+    \caption{Eine Etage tiefer: die echte Conv1D-Architektur
+    mit Input-Matrix, Feature-Maps, Pooling und Dense-Output.
+    Eine Forward-Pass-Welle leuchtet von oben nach unten.}
+\end{subfigure}
+\caption{Algorithmus-Tab, obere zwei Visualisierungen.}
+\label{fig:screens_algorithm_top}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{04_algorithm_history.png}
+    \caption{Live-Sparkline der letzten drei Stunden Akkuverlauf
+    plus gestrichelte Vorhersage-Extension. Hier (Akku zu 100\,\%)
+    nur als Linie sichtbar, weil keine Discharge-Dynamik vorhanden.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{06_algorithm_usp.png}
+    \caption{Ganz unten der USP-Block \glqq{}Was es besonders
+    macht\grqq{}: offline, 14,4\,KB, universal.}
+\end{subfigure}
+\caption{Algorithmus-Tab, untere Sektionen: Live-Sparkline und USP-Pillen.}
+\label{fig:screens_algorithm_bottom}
+\end{figure}
+
+\paragraph{Tab \glqq{}Genauigkeit\grqq{}: der ehrliche Vergleich.}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\linewidth]{07_accuracy.png}
+\caption{Genauigkeits-Tab: für den letzten beobachteten Discharge-Lauf
+wird der MAE der drei Methoden (eigenes TinyML, Google API,
+Linear-Baseline) verglichen. Hier auf dem Xiaomi: alle drei
+\glqq{}>10\,h daneben\grqq{} -- bewusst ehrliche Anzeige eines
+Falls, in dem das Modell nicht überzeugt. Die Statistik aus dem Paper
+trennt sauberer.}
+\label{fig:screen_accuracy}
+\end{figure}
+
+\paragraph{Settings (Zahnrad-Icon oben rechts).}
+Hier liegt alles, was nicht zur Hauptbühne gehört: Service-
+Steuerung, Permissions, Modell-Info, CSV-Export -- und genau dort
+findet der Nutzer auch den Button, um das Onboarding noch einmal
+anzusehen oder ein eigenes Modell zu trainieren.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{08_settings_top.png}
+    \caption{Settings, oberer Teil: Service-Status mit Laufzeit
+    und Datenpunkt-Counter, Start-/Stopp-Buttons,
+    Berechtigungs-Buttons und Modell-Info.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{10_settings_bottom.png}
+    \caption{Settings, unterer Teil: CSV-Export, der wichtige
+    Button \glqq{}Onboarding noch einmal ansehen\grqq{} und der
+    Einstieg in den Trainings-Guide \glqq{}Modell selbst
+    trainieren\grqq{}.}
+\end{subfigure}
+\caption{Settings-Activity. Hinweis: der Button
+\glqq{}Onboarding noch einmal ansehen\grqq{} ist exakt für
+den Fall gedacht, dass der Prüfer das Onboarding versehentlich
+weggeklickt hat.}
+\label{fig:screens_settings}
+\end{figure}
+
+\paragraph{Eigenes Modell trainieren (aus Settings erreichbar).}
+Wer das mitgelieferte Modell durch eines ersetzen möchte, das auf
+den eigenen 45+\,Tagen Daten trainiert ist, findet hier eine
+Anleitung in fünf Schritten inklusive Repo-Link.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{15_train_top.png}
+    \caption{Anleitung, oben: Warum-Block plus die ersten zwei
+    Schritte (lange sammeln, CSV exportieren).}
+\end{subfigure}\hfill
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{17_train_bottom.png}
+    \caption{Anleitung, unten: GitHub klonen, Pipeline laufen
+    lassen, \code{.tflite} zurück in \code{android/app/assets/}
+    deployen. Großer \glqq{}Auf GitHub ansehen\grqq{}-Button.}
+\end{subfigure}\caption{Train-Own-Model-Activity, aufgerufen über den
+Settings-Button \glqq{}Modell selbst trainieren\grqq{}.}
+\label{fig:screens_train}
+\end{figure}
+
+\paragraph{Detail-Verweise auf die finale UI.}
+Die folgenden Punkte fassen die zentralen Design-Entscheidungen
+des Refactors zusammen -- sie spiegeln, was die Screenshots oben
+zeigen:
 
 \begin{itemize}
-\item \emph{Drei-Slide-Onboarding} beim ersten Start. Erklärt in
-  einfachen Worten, was die App tut, und zeigt im dritten Slide
+\item \emph{Vier-Slide-Onboarding} beim ersten Start. Erklärt in
+  einfachen Worten, was die App tut, und zeigt im vierten Slide
   einen Größen-Vergleich \glqq{}Unser Modell: 14,4\,KB --
   WhatsApp-Sprachmemo: $\sim$\,80\,KB -- typisches Sprachmodell:
   $\sim$\,5\,GB\grqq{} als Wow-Element.
 \item \emph{Tab \glqq{}Live\grqq{}.} Die Hauptbühne der App.
   Vorhersage prominent oben, direkt darunter eine
-  \emph{Confidence-Pille} (gruen / gelb / rot) und ein Live-Block
+  \emph{Confidence-Pille} (grün / gelb / rot) und ein Live-Block
   mit allen zehn Sensoren als animierte Karten -- der Nutzer
   \glqq{}sieht dem Modell beim Denken zu\grqq{}.
 \item \emph{Tab \glqq{}Algorithmus\grqq{}.} Eigener Tab für die
@@ -805,177 +1042,6 @@ Completion-Rate ab dem fünften Schritt), Confidence als visueller
 Indikator statt nackter Zahl, das eigentliche Feature direkt auf
 der Hauptbühne und Infrastruktur-Knöpfe in einem separaten
 Settings-Screen.
-
-\subsection{Bedienungsanleitung mit Screenshots}
-\label{sec:bedienung}
-
-Die folgenden Screenshots wurden auf dem Xiaomi 2107113SG (Redmi
-Note 10 Pro, MIUI~13, Android~12) direkt vom laufenden Gerät per
-\code{adb screencap} gezogen. Sie zeigen den finalen Zustand der
-App nach dem UI-Refactor und sollen den Bedienungsfluss greifbar
-machen -- insbesondere, wie man auch nach dem ersten Start wieder
-ans Onboarding kommt oder das mitgelieferte Modell durch ein
-eigenes ersetzt.
-
-\subsubsection*{Erster Start: Onboarding (vier Slides)}
-
-Beim allerersten Öffnen wird automatisch das vierteilige Onboarding
-gezeigt. Slide~1 verortet den Nutzen anhand vier Alltagssituationen,
-Slide~2-3 erklären das \glqq{}Sammeln $\to$ Lernen $\to$
-Vorhersagen\grqq{}-Prinzip in einfachen Worten, Slide~4 zeigt den
-Modell-Größen-Vergleich als Wow-Moment.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}{0.46\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{11_onb_slide0.png}
-    \caption{Slide~1: Vier Anwendungsszenarien als 2$\times$2-Grid
-    (Wandern, Reisen, Pendel-Alltag, Tagesplanen).}
-\end{subfigure}\hfill
-\begin{subfigure}{0.46\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{14_onb_slide3.png}
-    \caption{Slide~4: Modell-Größen-Vergleich. Unser Modell (14,4\,KB)
-    in Orange, daneben WhatsApp-Sprachmemo und ein typisches
-    Sprachmodell.}
-\end{subfigure}
-\caption{Onboarding-Slides 1 und 4. Slides~2 und~3 dazwischen
-erklären Sensoren und PC-Training.}
-\label{fig:screens_onboarding}
-\end{figure}
-
-\subsubsection*{Tab \glqq{}Live\grqq{}: das Hauptfeature}
-
-Direkt nach dem Onboarding (oder bei jedem späteren Öffnen) landet
-der Nutzer im Live-Tab. Oben groß die Restlaufzeit (oder ein
-expliziter Status \glqq{}Lädt\grqq{} / \glqq{}Voll\grqq{} mit
-passender Sub-Erklärung), darunter alle zehn Live-Sensoren als
-animierte Karten -- die Hauptbühne der App.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.55\linewidth]{01_live.png}
-\caption{Live-Tab im Zustand \glqq{}Lädt\grqq{}: das Label
-oben (\glqq{}STATUS\grqq{}) wechselt dynamisch, damit nicht
-\glqq{}AKKU NOCH Lädt\grqq{} entsteht. Confidence-Pille ist
-in diesem Zustand bewusst ausgeblendet (Vorhersage pausiert).}
-\label{fig:screen_live}
-\end{figure}
-
-\subsubsection*{Tab \glqq{}Algorithmus\grqq{}: die drei Visualisierungen}
-
-Der mittlere Tab erklärt, wie der Algorithmus tatsächlich
-funktioniert. Drei eigene Custom-Canvas-Views, die alle live laufen.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}{0.46\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{02_algorithm_top.png}
-    \caption{Oben: animierter Datenfluss von zehn pulsierenden
-    Sensoren durch die TinyML-Box zur Vorhersage rechts.}
-\end{subfigure}\hfill
-\begin{subfigure}{0.46\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{03_algorithm_arch.png}
-    \caption{Eine Etage tiefer: die echte Conv1D-Architektur
-    mit Input-Matrix, Feature-Maps, Pooling und Dense-Output.
-    Eine Forward-Pass-Welle leuchtet von oben nach unten.}
-\end{subfigure}
-\caption{Algorithmus-Tab, obere zwei Visualisierungen.}
-\label{fig:screens_algorithm_top}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}{0.46\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{04_algorithm_history.png}
-    \caption{Live-Sparkline der letzten drei Stunden Akkuverlauf
-    plus gestrichelte Vorhersage-Extension. Hier (Akku zu 100\,\%)
-    nur als Linie sichtbar, weil keine Discharge-Dynamik vorhanden.}
-\end{subfigure}\hfill
-\begin{subfigure}{0.46\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{06_algorithm_usp.png}
-    \caption{Ganz unten der USP-Block \glqq{}Was es besonders
-    macht\grqq{}: offline, 14,4\,KB, universal.}
-\end{subfigure}
-\caption{Algorithmus-Tab, untere Sektionen: Live-Sparkline und USP-Pillen.}
-\label{fig:screens_algorithm_bottom}
-\end{figure}
-
-\subsubsection*{Tab \glqq{}Genauigkeit\grqq{}: der ehrliche Vergleich}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.55\linewidth]{07_accuracy.png}
-\caption{Genauigkeits-Tab: für den letzten beobachteten Discharge-Lauf
-wird der MAE der drei Methoden (eigenes TinyML, Google API,
-Linear-Baseline) verglichen. Hier auf dem Xiaomi: alle drei
-\glqq{}>10\,h daneben\grqq{} -- bewusst ehrliche Anzeige eines
-Falls, in dem das Modell nicht überzeugt. Die Statistik aus dem Paper
-trennt sauberer.}
-\label{fig:screen_accuracy}
-\end{figure}
-
-\subsubsection*{Settings (Zahnrad-Icon oben rechts)}
-
-Hier liegt alles, was nicht zur Hauptbühne gehört: Service-
-Steuerung, Permissions, Modell-Info, CSV-Export -- und genau dort
-findet der Nutzer auch den Button, um das Onboarding noch einmal
-anzusehen oder ein eigenes Modell zu trainieren.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}{0.46\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{08_settings_top.png}
-    \caption{Settings, oberer Teil: Service-Status mit Laufzeit
-    und Datenpunkt-Counter, Start-/Stopp-Buttons,
-    Berechtigungs-Buttons und Modell-Info.}
-\end{subfigure}\hfill
-\begin{subfigure}{0.46\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{10_settings_bottom.png}
-    \caption{Settings, unterer Teil: CSV-Export, der wichtige
-    Button \glqq{}Onboarding noch einmal ansehen\grqq{} und der
-    Einstieg in den Trainings-Guide \glqq{}Modell selbst
-    trainieren\grqq{}.}
-\end{subfigure}
-\caption{Settings-Activity. Hinweis: der Button
-\glqq{}Onboarding noch einmal ansehen\grqq{} ist exakt für
-den Fall gedacht, dass der Prüfer das Onboarding versehentlich
-weggeklickt hat.}
-\label{fig:screens_settings}
-\end{figure}
-
-\subsubsection*{Eigenes Modell trainieren (aus Settings erreichbar)}
-
-Wer das mitgelieferte Modell durch eines ersetzen möchte, das auf
-den eigenen 45+\,Tagen Daten trainiert ist, findet hier eine
-Anleitung in fünf Schritten inklusive Repo-Link.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}{0.46\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{15_train_top.png}
-    \caption{Anleitung, oben: Warum-Block plus die ersten zwei
-    Schritte (lange sammeln, CSV exportieren).}
-\end{subfigure}\hfill
-\begin{subfigure}{0.46\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{17_train_bottom.png}
-    \caption{Anleitung, unten: GitHub klonen, Pipeline laufen
-    lassen, \code{.tflite} zurück in \code{android/app/assets/}
-    deployen. Großer \glqq{}Auf GitHub ansehen\grqq{}-Button.}
-\end{subfigure}
-\caption{Train-Own-Model-Activity, aufgerufen über den
-Settings-Button \glqq{}Modell selbst trainieren\grqq{}.}
-\label{fig:screens_train}
-\end{figure}
 
 \newpage
 
@@ -1781,78 +1847,6 @@ Code-Mengen). Was die KI \emph{nicht} ersetzt hat: die Entscheidung,
 was gemacht wird, das Verstehen der Ergebnisse, das Verteidigen von
 Trade-offs, und vor allem die handfeste Geräte-Logistik und das
 Debugging vor Ort.
-
-\subsection{Was passiert im Inneren -- in einfachen Worten}
-\label{sec:einordnung}
-
-Damit das Projekt nicht als Black-Box wirkt, hier eine bewusst
-nicht-technische Beschreibung dessen, was die App tatsächlich tut.
-Wer Akkuanzeigen kennt, hat in 60~Sekunden den ganzen Mechanismus
-verstanden:
-
-\begin{enumerate}
-\item \textbf{Daten sammeln (Beobachten):} Alle 30~Sekunden schreibt
-  die App zehn Werte vom Handy auf -- zum Beispiel den aktuellen
-  Akkustand, die Bildschirm-Helligkeit, ob gerade YouTube läuft, die
-  Temperatur des Geräts und einige mehr. Das ist nichts anderes,
-  als wenn man stündlich Tagebuch über sein eigenes Verhalten
-  schreiben würde. Über mehrere Wochen entsteht so eine Tabelle
-  mit über 66.000~Zeilen.
-\item \textbf{Muster lernen (Training auf dem PC):} Diese Tabelle
-  wird auf den Laptop kopiert und einem kleinen Programm (dem
-  \glqq{}Modell\grqq{}) gezeigt. Das Programm lernt Zusammenhänge
-  wie: \emph{Wenn die Helligkeit hoch ist, YouTube läuft und die
-  Temperatur 38\,$^\circ$C beträgt, dann hält der Akku noch
-  ungefähr 2~Stunden.} Es lernt diese Zusammenhänge nicht aus
-  Büchern, sondern indem es die Tabelle viele Male durchrechnet
-  und seine Vorhersagen mit dem tatsächlichen Akku-Verlauf
-  abgleicht.
-\item \textbf{Im Alltag vorhersagen (Modell zurück im Handy):} Das
-  fertig gelernte Modell ist nur 14,4\,KB groß -- kleiner als ein
-  WhatsApp-Sprachmemo. Es wandert zurück in die App, läuft dort
-  ohne Internetverbindung und sagt im Hintergrund alle 30~Sekunden
-  eine neue Restlaufzeit voraus. Zum Vergleich zeigt die App
-  gleichzeitig Googles eigene Vorhersage und einen ganz simplen
-  Wert nach dem Motto \glqq{}so wie es bisher lief, läuft es weiter\grqq{}.
-\end{enumerate}
-
-\textbf{Warum genau diese Aufteilung?} Die drei Schritte sind
-absichtlich auf zwei Geräte aufgeteilt (Handy für Schritte~1 und~3,
-PC für Schritt~2). Das hat zwei Gründe:
-
-\begin{itemize}
-\item Auf dem Handy ist das Trainieren des Modells zu rechenintensiv
-  -- es würde den Akku stark belasten und Stunden dauern. Auf dem
-  PC ist es in wenigen Minuten erledigt.
-\item Das fertige Modell ist dafür so klein, dass es im Handy
-  problemlos im Hintergrund läuft, ohne dass der Nutzer etwas
-  davon merkt. Diese Asymmetrie -- \emph{trainieren ist teuer,
-  vorhersagen ist billig} -- ist typisch für ML-Systeme und der
-  Grund, warum es überhaupt sinnvoll ist, ein Modell auf einem
-  Gerät einzusetzen.
-\end{itemize}
-
-\textbf{Verortung im Kurs \glqq{}Mobile und Ubiquitäre Anwendungen\grqq{}.}
-Die Arbeit berührt drei Themen der Vorlesung direkt:
-
-\begin{itemize}
-\item \emph{Sensoren und Datenerhebung am mobilen Endgerät} --
-  die App liest zehn unterschiedliche Android-Signale aus und
-  zeigt, welche Permissions und APIs dafür nötig sind.
-\item \emph{Background-Services und Lebenszyklus} -- ein
-  Foreground-Service hält die Datensammlung am Laufen, auch wenn
-  die App vom Nutzer aus dem Speicher gewischt wird. Hier wird
-  das im Kurs behandelte Service-Konzept ganz konkret durchgespielt.
-\item \emph{Anwendungsbezogene Auswertung mobiler Daten} -- statt
-  die Daten zu sammeln und in der Cloud zu verarbeiten, bleibt
-  alles auf dem Gerät. Das ist eine bewusste Design-Entscheidung
-  zugunsten des Nutzers, nicht der Bequemlichkeit des Entwicklers.
-\end{itemize}
-
-Wer aus dem Portfolio nur eine Sache mitnehmen soll, dann diese:
-\emph{Das Projekt nimmt eine Standard-App-Funktion (Akkuanzeige),
-löst sie mit eigenen Daten und eigenem Modell, und legt dabei jeden
-Zwischenschritt offen.}
 
 \subsection{Abschluss-Reflexion}
 
