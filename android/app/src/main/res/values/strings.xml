@@ -30,6 +30,14 @@
     <string name="alg_arch_section">Modell-Architektur im Detail</string>
     <string name="alg_arch_caption">So sieht das eigentliche Conv1D-Netz aus. Die Forward-Welle leuchtet von oben nach unten – so berechnet das Modell bei jeder neuen Messung eine Vorhersage.</string>
 
+    <!-- Kompakte USP-Pills (gleich oben sichtbar) -->
+    <string name="alg_usp_pill_offline_head">offline</string>
+    <string name="alg_usp_pill_offline_sub">keine Cloud</string>
+    <string name="alg_usp_pill_size_head">14,4 KB</string>
+    <string name="alg_usp_pill_size_sub">winziges Modell</string>
+    <string name="alg_usp_pill_universal_head">universal</string>
+    <string name="alg_usp_pill_universal_sub">jedes Android</string>
+
     <!-- Onboarding -->
     <string name="onb_slide0_title">Wofur du das brauchst</string>
     <string name="onb_slide0_body">Eine ehrliche Restlaufzeit hilft immer dann, wenn die naechste Steckdose nicht in funf Minuten erreichbar ist. Und das ueberall, wo dein Hersteller (Xiaomi, Samsung, …) Googles eigene Anzeige nicht freigibt.</string>
