@@ -75,38 +75,15 @@ class ConvLayerView @JvmOverloads constructor(
     }
 
     /**
-     * Input-Matrix: 10 Sensoren x 10 Zeitschritte. Wird live durch
-     * [setInputCells] mit normalisierten Sensor-Werten (0..1) gefuettert
-     * -- das macht den Input-Layer ehrlich (das, was das Modell wirklich
-     * sieht).
-     *
-     * Die spaeteren Schichten (Conv, Pool) bleiben simuliert, weil
-     * INT8-Zwischenaktivierungen visuell nicht aussagekraeftig waeren
-     * und der TFLite-Interpreter sie standardmaessig auch nicht
-     * exponiert.
+     * Stabiles, aber "interessant" aussehendes Aktivierungs-Muster fuer
+     * die einzelnen Zellen. Da wir hier keine echten Modell-Inneren-Aktivierungen
+     * haben (das wuerde TFLite-Internals brauchen), simulieren wir per Seed.
      */
     private val rng = Random(seed = 42)
-    private val inputCells = Array(10) { FloatArray(10) { rng.nextFloat() * 0.4f + 0.1f } }
+    private val inputCells = Array(10) { FloatArray(10) { rng.nextFloat() } }
     private val convCells = Array(16) { FloatArray(10) { rng.nextFloat() * 0.85f + 0.15f } }
     private val poolValues = FloatArray(16) { rng.nextFloat() * 0.8f + 0.2f }
     private val outputValue = 0.78f
-
-    /**
-     * Setzt die Input-Matrix mit echten, bereits normalisierten Sensor-
-     * Werten. Erwartet eine 10x10-Matrix: [sensorIndex][zeitschritt],
-     * Wert in [0..1].
-     */
-    fun setInputCells(cells: Array<FloatArray>) {
-        if (cells.size != 10) return
-        for (sIdx in 0 until 10) {
-            val row = cells[sIdx]
-            if (row.size != 10) continue
-            for (tIdx in 0 until 10) {
-                inputCells[sIdx][tIdx] = row[tIdx].coerceIn(0f, 1f)
-            }
-        }
-        invalidate()
-    }
 
     private var animProgress = 0f  // 0..4, durchlaeuft die vier Schichten
     private val animator = ValueAnimator.ofFloat(0f, 4f).apply {

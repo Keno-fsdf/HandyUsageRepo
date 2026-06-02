@@ -79,7 +79,6 @@
             android:padding="14dp">
 
             <com.batterypredictor.datacollector.ConvLayerView
-                android:id="@+id/algConvLayer"
                 android:layout_width="match_parent"
                 android:layout_height="340dp" />
 
