@@ -53,7 +53,7 @@ class LiveFragment : Fragment() {
         SensorSpec(R.string.sensor_mobile, "📡", "mobile_data_on",
             { if (it >= 0.5f) "aktiv" else "aus" }, null),
         SensorSpec(R.string.sensor_charging, "⚡", "charging",
-            { if (it >= 0.5f) "laedt" else "entlaedt" }, null),
+            { if (it >= 0.5f) "lädt" else "entlädt" }, null),
         SensorSpec(R.string.sensor_cpu, "💻", "cpu_usage",
             { "${it.toInt()}%" }, { (it / 100f).coerceIn(0f, 1f) }),
         SensorSpec(R.string.sensor_temp, "🌡", "temperature",

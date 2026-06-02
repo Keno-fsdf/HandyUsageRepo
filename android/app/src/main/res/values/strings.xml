@@ -40,7 +40,7 @@
 
     <!-- Onboarding -->
     <string name="onb_slide0_title">Wofur du das brauchst</string>
-    <string name="onb_slide0_body">Eine ehrliche Restlaufzeit hilft immer dann, wenn die naechste Steckdose nicht in funf Minuten erreichbar ist. Und das ueberall, wo dein Hersteller (Xiaomi, Samsung, …) Googles eigene Anzeige nicht freigibt.</string>
+    <string name="onb_slide0_body">Eine ehrliche Restlaufzeit hilft immer dann, wenn die nächste Steckdose nicht in fünf Minuten erreichbar ist. Und das überall, wo dein Hersteller (Xiaomi, Samsung, …) Googles eigene Anzeige nicht freigibt.</string>
     <string name="onb_usecase_hiking">Beim Wandern</string>
     <string name="onb_usecase_travel">Auf Reisen</string>
     <string name="onb_usecase_commute">Im Pendel-Alltag</string>
