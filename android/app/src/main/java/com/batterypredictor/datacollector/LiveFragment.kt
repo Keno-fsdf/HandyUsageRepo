@@ -28,6 +28,7 @@ class LiveFragment : Fragment() {
     private lateinit var predictionText: TextView
     private lateinit var predictionDetail: TextView
     private lateinit var confidenceBadge: ConfidenceBadge
+    private lateinit var basisBadge: TextView
     private lateinit var sensorsContainer: LinearLayout
 
     // Sensor-Spec: Label-Key, Emoji, Wert-Formatter, Balken-Funktion (0..1) oder null
@@ -85,6 +86,7 @@ class LiveFragment : Fragment() {
         predictionText = root.findViewById(R.id.livePredictionText)
         predictionDetail = root.findViewById(R.id.livePredictionDetail)
         confidenceBadge = root.findViewById(R.id.liveConfidenceBadge)
+        basisBadge = root.findViewById(R.id.liveBasisBadge)
         sensorsContainer = root.findViewById(R.id.liveSensorsContainer)
 
         buildSensorRows(inflater)
@@ -123,6 +125,13 @@ class LiveFragment : Fragment() {
             requireContext().registerReceiver(predictionReceiver, filter)
         }
         showInitialState()
+        updateBasisBadge()
+    }
+
+    private fun updateBasisBadge() {
+        val ctx = context ?: return
+        basisBadge.visibility = if (BatteryDataLogger.getInstance(ctx).isBasisDataLoaded)
+            View.VISIBLE else View.GONE
     }
 
     /**

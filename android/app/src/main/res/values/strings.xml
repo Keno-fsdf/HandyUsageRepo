@@ -153,6 +153,12 @@
     <string name="settings_train_section">Eigenes Modell</string>
     <string name="settings_train_button">Modell selbst trainieren</string>
 
+    <string name="settings_basis_section">Basis-Daten</string>
+    <string name="settings_basis_info">Die App wurde mit einer kleinen Basis-Daten-Sammlung ausgestattet, damit alle Tabs sofort einen vollständigen Eindruck vermitteln. Mit dem Button unten kannst du sie verwerfen und ausschließlich deine eigenen Messpunkte verwenden.</string>
+    <string name="settings_basis_reset">Basis-Daten verwerfen und neu starten</string>
+    <string name="basis_badge">Basis-Daten</string>
+    <string name="acc_basis_caption">Berechnet auf Basis-Daten (Beispiel-Discharge-Lauf, mitgeliefert)</string>
+
     <!-- Train-Guide Activity -->
     <string name="train_title">Modell selbst trainieren</string>
     <string name="train_intro_title">Warum lohnt sich das?</string>

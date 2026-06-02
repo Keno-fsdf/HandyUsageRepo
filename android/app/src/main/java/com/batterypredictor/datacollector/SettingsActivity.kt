@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.os.Process
 import android.provider.Settings
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -80,11 +81,29 @@ class SettingsActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnSettingsTrainOwn).setOnClickListener {
             startActivity(Intent(this, TrainOwnModelActivity::class.java))
         }
+
+        findViewById<Button>(R.id.btnSettingsBasisReset).setOnClickListener {
+            logger.resetToOwnDataOnly()
+            Toast.makeText(this,
+                "Basis-Daten verworfen — eigene Sammlung beginnt jetzt",
+                Toast.LENGTH_LONG
+            ).show()
+            // Service neu anstossen, damit der naechste Tick frisch sammelt
+            val refresh = Intent(this, DataCollectorService::class.java).apply {
+                action = "REFRESH"
+            }
+            ContextCompat.startForegroundService(this, refresh)
+            refreshStatus()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         refreshStatus()
+        // Basis-Daten-Sektion nur anzeigen, wenn die Daten tatsaechlich noch
+        // aus dem mitgelieferten Sample stammen (nicht laenger nach Reset).
+        findViewById<View>(R.id.settingsBasisCard).visibility =
+            if (logger.isBasisDataLoaded) View.VISIBLE else View.GONE
     }
 
     private fun refreshStatus() {

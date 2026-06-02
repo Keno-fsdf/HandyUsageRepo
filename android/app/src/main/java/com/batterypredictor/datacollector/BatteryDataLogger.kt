@@ -32,11 +32,24 @@ class BatteryDataLogger private constructor(context: Context) {
 
     private val countRef = AtomicLong(0L)
 
+    /**
+     * Wurde die mitgelieferte Basis-Daten-CSV beim allerersten Start
+     * geladen? Wird in den UI-Komponenten gelesen, um eine dezente
+     * \"Basis-Daten\"-Markierung anzuzeigen, solange noch keine eigene
+     * Datensammlung gestartet wurde.
+     */
+    val isBasisDataLoaded: Boolean
+        get() = appContext.getSharedPreferences("battery_collector", Context.MODE_PRIVATE)
+            .getBoolean(KEY_BASIS_LOADED, false)
+
     init {
         val expectedHeader = "session_id,timestamp,datetime,${BatteryDataPoint.CSV_HEADER}"
 
         if (!csvFile.exists() || csvFile.length() == 0L) {
             csvFile.writeText("$expectedHeader\n")
+            // Erster Start: mitgelieferte Basis-Daten aus assets/ einspielen,
+            // damit die App sofort einen vollstaendigen Eindruck vermittelt.
+            tryLoadBasisData(expectedHeader)
         } else {
             // Schema-Drift: alte CSV (z.B. ohne system_personalized) parken,
             // neue beginnen. Sonst werden Spalten falsch zugeordnet.
@@ -152,7 +165,61 @@ class BatteryDataLogger private constructor(context: Context) {
         return exportFile
     }
 
+    /**
+     * Wenn die CSV gerade frisch leer ist (erster Start), wird hier die
+     * mitgelieferte assets/sample_data.csv vollstaendig in die CSV
+     * gespielt. Bei eigenem Datensammeln waechst die Datei darueber
+     * hinaus, der AccuracyComputer arbeitet wie gewohnt mit dem Tail.
+     */
+    private fun tryLoadBasisData(expectedHeader: String) {
+        try {
+            val input = appContext.assets.open("sample_data.csv")
+            val lines = input.bufferedReader(Charsets.UTF_8).readLines()
+            if (lines.isEmpty()) return
+            val srcHeader = lines.first()
+            if (srcHeader != expectedHeader) {
+                android.util.Log.w("BatteryDataLogger",
+                    "Sample header mismatch -- skipping basis data")
+                return
+            }
+            BufferedWriter(FileWriter(csvFile, true)).use { writer ->
+                for (i in 1 until lines.size) {
+                    val line = lines[i].trim()
+                    if (line.isEmpty()) continue
+                    writer.write("$line\n")
+                }
+            }
+            appContext.getSharedPreferences("battery_collector", Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean(KEY_BASIS_LOADED, true)
+                .apply()
+            android.util.Log.i("BatteryDataLogger",
+                "Loaded ${lines.size - 1} basis-data rows")
+        } catch (e: Exception) {
+            android.util.Log.w("BatteryDataLogger",
+                "Basis-Daten loading failed: ${e.message}")
+        }
+    }
+
+    /**
+     * Setzt die App auf "nur eigene Daten" zurueck: CSV wird geleert,
+     * Basis-Daten-Flag entfernt, Counter resettet. Im Settings-Screen
+     * ueber den Button "Basis-Daten verwerfen" erreichbar.
+     */
+    @Synchronized
+    fun resetToOwnDataOnly() {
+        val expectedHeader = "session_id,timestamp,datetime,${BatteryDataPoint.CSV_HEADER}"
+        csvFile.writeText("$expectedHeader\n")
+        countRef.set(0L)
+        appContext.getSharedPreferences("battery_collector", Context.MODE_PRIVATE)
+            .edit()
+            .remove(KEY_BASIS_LOADED)
+            .apply()
+    }
+
     companion object {
+        const val KEY_BASIS_LOADED = "basis_data_loaded"
+
         @Volatile
         private var INSTANCE: BatteryDataLogger? = null
 

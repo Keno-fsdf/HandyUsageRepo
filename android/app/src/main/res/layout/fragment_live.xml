@@ -55,6 +55,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/liveBasisBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/basis_badge"
+                android:textColor="@color/sensor_card_label"
+                android:textSize="10sp"
+                android:textStyle="italic"
+                android:visibility="gone" />
         </LinearLayout>
 
         <!-- Sensor-Sektion -->

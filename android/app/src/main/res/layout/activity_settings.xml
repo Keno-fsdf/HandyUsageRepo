@@ -232,6 +232,40 @@
             </LinearLayout>
 
             <!-- ============================================== -->
+            <!-- Sektion: Basis-Daten verwerfen                  -->
+            <!-- ============================================== -->
+            <TextView
+                style="@style/SettingsSection"
+                android:text="@string/settings_basis_section" />
+
+            <LinearLayout
+                android:id="@+id/settingsBasisCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:lineSpacingExtra="2dp"
+                    android:text="@string/settings_basis_info"
+                    android:textColor="@color/sensor_card_label"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/btnSettingsBasisReset"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_basis_reset"
+                    android:textAllCaps="false"
+                    style="@style/Widget.Material3.Button.OutlinedButton" />
+            </LinearLayout>
+
+            <!-- ============================================== -->
             <!-- Sektion: Eigenes Modell trainieren              -->
             <!-- ============================================== -->
             <TextView

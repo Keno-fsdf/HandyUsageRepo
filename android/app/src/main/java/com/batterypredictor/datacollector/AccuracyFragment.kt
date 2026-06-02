@@ -115,7 +115,11 @@ class AccuracyFragment : Fragment() {
         emptyText.visibility = View.GONE
         resultsContainer.visibility = View.VISIBLE
 
-        subtitleText.text = "Basis: ${score.nPoints} Vorhersage-Punkte im letzten Discharge-Lauf"
+        val basis = BatteryDataLogger.getInstance(ctx).isBasisDataLoaded
+        subtitleText.text = if (basis)
+            getString(R.string.acc_basis_caption)
+        else
+            "Basis: ${score.nPoints} Vorhersage-Punkte im letzten Discharge-Lauf"
 
         applyRow(rowOwn, score.maeOwnMin, score.winner == "own", ctx)
         applyRow(rowGoogle, score.maeGoogleMin, score.winner == "google", ctx)
