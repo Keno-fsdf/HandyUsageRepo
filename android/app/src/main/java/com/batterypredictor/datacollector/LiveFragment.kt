@@ -120,6 +120,36 @@ class LiveFragment : Fragment() {
             @Suppress("UnspecifiedRegisterReceiverFlag")
             requireContext().registerReceiver(predictionReceiver, filter)
         }
+        showInitialState()
+    }
+
+    /**
+     * Zeigt einen klaren Status, BEVOR der erste Broadcast kommt.
+     * Bei laufendem Service: \glqq{}Sammle Werte\grqq{} + REFRESH triggern,
+     * damit die Daten in 1-2s da sind statt erst nach dem naechsten 30s-Tick.
+     * Bei gestopptem Service: klarer Hinweis, dass im Settings-Tab gestartet
+     * werden muss.
+     */
+    private fun showInitialState() {
+        val ctx = context ?: return
+        val enabled = ctx.getSharedPreferences("battery_collector", AppCompatActivity.MODE_PRIVATE)
+            .getBoolean("service_enabled", false)
+        if (enabled) {
+            predictionText.text = getString(R.string.live_initial_main)
+            predictionDetail.text = getString(R.string.live_initial_sub)
+            confidenceBadge.visibility = View.INVISIBLE
+            // Sofort einen Messpunkt vom Service holen, statt 30s zu warten.
+            try {
+                val refresh = Intent(ctx, DataCollectorService::class.java).apply {
+                    action = "REFRESH"
+                }
+                androidx.core.content.ContextCompat.startForegroundService(ctx, refresh)
+            } catch (_: Exception) { /* best-effort */ }
+        } else {
+            predictionText.text = getString(R.string.live_service_stopped_main)
+            predictionDetail.text = getString(R.string.live_service_stopped_sub)
+            confidenceBadge.visibility = View.INVISIBLE
+        }
     }
 
     override fun onPause() {

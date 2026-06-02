@@ -72,16 +72,14 @@ class MainActivity : AppCompatActivity() {
             bottomNav.selectedItemId = R.id.tab_live
         }
 
-        // Falls der Service noch nie gestartet wurde, einmalig anwerfen.
-        // Den Soft-Start verlassen wir, falls UsageStats fehlt -- der Nutzer
-        // wird im Settings-Screen ohnehin erinnert.
-        val prefs = getSharedPreferences("battery_collector", MODE_PRIVATE)
-        if (!prefs.contains("service_started_at")) {
-            tryStartService(prefs)
-        }
+        // Bei jedem App-Start sicherstellen, dass der Service laeuft.
+        // startForegroundService ist idempotent -- wenn er schon laeuft,
+        // passiert nichts. Wenn er nach App-Update / Reinstall noch nicht
+        // hochgekommen ist (was passiert), wird er hier wieder angestossen.
+        ensureServiceRunning()
     }
 
-    private fun tryStartService(prefs: android.content.SharedPreferences) {
+    private fun ensureServiceRunning() {
         // Hard requirement Android 13+: ohne POST_NOTIFICATIONS kann der
         // Foreground-Service kein Notification anzeigen -> wir warten lieber,
         // bis der Nutzer es im Settings-Tab anstoesst.
@@ -91,9 +89,12 @@ class MainActivity : AppCompatActivity() {
             return
         }
         try {
-            prefs.edit()
-                .putLong("service_started_at", System.currentTimeMillis())
-                .apply()
+            val prefs = getSharedPreferences("battery_collector", MODE_PRIVATE)
+            if (!prefs.contains("service_started_at")) {
+                prefs.edit()
+                    .putLong("service_started_at", System.currentTimeMillis())
+                    .apply()
+            }
             val intent = Intent(this, DataCollectorService::class.java)
             ContextCompat.startForegroundService(this, intent)
         } catch (_: Exception) { }

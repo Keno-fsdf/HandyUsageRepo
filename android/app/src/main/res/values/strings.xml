@@ -78,6 +78,11 @@
     <string name="notif_charging">Laedt – Akku %1$d%%</string>
     <string name="notif_full">Akku voll – Vorhersage pausiert</string>
 
+    <string name="live_initial_main">Sammle Werte…</string>
+    <string name="live_initial_sub">Erste Messung kommt in wenigen Sekunden</string>
+    <string name="live_service_stopped_main">Service gestoppt</string>
+    <string name="live_service_stopped_sub">Im Settings-Tab (Zahnrad) starten</string>
+
     <!-- Accuracy Tab -->
     <string name="acc_title">Wer war heute genauer?</string>
     <string name="acc_our_model">Mein TinyML-Modell</string>
