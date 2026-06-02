@@ -1611,6 +1611,28 @@ mit manueller Bestätigung pro Datei händisch erschöpfend
 gewesen wäre, im Container aber durchlaufen konnte, während ich
 parallel am Portfolio weitergeschrieben habe.
 
+\textbf{Eine ehrliche kleine Sackgasse zur Architektur-Visualisierung.}
+Im Algorithmus-Tab zeigt die obere Schicht der Conv1D-Architektur
+eine 10$\times$10-Matrix als Heatmap. Diese ist standardmäßig mit
+einem ruhigen Pseudo-Zufalls-Muster gefüllt, das die spätere
+Forward-Pass-Animation gut transportiert. Ich habe in den letzten
+Tagen vor Abgabe kurz überlegt, diese Matrix stattdessen mit den
+echten Sensor-Werten der letzten zehn Messpunkte zu füttern, um
+zu sagen: \glqq{}auch der Input-Layer ist live\grqq{}. Die
+Implementierung dafür war in 30 Minuten gebaut. Beim Testen auf
+dem Gerät stellte sich aber heraus: die meisten Sensoren ändern
+sich über fünf Minuten kaum (Akkustand schwankt um wenige
+Prozent, Hotspot ist konstant aus, Ladezustand konstant). Die
+Matrix sah dadurch aus wie horizontale Streifen mit konstanten
+Werten -- visuell schlechter als die ruhig pulsierende Pseudo-
+Heatmap und für den Betrachter ohne mündliche Erklärung auch
+nicht aussagekräftiger. Also habe ich die Live-Variante wieder
+verworfen und die abstrakte Architektur-Skizze beibehalten. Das
+Output-Element (die fertige Vorhersage) ist und bleibt ohnehin
+echt -- nur die inneren Schichten sind bewusst als skizzierte
+Pulsations-Animation belassen, weil INT8-Aktivierungen visuell
+keinen Mehrwert hätten.
+
 Den Rest der Woche viel Zeit in die Aufbereitung beider Abgabe-
 Dokumente (Portfolio und separates Paper) gesteckt, in Pipeline-
 Konsistenz-Checks und in das Schreiben dieses Erfahrungsberichts.
@@ -1715,6 +1737,9 @@ W7 & Ein Hauptfeature stolz, 2 Tabs + Settings &
 W7 & Feature-Importance-Anzeige verworfen &
   Bar-Chart der Sensor-Wichtigkeit &
   battery\_level dominiert zu stark -- wäre entlarvend statt sexy \\
+W7 & Architektur-Heatmap als skizzierte Pulsation &
+  Input-Layer live mit echten Sensor-Werten füttern &
+  Echte Werte änderten sich über 5\,Min kaum -- horizontale Streifen statt aussagekräftige Heatmap, visuell schlechter \\
 Durchgängig & KI-Modus zweigeteilt &
   Nur Desktop-App-Modus &
   Container kapselt Risiko für massive Auto-Refactors \\
