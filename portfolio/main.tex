@@ -35,7 +35,7 @@
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
-\graphicspath{{./}{../reports/figures/}}
+\graphicspath{{./}{./screenshots/}{../reports/figures/}}
 
 % ── THWS Farben ────────────────────────────────────────────
 \definecolor{thwsorange}{RGB}{246,130,30}
@@ -803,8 +803,179 @@ Onboarding- und Explainable-AI-Best-Practices: drei Slides statt
 fünf (App-Onboarding-Studien zeigen einen deutlichen Abfall der
 Completion-Rate ab dem fünften Schritt), Confidence als visueller
 Indikator statt nackter Zahl, das eigentliche Feature direkt auf
-der Hauptbühne und Infrastruktur-Knoepfe in einem separaten
+der Hauptbühne und Infrastruktur-Knöpfe in einem separaten
 Settings-Screen.
+
+\subsection{Bedienungsanleitung mit Screenshots}
+\label{sec:bedienung}
+
+Die folgenden Screenshots wurden auf dem Xiaomi 2107113SG (Redmi
+Note 10 Pro, MIUI~13, Android~12) direkt vom laufenden Gerät per
+\code{adb screencap} gezogen. Sie zeigen den finalen Zustand der
+App nach dem UI-Refactor und sollen den Bedienungsfluss greifbar
+machen -- insbesondere, wie man auch nach dem ersten Start wieder
+ans Onboarding kommt oder das mitgelieferte Modell durch ein
+eigenes ersetzt.
+
+\subsubsection*{Erster Start: Onboarding (vier Slides)}
+
+Beim allerersten Öffnen wird automatisch das vierteilige Onboarding
+gezeigt. Slide~1 verortet den Nutzen anhand vier Alltagssituationen,
+Slide~2-3 erklären das \glqq{}Sammeln $\to$ Lernen $\to$
+Vorhersagen\grqq{}-Prinzip in einfachen Worten, Slide~4 zeigt den
+Modell-Größen-Vergleich als Wow-Moment.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{11_onb_slide0.png}
+    \caption{Slide~1: Vier Anwendungsszenarien als 2$\times$2-Grid
+    (Wandern, Reisen, Pendel-Alltag, Tagesplanen).}
+\end{subfigure}\hfill
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{14_onb_slide3.png}
+    \caption{Slide~4: Modell-Größen-Vergleich. Unser Modell (14,4\,KB)
+    in Orange, daneben WhatsApp-Sprachmemo und ein typisches
+    Sprachmodell.}
+\end{subfigure}
+\caption{Onboarding-Slides 1 und 4. Slides~2 und~3 dazwischen
+erklären Sensoren und PC-Training.}
+\label{fig:screens_onboarding}
+\end{figure}
+
+\subsubsection*{Tab \glqq{}Live\grqq{}: das Hauptfeature}
+
+Direkt nach dem Onboarding (oder bei jedem späteren Öffnen) landet
+der Nutzer im Live-Tab. Oben groß die Restlaufzeit (oder ein
+expliziter Status \glqq{}Lädt\grqq{} / \glqq{}Voll\grqq{} mit
+passender Sub-Erklärung), darunter alle zehn Live-Sensoren als
+animierte Karten -- die Hauptbühne der App.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\linewidth]{01_live.png}
+\caption{Live-Tab im Zustand \glqq{}Lädt\grqq{}: das Label
+oben (\glqq{}STATUS\grqq{}) wechselt dynamisch, damit nicht
+\glqq{}AKKU NOCH Lädt\grqq{} entsteht. Confidence-Pille ist
+in diesem Zustand bewusst ausgeblendet (Vorhersage pausiert).}
+\label{fig:screen_live}
+\end{figure}
+
+\subsubsection*{Tab \glqq{}Algorithmus\grqq{}: die drei Visualisierungen}
+
+Der mittlere Tab erklärt, wie der Algorithmus tatsächlich
+funktioniert. Drei eigene Custom-Canvas-Views, die alle live laufen.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{02_algorithm_top.png}
+    \caption{Oben: animierter Datenfluss von zehn pulsierenden
+    Sensoren durch die TinyML-Box zur Vorhersage rechts.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{03_algorithm_arch.png}
+    \caption{Eine Etage tiefer: die echte Conv1D-Architektur
+    mit Input-Matrix, Feature-Maps, Pooling und Dense-Output.
+    Eine Forward-Pass-Welle leuchtet von oben nach unten.}
+\end{subfigure}
+\caption{Algorithmus-Tab, obere zwei Visualisierungen.}
+\label{fig:screens_algorithm_top}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{04_algorithm_history.png}
+    \caption{Live-Sparkline der letzten drei Stunden Akkuverlauf
+    plus gestrichelte Vorhersage-Extension. Hier (Akku zu 100\,\%)
+    nur als Linie sichtbar, weil keine Discharge-Dynamik vorhanden.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{06_algorithm_usp.png}
+    \caption{Ganz unten der USP-Block \glqq{}Was es besonders
+    macht\grqq{}: offline, 14,4\,KB, universal.}
+\end{subfigure}
+\caption{Algorithmus-Tab, untere Sektionen: Live-Sparkline und USP-Pillen.}
+\label{fig:screens_algorithm_bottom}
+\end{figure}
+
+\subsubsection*{Tab \glqq{}Genauigkeit\grqq{}: der ehrliche Vergleich}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\linewidth]{07_accuracy.png}
+\caption{Genauigkeits-Tab: für den letzten beobachteten Discharge-Lauf
+wird der MAE der drei Methoden (eigenes TinyML, Google API,
+Linear-Baseline) verglichen. Hier auf dem Xiaomi: alle drei
+\glqq{}>10\,h daneben\grqq{} -- bewusst ehrliche Anzeige eines
+Falls, in dem das Modell nicht überzeugt. Die Statistik aus dem Paper
+trennt sauberer.}
+\label{fig:screen_accuracy}
+\end{figure}
+
+\subsubsection*{Settings (Zahnrad-Icon oben rechts)}
+
+Hier liegt alles, was nicht zur Hauptbühne gehört: Service-
+Steuerung, Permissions, Modell-Info, CSV-Export -- und genau dort
+findet der Nutzer auch den Button, um das Onboarding noch einmal
+anzusehen oder ein eigenes Modell zu trainieren.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{08_settings_top.png}
+    \caption{Settings, oberer Teil: Service-Status mit Laufzeit
+    und Datenpunkt-Counter, Start-/Stopp-Buttons,
+    Berechtigungs-Buttons und Modell-Info.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{10_settings_bottom.png}
+    \caption{Settings, unterer Teil: CSV-Export, der wichtige
+    Button \glqq{}Onboarding noch einmal ansehen\grqq{} und der
+    Einstieg in den Trainings-Guide \glqq{}Modell selbst
+    trainieren\grqq{}.}
+\end{subfigure}
+\caption{Settings-Activity. Hinweis: der Button
+\glqq{}Onboarding noch einmal ansehen\grqq{} ist exakt für
+den Fall gedacht, dass der Prüfer das Onboarding versehentlich
+weggeklickt hat.}
+\label{fig:screens_settings}
+\end{figure}
+
+\subsubsection*{Eigenes Modell trainieren (aus Settings erreichbar)}
+
+Wer das mitgelieferte Modell durch eines ersetzen möchte, das auf
+den eigenen 45+\,Tagen Daten trainiert ist, findet hier eine
+Anleitung in fünf Schritten inklusive Repo-Link.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{15_train_top.png}
+    \caption{Anleitung, oben: Warum-Block plus die ersten zwei
+    Schritte (lange sammeln, CSV exportieren).}
+\end{subfigure}\hfill
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{17_train_bottom.png}
+    \caption{Anleitung, unten: GitHub klonen, Pipeline laufen
+    lassen, \code{.tflite} zurück in \code{android/app/assets/}
+    deployen. Großer \glqq{}Auf GitHub ansehen\grqq{}-Button.}
+\end{subfigure}
+\caption{Train-Own-Model-Activity, aufgerufen über den
+Settings-Button \glqq{}Modell selbst trainieren\grqq{}.}
+\label{fig:screens_train}
+\end{figure}
 
 \newpage
 
