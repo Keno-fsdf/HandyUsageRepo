@@ -73,7 +73,7 @@
     <string name="onb_slide2_body">Aus den gesammelten Daten entsteht ein TinyML-Modell, das gelernt hat, wie sich dein Akku unter verschiedenen Bedingungen verhalt. Es wird einmal am PC trainiert und wandert dann zuruck in die App.</string>
 
     <string name="onb_slide3_title">Du siehst deine Restlaufzeit live</string>
-    <string name="onb_slide3_body">Das fertig gelernte Modell lauft komplett offline auf deinem Handy und sagt dir alle 30 Sekunden eine neue Restlaufzeit voraus. Du vergleichst direkt mit Googles eigener Schatzung.</string>
+    <string name="onb_slide3_body">Das fertig gelernte Modell läuft komplett offline auf deinem Handy und sagt dir alle 30 Sekunden eine neue Restlaufzeit voraus. Du vergleichst direkt mit Googles eigener Schätzung.</string>
 
     <string name="onb_size_title">So klein ist das Modell wirklich</string>
     <string name="onb_size_ours">Dieses Modell: 14,4 KB</string>
