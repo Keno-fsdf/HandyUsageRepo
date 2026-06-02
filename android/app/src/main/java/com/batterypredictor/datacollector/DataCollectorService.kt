@@ -256,21 +256,26 @@ class DataCollectorService : Service() {
         }
         sendBroadcast(broadcastIntent)
 
-        // Notification: Vorhersage + Confidence-Pille
+        // Notification: Vorhersage + Confidence-Pille -- mit Sonderfaellen
+        // "laedt" und "Akku voll" (dann ist die Restlaufzeit-Aussage sinnfrei).
         val confidence = ConfidenceLevel.fromBufferAndBattery(bufferSize, data.batteryLevel)
         val confTag = when (confidence) {
             ConfidenceLevel.HIGH -> "\ud83d\udfe2 hoch"
             ConfidenceLevel.MEDIUM -> "\ud83d\udfe1 mittel"
             ConfidenceLevel.LOW -> "\ud83d\udd34 unsicher"
         }
-        val predText = if (prediction >= 0f) {
-            val hours = prediction.toInt()
-            val mins = ((prediction - hours) * 60).toInt()
-            "Akku noch ${hours}h ${mins}min  \u00b7  $confTag"
-        } else if (predictor != null) {
-            "Sammle Daten... ($bufferSize/10)  \u00b7  $confTag"
-        } else {
-            "Modell nicht geladen"
+        val isCharging = data.charging == 1
+        val isFull = data.batteryLevel >= 99f
+        val predText = when {
+            isCharging -> getString(R.string.notif_charging, data.batteryLevel.toInt())
+            isFull -> getString(R.string.notif_full)
+            prediction >= 0f -> {
+                val hours = prediction.toInt()
+                val mins = ((prediction - hours) * 60).toInt()
+                "Akku noch ${hours}h ${mins}min  \u00b7  $confTag"
+            }
+            predictor != null -> "Sammle Daten... ($bufferSize/10)  \u00b7  $confTag"
+            else -> "Modell nicht geladen"
         }
         val subText = "Akku ${data.batteryLevel.toInt()}%  \u00b7  ${logger.getCount()} Messungen"
 

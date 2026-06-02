@@ -131,21 +131,37 @@ class LiveFragment : Fragment() {
         val prediction = intent.getFloatExtra("prediction", -1f)
         val bufferSize = intent.getIntExtra("buffer_size", 0)
         val batteryLevel = intent.getFloatExtra("battery_level", -1f)
+        val isCharging = intent.getFloatExtra("charging", 0f) >= 0.5f
+        val isFull = batteryLevel >= 99f
 
-        // Hauptvorhersage
-        if (prediction >= 0f) {
-            predictionText.text = formatHoursShort(prediction)
-            predictionDetail.text = "Akkustand ${batteryLevel.toInt()}%"
-        } else {
-            predictionText.text = getString(R.string.live_buffer_label) + "… ${bufferSize}/10"
-            val remaining = (10 - bufferSize).coerceAtLeast(0)
-            predictionDetail.text = "Noch $remaining Messungen à 30 Sekunden"
+        // Hauptvorhersage -- mit Sonderfaellen "laedt" und "voll"
+        when {
+            isCharging -> {
+                predictionText.text = getString(R.string.live_charging_main)
+                predictionDetail.text = getString(
+                    R.string.live_charging_sub, batteryLevel.toInt()
+                )
+                confidenceBadge.visibility = View.INVISIBLE
+            }
+            isFull -> {
+                predictionText.text = getString(R.string.live_full_main)
+                predictionDetail.text = getString(R.string.live_full_sub)
+                confidenceBadge.visibility = View.INVISIBLE
+            }
+            prediction >= 0f -> {
+                predictionText.text = formatHoursShort(prediction)
+                predictionDetail.text = "Akkustand ${batteryLevel.toInt()}%"
+                val level = ConfidenceLevel.fromBufferAndBattery(bufferSize, batteryLevel)
+                confidenceBadge.setConfidence(level)
+                confidenceBadge.visibility = View.VISIBLE
+            }
+            else -> {
+                predictionText.text = getString(R.string.live_buffer_label) + "… ${bufferSize}/10"
+                val remaining = (10 - bufferSize).coerceAtLeast(0)
+                predictionDetail.text = "Noch $remaining Messungen à 30 Sekunden"
+                confidenceBadge.visibility = View.INVISIBLE
+            }
         }
-
-        // Confidence-Badge
-        val level = ConfidenceLevel.fromBufferAndBattery(bufferSize, batteryLevel)
-        confidenceBadge.setConfidence(level)
-        confidenceBadge.visibility = if (prediction >= 0f) View.VISIBLE else View.INVISIBLE
 
         // Live-Sensoren
         sensorSpecs.forEachIndexed { i, spec ->
