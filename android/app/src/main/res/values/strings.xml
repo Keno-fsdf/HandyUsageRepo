@@ -149,4 +149,31 @@
 
     <string name="settings_onboarding_section">Onboarding</string>
     <string name="settings_show_onboarding">Onboarding noch einmal ansehen</string>
+
+    <string name="settings_train_section">Eigenes Modell</string>
+    <string name="settings_train_button">Modell selbst trainieren</string>
+
+    <!-- Train-Guide Activity -->
+    <string name="train_title">Modell selbst trainieren</string>
+    <string name="train_intro_title">Warum lohnt sich das?</string>
+    <string name="train_intro_body">Das mitgelieferte Modell wurde auf den Daten von vier Geräten trainiert (Xiaomi Redmi Note 10 Pro + Pixel 7/8/9 Pro). Wenn dein Nutzungsverhalten oder dein Akku stark davon abweicht, kann ein eigenes Modell, das speziell auf deinen Daten trainiert ist, spürbar genauer werden.\n\nGute Gründe es zu tun:\n• Du hast ein anderes Gerät (z. B. Samsung, OnePlus, Motorola)\n• Dein Akku ist älter und verhält sich anders\n• Du nutzt das Handy sehr untypisch (z. B. Heavy-Gaming, Senior, Festival-Modus)</string>
+
+    <string name="train_step1_title">1. Lange genug sammeln</string>
+    <string name="train_step1_body">Lass die App mindestens 2 bis 4 Wochen im Hintergrund laufen, damit genug Discharge-Daten zusammenkommen. Faustregel: ab ca. 5.000 Messpunkten lohnt sich das Trainieren. Den aktuellen Stand siehst du in den Settings unter \"Datensammlung\".</string>
+
+    <string name="train_step2_title">2. CSV exportieren</string>
+    <string name="train_step2_body">Hier in den Settings auf \"CSV exportieren\" tippen und die Datei z. B. per E-Mail oder Drive auf den Computer schicken. Die CSV enthält alle gesammelten Sensor-Messpunkte plus die drei Vergleichswerte (eigene Vorhersage, Google-API, Linear-Baseline).</string>
+
+    <string name="train_step3_title">3. GitHub-Repo klonen</string>
+    <string name="train_step3_body">Das vollständige Projekt mit Trainings-Pipeline liegt auf GitHub. Mit einem PC (Python 3.10+ installiert) reicht:\n\n  git clone https://github.com/Keno-fsdf/HandyUsageRepo\n  cd HandyUsageRepo\n  python -m venv venv\n  venv\\Scripts\\activate   (Windows)\n  pip install -r requirements.txt</string>
+
+    <string name="train_step4_title">4. Pipeline laufen lassen</string>
+    <string name="train_step4_body">Die exportierte CSV in den Ordner data/raw/ kopieren und ausführen:\n\n  python run_pipeline.py\n\nDas Skript bereitet die Daten auf, trainiert das Conv1D-Netz, quantisiert auf INT8 und legt das fertige Modell unter models/own_model.tflite ab. Auf einem normalen Notebook dauert das ein paar Minuten.</string>
+
+    <string name="train_step5_title">5. Eigenes Modell in die App deployen</string>
+    <string name="train_step5_body">Die generierte .tflite-Datei in android/app/src/main/assets/ kopieren (überschreibt das mitgelieferte Modell). Dann die App neu bauen mit:\n\n  cd android\n  ./gradlew assembleDebug\n\nund die APK aus android/app/build/outputs/apk/debug/ aufs Handy übertragen oder per Android Studio installieren.</string>
+
+    <string name="train_github_button">Auf GitHub ansehen</string>
+    <string name="train_github_url">https://github.com/Keno-fsdf/HandyUsageRepo</string>
+    <string name="train_back">Zurück</string>
 </resources>

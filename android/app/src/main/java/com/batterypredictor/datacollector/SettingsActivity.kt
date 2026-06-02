@@ -76,6 +76,10 @@ class SettingsActivity : AppCompatActivity() {
             }
             startActivity(intent)
         }
+
+        findViewById<Button>(R.id.btnSettingsTrainOwn).setOnClickListener {
+            startActivity(Intent(this, TrainOwnModelActivity::class.java))
+        }
     }
 
     override fun onResume() {
