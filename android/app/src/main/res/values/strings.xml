@@ -30,6 +30,26 @@
     <string name="alg_arch_section">Modell-Architektur im Detail</string>
     <string name="alg_arch_caption">So sieht das eigentliche Conv1D-Netz aus. Die Forward-Welle leuchtet von oben nach unten – so berechnet das Modell bei jeder neuen Messung eine Vorhersage.</string>
 
+    <!-- Tap-Hint und Deep-Dive Sheet -->
+    <string name="alg_tap_hint">Tippe für ausführliche Erklärung</string>
+    <string name="deepdive_title">So funktioniert das Modell</string>
+    <string name="deepdive_close">Schließen</string>
+
+    <string name="deepdive_tinyml_title">Was ist TinyML überhaupt?</string>
+    <string name="deepdive_tinyml_body">TinyML steht für \"winziges Machine Learning\" – also neuronale Netze, die so klein sind, dass sie auf Mikrocontrollern oder Smartphones direkt laufen, ohne Cloud-Anbindung. Typische Größenordnung: einige Kilobyte bis wenige Megabyte. Zum Vergleich: Sprachmodelle wie ChatGPT sind 100.000-mal größer.</string>
+
+    <string name="deepdive_arch_title">Die Architektur im Detail</string>
+    <string name="deepdive_arch_body">Das Modell ist ein 1D-Convolutional Neural Network (Conv1D). Es schaut auf die letzten 10 Messpunkte (= 5 Minuten Verlauf) und sucht darin Muster.\n\n• Eingabe: eine Matrix aus 10 Sensoren × 10 Zeitschritten\n• Conv1D-Schicht: 16 Filter mit Kernel-Größe 3, jeder Filter sucht nach einem bestimmten zeitlichen Muster (z. B. \"Helligkeit steigt während YouTube läuft\")\n• Global Average Pooling: aus 16 Zeitreihen werden 16 mittlere Werte\n• Dense-Schicht: aus den 16 Werten wird genau eine Zahl – die geschätzte Restlaufzeit in Stunden</string>
+
+    <string name="deepdive_training_title">Wie wurde es trainiert?</string>
+    <string name="deepdive_training_body">66.001 reale Messpunkte über 45 Tage von vier Geräten (Xiaomi + drei Pixel) wurden am PC mit TensorFlow trainiert. Das Modell hat dabei nicht die Werte einzelner Geräte auswendig gelernt, sondern die Zusammenhänge: was bedeutet eine bestimmte Sensor-Konstellation für die Restlaufzeit. Trainings-Methodik (Segment-Level-Split) sorgt dafür, dass keine Information aus der Zukunft in den Test-Lauf leakt.</string>
+
+    <string name="deepdive_quant_title">Warum ist es so klein?</string>
+    <string name="deepdive_quant_body">Das fertig trainierte Modell wird mit INT8-Quantisierung komprimiert: statt 32-Bit-Gleitkommazahlen für jedes Gewicht reichen 8-Bit-Ganzzahlen. Das reduziert die Größe um den Faktor 4 und macht die Berechnung schneller, ohne nennenswerten Genauigkeitsverlust. Ergebnis: 14,4 KB statt rund 60 KB.</string>
+
+    <string name="deepdive_features_title">Die 10 Sensoren im Detail</string>
+    <string name="deepdive_features_body">1. Akkustand (in Prozent)\n2. Bildschirm-Helligkeit\n3. Bildschirm an/aus\n4. Aktive App-Kategorie (Social, Video, Spiele, Browser, Produktiv, Leerlauf)\n5. WLAN verbunden\n6. Mobile Daten aktiv\n7. Lädt gerade\n8. CPU-Frequenz-Auslastung\n9. Akku-Temperatur\n10. Hotspot aktiv\n\nWichtig: keine Location, keine Inhalte, keine Kontakte, kein Mikrofon. Nur das, was eine normale App ohne Spezialrechte lesen darf.</string>
+
     <!-- Kompakte USP-Pills (gleich oben sichtbar) -->
     <string name="alg_usp_pill_offline_head">offline</string>
     <string name="alg_usp_pill_offline_sub">keine Cloud</string>

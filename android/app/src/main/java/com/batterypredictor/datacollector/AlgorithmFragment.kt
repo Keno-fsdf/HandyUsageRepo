@@ -37,6 +37,12 @@ class AlgorithmFragment : Fragment() {
     ): View {
         val root = inflater.inflate(R.layout.fragment_algorithm, container, false)
         batteryChart = root.findViewById(R.id.algBatteryChart)
+
+        // Tap auf die Architektur-Karte oeffnet den Deep-Dive-Sheet
+        root.findViewById<View>(R.id.algArchCard).setOnClickListener {
+            ModelDeepDiveSheet().show(parentFragmentManager, ModelDeepDiveSheet.TAG)
+        }
+
         return root
     }
 
