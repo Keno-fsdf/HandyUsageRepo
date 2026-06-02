@@ -28,137 +28,6 @@
             android:textColor="@color/sensor_card_label" />
 
         <!-- ============================================== -->
-        <!-- USP-Pills (prominent oben, gleich beim Oeffnen) -->
-        <!-- ============================================== -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
-            android:layout_marginBottom="8dp"
-            android:text="@string/alg_usp_title"
-            android:textAllCaps="true"
-            android:textColor="@color/brand_primary"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.08" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_prediction"
-            android:orientation="horizontal"
-            android:padding="14dp"
-            android:weightSum="3">
-
-            <!-- Pill 1: offline -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🛡"
-                    android:textSize="28sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/alg_usp_pill_offline_head"
-                    android:textColor="@color/prediction_text"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/alg_usp_pill_offline_sub"
-                    android:textColor="@color/prediction_subtext"
-                    android:textSize="10sp" />
-            </LinearLayout>
-
-            <!-- Trennstrich -->
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:layout_marginVertical="4dp"
-                android:background="@color/card_outline" />
-
-            <!-- Pill 2: 14,4 KB -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="📦"
-                    android:textSize="28sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/alg_usp_pill_size_head"
-                    android:textColor="@color/prediction_text"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/alg_usp_pill_size_sub"
-                    android:textColor="@color/prediction_subtext"
-                    android:textSize="10sp" />
-            </LinearLayout>
-
-            <!-- Trennstrich -->
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:layout_marginVertical="4dp"
-                android:background="@color/card_outline" />
-
-            <!-- Pill 3: universal -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🌍"
-                    android:textSize="28sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/alg_usp_pill_universal_head"
-                    android:textColor="@color/prediction_text"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/alg_usp_pill_universal_sub"
-                    android:textColor="@color/prediction_subtext"
-                    android:textSize="10sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- ============================================== -->
         <!-- HERO 1: Animierte Datenfluss-Visualisierung    -->
         <!-- ============================================== -->
         <LinearLayout
@@ -475,10 +344,135 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Bottom-Padding fuer Komfort beim Scrollen -->
-        <View
+        <!-- ============================================== -->
+        <!-- USP-Pills am Schluss                            -->
+        <!-- ============================================== -->
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="24dp" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/alg_usp_title"
+            android:textAllCaps="true"
+            android:textColor="@color/brand_primary"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_prediction"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            android:weightSum="3">
+
+            <!-- Pill 1: offline -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🛡"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/alg_usp_pill_offline_head"
+                    android:textColor="@color/prediction_text"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/alg_usp_pill_offline_sub"
+                    android:textColor="@color/prediction_subtext"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="4dp"
+                android:background="@color/card_outline" />
+
+            <!-- Pill 2: 14,4 KB -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📦"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/alg_usp_pill_size_head"
+                    android:textColor="@color/prediction_text"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/alg_usp_pill_size_sub"
+                    android:textColor="@color/prediction_subtext"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="4dp"
+                android:background="@color/card_outline" />
+
+            <!-- Pill 3: universal -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🌍"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/alg_usp_pill_universal_head"
+                    android:textColor="@color/prediction_text"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/alg_usp_pill_universal_sub"
+                    android:textColor="@color/prediction_subtext"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>
