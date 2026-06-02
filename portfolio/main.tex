@@ -550,15 +550,24 @@ Die App ist in achtzehn Kotlin-Dateien gegliedert, sauber getrennt
 in App-Lifecycle, Datenerhebungs-Service, Modell-Inferenz und
 UI-Bausteine:
 
-\begin{table}[H]
-\centering
+{\small
+\begin{longtable}{lp{8.5cm}}
 \caption{Module der Android-App}
-\label{tab:android_module}
-\small
-\begin{tabular}{lp{8.5cm}}
+\label{tab:android_module} \\
 \toprule
 \textbf{Datei} & \textbf{Aufgabe} \\
 \midrule
+\endfirsthead
+\multicolumn{2}{c}{\itshape Fortsetzung Tabelle~\ref{tab:android_module}} \\
+\toprule
+\textbf{Datei} & \textbf{Aufgabe} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\itshape Fortsetzung auf nächster Seite} \\
+\endfoot
+\bottomrule
+\endlastfoot
 \multicolumn{2}{l}{\textit{Datenerhebung und Modell}} \\
 \datei{DataCollectorService.kt} & Foreground-Service, sammelt alle 30 Sekunden Daten und sendet Broadcasts an die UI \\
 \datei{BatteryDataPoint.kt}     & Datenklasse für einen Messpunkt mit CSV-Serialisierung \\
@@ -582,11 +591,10 @@ UI-Bausteine:
 \midrule
 \multicolumn{2}{l}{\textit{Infrastruktur-UI}} \\
 \datei{SettingsActivity.kt}     & Service-Status, Permissions, CSV-Export, Modell-Info -- bewusst hinter dem Zahnrad-Icon \\
-\datei{ConfidenceBadge.kt}      & Wiederverwendbare Pille mit Punkt und Label (gruen / gelb / rot) \\
+\datei{ConfidenceBadge.kt}      & Wiederverwendbare Pille mit Punkt und Label (grün / gelb / rot) \\
 \datei{ConfidenceLevel.kt}      & Enum + Heuristik (Buffer-Größe + Akkustand) \\
-\bottomrule
-\end{tabular}
-\end{table}
+\end{longtable}
+}
 
 \subsection{Python-Pipeline im Detail}
 
@@ -772,16 +780,18 @@ Systemeinstellung:
 \end{tabular}
 \end{table}
 
+\begin{samepage}
 \textbf{Wo der Nutzer das findet.}
 Alle drei Buttons sind im \emph{Settings}-Screen (Zahnrad-Icon
 oben rechts) gebündelt -- in der Sektion \glqq{}Berechtigungen\grqq{}
 mit den Beschriftungen \glqq{}Nutzungsdatenzugriff aktivieren\grqq{} und
-\glqq{}Akku-Optimierung deaktivieren\grqq{}. Ein Tap genuegt, dann
+\glqq{}Akku-Optimierung deaktivieren\grqq{}. Ein Tap genügt, dann
 landet der Nutzer direkt auf der passenden System-Einstellung
 (\code{ACTION\_USAGE\_ACCESS\_SETTINGS} bzw.\
 \code{ACTION\_REQUEST\_IGNORE\_BATTERY\_OPTIMIZATIONS}). Der Status
 \glqq{}erteilt\grqq{} bzw.\ \glqq{}fehlt\grqq{} wird im Settings-Screen
 direkt darüber angezeigt.
+\end{samepage}
 
 \subsubsection*{Beim Verteilen in der Familie}
 
@@ -797,46 +807,20 @@ Einwilligung hat jeder per WhatsApp bestätigt.
 \subsection{Die App in Aktion -- Bedienungsanleitung mit Screenshots}
 \label{sec:bedienung}
 
-Die App hat im Lauf des Projekts zwei deutlich unterschiedliche
-Gesichter gehabt: einen funktionalen Single-Screen-Stand während
-der Datensammlung und die heutige drei-Tab-UI nach dem
-Abschluss-Refactor. Diese Sektion zeigt beides -- zuerst eine
-kurze historische Einordnung mit den Original-Screenshots aus
-der Sammlungs-Phase, dann eine vollständige Bedienungsanleitung
-des finalen Stands.
-
-\subsubsection*{Historische Single-Screen-Phase}
-
-Abbildung~\ref{fig:app_screenshots} zeigt die Main Activity der App
-auf dem Xiaomi 2107113SG in der ersten Projekt-Hälfte. Eine einzige
-Activity mit Start/Stop-Buttons, Live-Vorhersage und
-Datenpunkt-Zähler. Diese Variante war ausreichend, um die
-Datensammlung zu betreiben, aber für eine Verteidigung zu rau --
-deshalb der UI-Refactor in Woche~7.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}{0.42\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{screenshot_app_start.jpg}
-    \caption{Aufwärmphase: \glqq{}Sammle Daten\ldots\ (0/10)\grqq{}.
-    Bis zehn Messpunkte vorliegen, gibt das Modell noch keine
-    Vorhersage aus.}
-    \label{fig:app_start}
-\end{subfigure}\hfill
-\begin{subfigure}{0.42\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{screenshot_app_prediction.jpg}
-    \caption{Aktive Vorhersage: \glqq{}Noch 13\,h 57\,min\grqq{}
-    bei 100\,\% Akku. Die TinyML-Inferenz läuft direkt auf dem
-    Phone.}
-    \label{fig:app_prediction}
-\end{subfigure}
-\caption{Single-Screen-Stand der App während der Datensammlungs-Phase.}
-\label{fig:app_screenshots}
-\end{figure}
+Diese Sektion gibt eine vollständige Bedienungsanleitung der App
+im finalen Zustand nach dem UI-Refactor in Woche~7. Sie ergänzt
+die textuelle Modul-Beschreibung in
+Tabelle~\ref{tab:android_module} um Screenshots aller relevanten
+Bildschirme.
 
 \subsubsection*{Finale UI nach UI-Refactor}
+
+Hinweis vorab: in der ersten Projekt-Hälfte (Wochen~1--6) bestand die
+App aus einer einzigen Activity mit Start-/Stopp-Buttons, einer
+zentralen Live-Vorhersage und einem Datenpunkt-Zähler. Das war
+ausreichend für die Datensammlung, aber für die Abgabe zu rau --
+deshalb der UI-Refactor in Woche~7, dessen Ergebnis im Folgenden
+gezeigt wird.
 
 Im Zuge des Portfolio-Abschlusses wurde die UI vollständig
 überarbeitet, mit klarem Fokus auf das eine USP-Feature (eigene
