@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment
  */
 class LiveFragment : Fragment() {
 
+    private lateinit var predictionLabel: TextView
     private lateinit var predictionText: TextView
     private lateinit var predictionDetail: TextView
     private lateinit var confidenceBadge: ConfidenceBadge
@@ -80,6 +81,7 @@ class LiveFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         val root = inflater.inflate(R.layout.fragment_live, container, false)
+        predictionLabel = root.findViewById(R.id.livePredictionLabel)
         predictionText = root.findViewById(R.id.livePredictionText)
         predictionDetail = root.findViewById(R.id.livePredictionDetail)
         confidenceBadge = root.findViewById(R.id.liveConfidenceBadge)
@@ -135,6 +137,7 @@ class LiveFragment : Fragment() {
         val enabled = ctx.getSharedPreferences("battery_collector", AppCompatActivity.MODE_PRIVATE)
             .getBoolean("service_enabled", false)
         if (enabled) {
+            predictionLabel.text = getString(R.string.live_prediction_label)
             predictionText.text = getString(R.string.live_initial_main)
             predictionDetail.text = getString(R.string.live_initial_sub)
             confidenceBadge.visibility = View.INVISIBLE
@@ -146,6 +149,7 @@ class LiveFragment : Fragment() {
                 androidx.core.content.ContextCompat.startForegroundService(ctx, refresh)
             } catch (_: Exception) { /* best-effort */ }
         } else {
+            predictionLabel.text = getString(R.string.live_status_label)
             predictionText.text = getString(R.string.live_service_stopped_main)
             predictionDetail.text = getString(R.string.live_service_stopped_sub)
             confidenceBadge.visibility = View.INVISIBLE
@@ -164,9 +168,12 @@ class LiveFragment : Fragment() {
         val isCharging = intent.getFloatExtra("charging", 0f) >= 0.5f
         val isFull = batteryLevel >= 99f
 
-        // Hauptvorhersage -- mit Sonderfaellen "laedt" und "voll"
+        // Hauptvorhersage -- mit Sonderfaellen "laedt" und "voll".
+        // Label oben wird dynamisch angepasst, damit "AKKU NOCH Laedt" nicht
+        // entsteht.
         when {
             isCharging -> {
+                predictionLabel.text = getString(R.string.live_status_label)
                 predictionText.text = getString(R.string.live_charging_main)
                 predictionDetail.text = getString(
                     R.string.live_charging_sub, batteryLevel.toInt()
@@ -174,11 +181,13 @@ class LiveFragment : Fragment() {
                 confidenceBadge.visibility = View.INVISIBLE
             }
             isFull -> {
+                predictionLabel.text = getString(R.string.live_status_label)
                 predictionText.text = getString(R.string.live_full_main)
                 predictionDetail.text = getString(R.string.live_full_sub)
                 confidenceBadge.visibility = View.INVISIBLE
             }
             prediction >= 0f -> {
+                predictionLabel.text = getString(R.string.live_prediction_label)
                 predictionText.text = formatHoursShort(prediction)
                 predictionDetail.text = "Akkustand ${batteryLevel.toInt()}%"
                 val level = ConfidenceLevel.fromBufferAndBattery(bufferSize, batteryLevel)
@@ -186,6 +195,7 @@ class LiveFragment : Fragment() {
                 confidenceBadge.visibility = View.VISIBLE
             }
             else -> {
+                predictionLabel.text = getString(R.string.live_prediction_label)
                 predictionText.text = getString(R.string.live_buffer_label) + "… ${bufferSize}/10"
                 val remaining = (10 - bufferSize).coerceAtLeast(0)
                 predictionDetail.text = "Noch $remaining Messungen à 30 Sekunden"

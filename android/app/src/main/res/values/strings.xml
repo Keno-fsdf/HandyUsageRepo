@@ -66,16 +66,17 @@
 
     <!-- Live Tab -->
     <string name="live_prediction_label">Akku noch</string>
+    <string name="live_status_label">Status</string>
     <string name="live_confidence_high">hohe Genauigkeit</string>
     <string name="live_confidence_med">mittlere Genauigkeit</string>
     <string name="live_confidence_low">noch unsicher</string>
     <string name="live_sensors_label">Worauf das Modell gerade schaut</string>
     <string name="live_buffer_label">Sammle Daten</string>
-    <string name="live_charging_main">Laedt</string>
-    <string name="live_charging_sub">Akku bei %1$d%% – Vorhersage pausiert</string>
+    <string name="live_charging_main">Lädt</string>
+    <string name="live_charging_sub">Akku bei %1$d%% – Vorhersage pausiert beim Laden</string>
     <string name="live_full_main">Voll</string>
     <string name="live_full_sub">100%% – Vorhersage startet erst beim Entladen</string>
-    <string name="notif_charging">Laedt – Akku %1$d%%</string>
+    <string name="notif_charging">Lädt – Akku %1$d%%</string>
     <string name="notif_full">Akku voll – Vorhersage pausiert</string>
 
     <string name="live_initial_main">Sammle Werte…</string>
