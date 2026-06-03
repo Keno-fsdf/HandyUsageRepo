@@ -727,22 +727,19 @@ Settings-Button \glqq{}Modell selbst trainieren\grqq{}.}
 \label{fig:screens_train}
 \end{figure}
 
-\paragraph{Detail-Verweise auf die finale UI.}
-Die folgenden Punkte fassen die zentralen Design-Entscheidungen
-des Refactors zusammen -- sie spiegeln, was die Screenshots oben
-zeigen:
+\paragraph{Die UI im Überblick.}
+Die folgenden Punkte fassen die zentralen UI-Eigenschaften zusammen:
 
 \begin{itemize}
 \item \emph{Vier-Slide-Onboarding} beim ersten Start. Erklärt in
   einfachen Worten, was die App tut, und zeigt im vierten Slide
   einen Größen-Vergleich \glqq{}Unser Modell: 14,4\,KB --
   WhatsApp-Sprachmemo: $\sim$\,80\,KB -- typisches Sprachmodell:
-  $\sim$\,5\,GB\grqq{} als Wow-Element.
-\item \emph{Tab \glqq{}Live\grqq{}.} Die Hauptbühne der App.
+  $\sim$\,5\,GB\grqq{}.
+\item \emph{Tab \glqq{}Live\grqq{}.} Der Haupt-Tab der App.
   Vorhersage prominent oben, direkt darunter eine
   \emph{Confidence-Pille} (grün / gelb / rot) und ein Live-Block
-  mit allen zehn Sensoren als animierte Karten -- der Nutzer
-  \glqq{}sieht dem Modell beim Denken zu\grqq{}.
+  mit allen zehn Sensoren als animierte Karten.
 \item \emph{Tab \glqq{}Algorithmus\grqq{}.} Eigener Tab für die
   Erklärung des USP-Features. Ganz oben -- gleich beim Öffnen
   sichtbar -- drei Pillen mit den Alleinstellungs-Argumenten
@@ -775,8 +772,9 @@ zeigen:
 \item \emph{Settings hinter dem Zahnrad.} Alle Infrastruktur-
   Bedienelemente (Service-Status mit Laufzeit, Permissions-Check,
   Start/Stopp, CSV-Export, Modell-Info-Karte) sind bewusst aus
-  der Hauptbühne genommen, damit der Nutzer beim Öffnen der
-  App genau \emph{ein} Feature sieht und nicht ein Feature-Buffet.
+  den Haupt-Tabs ausgelagert, damit der Nutzer beim Öffnen der
+  App genau \emph{ein} Feature sieht und nicht ein
+  Feature-Buffet.
 \item \emph{Erweiterte Notification.} Statt nur \glqq{}Akku noch
   X\,h Y\,min\grqq{} steht in der Sperrbildschirm-Anzeige jetzt
   zusätzlich die Confidence-Pille -- die Vorhersage hat eine
