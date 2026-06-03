@@ -235,11 +235,11 @@ fünf Minuten erreichbar.
 \item \textbf{Beim Wandern oder auf Mehrtagestouren.} Eine
   Restlaufzeit, der man trauen kann, entscheidet, ob man unterwegs
   noch die Karte öffnen kann oder lieber den Flugmodus aktiviert.
-  Pixel-Nutzer haben hier Googles Schätzung. Wer ein
-  Xiaomi/Samsung/Motorola benutzt, hat sie nicht --- die App
-  schließt genau diese Lücke.
+  Genau das, was ein an deinem Nutzungsverhalten trainiertes
+  TinyML-Modell deutlich besser hinbekommt als ein einfacher
+  linearer Durchschnitt.
 \item \textbf{Auf Reisen ohne sichere Ladequelle.} Im Zug, im
-  Flugzeug, im Hotelzimmer ohne freie Steckdose. Statt nervoes
+  Flugzeug, im Hotelzimmer ohne freie Steckdose. Statt nervös
   alle zehn Minuten zu prüfen, gibt eine verlässliche Schätzung
   Planungssicherheit (z.\,B. ob man Filme bis zur Ankunft schauen
   kann).
@@ -250,9 +250,9 @@ fünf Minuten erreichbar.
 \item \textbf{Beim aktiven Tagesplanen.} Wer das Handy für
   Navigation, Musik und Foto braucht (Konzert, Festival,
   Stadtführung), nutzt das Gerät wesentlich aggressiver als an
-  einem normalen Büroarbeitstag. Eine Vorhersage, die genau dieses
-  Verhalten kennt, ist hier deutlich nuetzlicher als ein generischer
-  Durchschnitt.
+  einem normalen Büroarbeitstag. Ein Modell, das die zehn
+  Sensor-Features in genau diesem Verhaltensmuster gelernt hat,
+  ist hier deutlich nützlicher als ein generischer Durchschnitt.
 \end{itemize}
 
 In jedem dieser Fälle ist der Mehrwert nicht abstrakt, sondern
@@ -271,46 +271,42 @@ sondern weil die Lösung in jeder dieser Dimensionen sauber
 positioniert ist:
 
 \begin{itemize}
+\item \textbf{Echte Architektur-Innovation, keine UI-Kopie.}
+  Im Zentrum steht ein eigenes TinyML-Modell auf dem Endgerät, nicht
+  ein hübscheres Frontend für eine vorhandene API. Genau dieses
+  \glqq{}eigenes ML auf dem Handy\grqq{} ist das Asset, das die App
+  von beliebigen Akku-Anzeigen abhebt -- und das einem
+  vergleichbaren Cloud-AI-Produkt strukturell überlegen ist.
+
 \item \textbf{Klar definierter Mehrwert beim Nutzer.}
   Der Nutzen ist nicht abstrakt, sondern eine direkte
   Reduktion von Reibung im Alltag: weniger
   \glqq{}reicht der Akku noch?\grqq{}-Momente, weniger spontaner
   Powerbank-Kauf, bessere Planung von Zeitfenstern ohne
-  Steckdose. Wer das einmal erlebt hat -- Stichwort Pixel-Nutzer,
-  die sich an die Vorhersage gewoehnt haben -- vermisst sie
-  spürbar auf jedem anderen Gerät.
-
-\item \textbf{Echte Marktlücke statt Mich-Auch-Produkt.}
-  Hersteller-Statistiken (StatCounter, Mai~2026) sehen Samsung
-  bei rund 35\,\% und Xiaomi bei rund 13\,\% des
-  globalen Android-Markts -- beides Hersteller, deren
-  Standard-Oberfläche die Google-API nicht anzeigt. Die
-  Lückenfüller-Funktion adressiert also einen substanziellen
-  Anteil aller Android-Nutzer und ist keine reine
-  Pixel-Spielerei.
+  Steckdose.
 
 \item \textbf{Skalierbar ohne laufende Kosten.}
   Weil das Modell vollständig auf dem Gerät läuft, fällt
   kein Server-Betrieb an. Eine Verteilung an 1.000 oder 10.000
   Nutzer kostet exakt das gleiche wie an einen einzelnen --
-  nämlich nichts. Damit ist die Lösung untypisch für ein
-  AI-Produkt: kein Cloud-Compute, kein API-Call pro Vorhersage,
-  keine variable Infrastruktur-Komponente in der Kostenrechnung.
+  nämlich nichts. Kein Cloud-Compute, kein API-Call pro
+  Vorhersage, keine variable Infrastruktur-Komponente in der
+  Kostenrechnung.
 
 \item \textbf{Niedrige Adoption-Hürde.}
-  Kein Account, kein Abo, keine Cloud-Anmeldung. Der Drei-Slide-
-  Onboarding-Flow ist in unter 90~Sekunden durchgespielt und
-  liefert das Wertversprechen bereits beim ersten Tap (statt
-  erst nach mehreren Sitzungen). Die typische Drop-out-Kurve in
-  Onboarding-Studien zeigt: jede zusaetzliche Sekunde vor dem
-  ersten Aha-Moment kostet messbar Adoption.
+  Kein Account, kein Abo, keine Cloud-Anmeldung. Das Onboarding
+  ist in unter 90~Sekunden durchgespielt und liefert das
+  Wertversprechen bereits beim ersten Tap. Onboarding-Studien
+  zeigen: jede zusätzliche Sekunde vor dem ersten Aha-Moment
+  kostet messbar Adoption.
 \end{itemize}
 
-Diese vier Punkte zusammen erklären, warum es sich nicht um eine
-weitere App in einem überlaufenen Markt handelt, sondern um eine
-sehr klar positionierte Antwort auf ein konkretes Problem -- mit
-einer Kostenstruktur, die einem normalen App-Geschäftsmodell
-deutlich überlegen ist.
+Diese vier Punkte zusammen ergeben eine sehr klar positionierte Antwort
+auf ein konkretes Problem -- mit einer Kostenstruktur, die einem
+normalen App-Geschäftsmodell deutlich überlegen ist. Dass die App
+gleichzeitig auf Nicht-Pixel-Geräten eine Anzeige liefert, wo das
+System sonst gar nichts zeigt, ist ein angenehmer Reichweiten-Bonus,
+aber nicht das eigentliche Verkaufsargument.
 
 \subsection{Zielsetzung}
 
