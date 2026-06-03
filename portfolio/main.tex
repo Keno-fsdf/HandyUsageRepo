@@ -406,8 +406,7 @@ Die App arbeitet in drei aufeinander aufbauenden Schritten:
   zehn Werte vom Handy in eine CSV-Datei -- aktueller Akkustand,
   Bildschirm-Helligkeit, aktive App-Kategorie (z.\,B. Video,
   Browser, Spiel), Geräte-Temperatur, CPU-Last,
-  Netzwerk-Zustand und so weiter. Über mehrere Wochen entsteht
-  so eine Tabelle mit rund 66.000~Zeilen.
+  Netzwerk-Zustand und so weiter.
 \item \textbf{Modell trainieren am PC.} Die Tabelle wird auf den
   PC übertragen und dort von einem neuronalen Netz (Conv1D +
   Dense) durchgearbeitet. In jeder Trainings-Iteration vergleicht
@@ -440,29 +439,6 @@ PC für Schritt~2). Das hat zwei Gründe:
   billig} -- diese Asymmetrie macht den On-Device-Einsatz
   überhaupt erst möglich.
 \end{itemize}
-
-\textbf{Verortung im Kurs \glqq{}Mobile und Ubiquitäre Anwendungen\grqq{}.}
-Die Arbeit berührt drei Themen der Vorlesung direkt:
-
-\begin{itemize}
-\item \emph{Sensoren und Datenerhebung am mobilen Endgerät} --
-  die App liest zehn unterschiedliche Android-Signale aus und
-  zeigt, welche Permissions und APIs dafür nötig sind.
-\item \emph{Background-Services und Lebenszyklus} -- ein
-  Foreground-Service hält die Datensammlung am Laufen, auch wenn
-  die App vom Nutzer aus dem Speicher gewischt wird. Hier wird
-  das im Kurs behandelte Service-Konzept ganz konkret durchgespielt.
-\item \emph{Anwendungsbezogene Auswertung mobiler Daten} -- statt
-  die Daten zu sammeln und in der Cloud zu verarbeiten, bleibt
-  alles auf dem Gerät. Das ist eine bewusste Design-Entscheidung
-  zugunsten des Nutzers, nicht der Bequemlichkeit des Entwicklers.
-\end{itemize}
-
-Wer aus dem Portfolio nur eine Sache mitnehmen soll, dann diese:
-\emph{Das Projekt löst eine Standard-App-Funktion (Akkuanzeige) mit
-einem 14{,}4\,KB großen TinyML-Modell, das vollständig auf dem
-Gerät läuft und auf den eigenen Daten des Nutzers nachjustiert
-werden kann -- und legt dabei jeden Zwischenschritt offen.}
 
 \subsection{Gesamtarchitektur im Überblick}
 
