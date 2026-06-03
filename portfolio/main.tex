@@ -943,9 +943,8 @@ Upload, keinen Server und keine Telemetrie.
 \paragraph{Was der Nutzer aktiv freischalten muss.}
 Drei dieser Permissions kann der Nutzer Android nicht einfach
 durchwinken -- sie brauchen ein explizites Antippen, weil sie weit
-mehr können als die App tatsächlich braucht. Genau das ist auch
-ein wichtiger Datenschutz-Mechanismus von Android. Die App führt
-den Nutzer per Button-Klick direkt in die jeweils richtige
+mehr können als die App tatsächlich braucht. Die App führt den
+Nutzer per Button-Klick direkt in die jeweils richtige
 Systemeinstellung:
 
 \begin{table}[H]
@@ -968,7 +967,7 @@ Systemeinstellung:
 \textbf{Akku-Optimierung deaktivieren} & Standard-Dialog via Button \glqq{}Akku-Optimierung deaktivieren\grqq{} &
   Damit der Service auch nach Stunden Inaktivität nicht von Doze
   oder herstellerseitigen Aggressive-Killer-Regeln (vor allem MIUI)
-  unterbrochen wird. Auf Pixel-Geräten weniger kritisch. \\
+  unterbrochen wird. \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -980,23 +979,11 @@ oben rechts) gebündelt -- in der Sektion \glqq{}Berechtigungen\grqq{}
 mit den Beschriftungen \glqq{}Nutzungsdatenzugriff aktivieren\grqq{} und
 \glqq{}Akku-Optimierung deaktivieren\grqq{}. Ein Tap genügt, dann
 landet der Nutzer direkt auf der passenden System-Einstellung
-(\code{ACTION\_USAGE\_ACCESS\_SETTINGS} bzw.\
-\code{ACTION\_REQUEST\_IGNORE\_BATTERY\_OPTIMIZATIONS}). Der Status
+(\code{ACTION\_USAGE\_\allowbreak ACCESS\_SETTINGS} bzw.\
+\code{ACTION\_REQUEST\_\allowbreak IGNORE\_BATTERY\_\allowbreak OPTIMIZATIONS}). Der Status
 \glqq{}erteilt\grqq{} bzw.\ \glqq{}fehlt\grqq{} wird im Settings-Screen
 direkt darüber angezeigt.
 \end{samepage}
-
-\subsubsection*{Beim Verteilen in der Familie}
-
-Für die drei Pixel-Geräte habe ich die App-APK an drei
-Familienmitglieder weitergegeben (per E-Mail bzw.\ direkt am
-Phone installiert). Vor der Installation wurde jeweils erklärt,
-welche Daten gesammelt werden (CSV mit 17 Spalten, davon 10 Sensor-Features plus Metadaten und Vergleichswerte), dass sie nur
-lokal auf ihrem Phone liegen, dass die CSV nur zu mir kommt, wenn
-sie sie aktiv per Share-Intent verschicken, und dass keinerlei
-Auto-Upload oder Hintergrund-Übertragung stattfindet. Eine
-Einwilligung hat jeder per WhatsApp bestätigt.
-
 
 \newpage
 
