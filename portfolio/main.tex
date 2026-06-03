@@ -190,18 +190,21 @@ dreht. Alle weiteren Entscheidungen -- von der Sensorauswahl über
 die Modell-Architektur bis zum UI-Refactor -- ordnen sich diesem
 Hauptfeature unter.
 
-Hersteller wie Xiaomi und Samsung zeigen Googles eigene
-\code{PowerManager.getBatteryDischargePrediction()}-API in ihren
-Launchern nicht an, obwohl die Schnittstelle seit Android~12
-verfügbar ist. Die App schließt genau diese Lücke -- mit einem
-eigenen Modell, das kleiner ist als eine WhatsApp-Sprachnachricht,
-auf jeder Android-Version ohne spürbaren Energie- oder
-Speicher-Overhead läuft und keine Sensordaten an einen Server
-schickt. Daten werden in der App gesammelt, am PC trainiert und das
-fertige TFLite-Modell wieder zurück in die App deployt; die App ist
-damit nicht nur Konsument eines vortrainierten Modells, sondern Teil
-einer schließbaren Trainings-Schleife, die geräte- und
-nutzerspezifisch nachjustiert werden kann.
+Das mitgelieferte Conv1D-Netz ist mit 14{,}4\,KB kleiner als eine
+WhatsApp-Sprachnachricht, läuft INT8-quantisiert auf jeder
+Android-Version ohne spürbaren Energie- oder Speicher-Overhead und
+hält sämtliche Sensordaten lokal -- es gibt keinen Server-Roundtrip.
+Daten werden in der App gesammelt, am PC trainiert und das fertige
+TFLite-Modell wieder zurück in die App deployt; die App ist damit
+nicht nur Konsument eines vortrainierten Modells, sondern Teil einer
+schließbaren Trainings-Schleife, die geräte- und nutzerspezifisch
+nachjustiert werden kann.
+
+Als angenehmer Nebeneffekt liefert die App damit auch dort eine
+Restlaufzeit-Vorhersage, wo das System sonst gar nichts anzeigt --
+etwa auf Geräten von Xiaomi oder Samsung, deren Hersteller-Launcher
+Googles eigene \code{PowerManager.getBatteryDischargePrediction()}-API
+nicht sichtbar machen.
 
 \subsection{Problemstellung}
 
