@@ -818,7 +818,11 @@ Extrapolation des bisherigen Verbrauchs.
 
 \subsection{CSV-Schema}
 
-Pro Messpunkt schreibt die App eine Zeile mit folgenden Spalten:
+Pro Messpunkt schreibt die App eine Zeile in die CSV. Die ersten
+drei Spalten sind Metadaten, die zehn nächsten sind die
+\emph{Features} für das ML-Modell, die letzten vier sind
+Vergleichswerte zur Auswertung. Tabelle~\ref{tab:csv_schema} zeigt
+die Spalten im Detail.
 
 \begin{table}[H]
 \centering
@@ -851,10 +855,6 @@ Pro Messpunkt schreibt die App eine Zeile mit folgenden Spalten:
 \bottomrule
 \end{tabular}
 \end{table}
-
-Die ersten drei Spalten sind Metadaten, die zehn nächsten sind die
-\emph{Features} für das ML-Modell, die letzten vier sind
-Vergleichswerte zur Auswertung.
 
 \subsection{Warum genau diese zehn Features?}
 
