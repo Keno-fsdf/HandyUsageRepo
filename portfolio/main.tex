@@ -313,36 +313,51 @@ Aus Nutzer- und Marktsicht steht die App auf fünf Punkten:
 
 \subsection{Zielsetzung}
 
-Ziel ist eine Android-App, die
+Ziel der Arbeit ist eine Android-App, die das in
+Abschnitt~\ref{sec:usp} beschriebene Hauptfeature praktisch
+umsetzt: eine eigene Restlaufzeit-Vorhersage durch ein
+TinyML-Modell, das vollständig auf dem Gerät läuft, dort vom
+Nutzer auf den eigenen gesammelten Daten nachtrainiert werden
+kann -- und auch auf Android-Versionen funktioniert, die im
+System gar keine ML-basierte Akku-Schätzung haben.
 
-\begin{itemize}
-\item alle 30~Sekunden 10~Sensordaten-Features sammelt (Akku,
-  Helligkeit, App-Kategorie, CPU, Temperatur usw.),
-\item ein eigenes TinyML-Modell on-device einsetzt,
-\item parallel die Google-API liest und vergleicht,
-\item alles in eine CSV schreibt, die am PC ausgewertet wird.
-\end{itemize}
-
-Funktional sollte am Ende stehen:
+Damit dieses Hauptfeature belastbar wird, müssen vier Bausteine
+zusammenspielen:
 
 \begin{enumerate}
-\item Eine Android-App, die im Hintergrund Daten sammelt und überlebt
-  (Foreground-Service, Auto-Restart nach Boot oder Wegwischen).
+\item Eine Android-App, die im Hintergrund alle 30~Sekunden zehn
+  Sensor-Features sammelt (Akku, Helligkeit, App-Kategorie, CPU,
+  Temperatur, Netzwerk-Zustand, \ldots) und einen
+  Foreground-Service betreibt, der Boot-Reboots und das
+  Wegwischen aus der Recent-Apps-Übersicht übersteht. Ohne
+  saubere Datensammlung kein verlässliches Modell.
 \item Ein quantisiertes TFLite-Modell ($<$\,15\,KB), das in der App
-  on-device läuft und eine Vorhersage in der Notification anzeigt.
-\item Eine Trainings-Pipeline am PC, die die exportierte CSV
-  verarbeitet, das Modell trainiert und es zurück in die App
-  deployt.
-\item Eine Auswertung, die zeigt, wie gut das eigene Modell gegen
-  die Google-API und einfache Baselines steht.
+  on-device läuft -- klein genug, um auch auf älteren
+  Smartphones flüssig zu inferieren, und klein genug, um es mit
+  jeder neuen Trainings-Runde durch eine neue Version ersetzen
+  zu können. Vorhersage erscheint in Notification und in drei
+  spezialisierten Tabs (Live, Algorithmus, Genauigkeit) --
+  zusammen mit der Google-API als Vergleichswert.
+\item Eine Python-Trainings-Pipeline am PC, die die aus der App
+  exportierte CSV einliest, daraus ein nutzerspezifisches Modell
+  trainiert und es als neue \code{.tflite}-Datei zurück in die
+  App deployt. Genau das macht den \glqq{}vom Nutzer auf eigene
+  Daten nachtrainierbar\grqq{}-Anspruch des USPs operationell:
+  ohne diesen Schritt wäre das mitgelieferte Modell statisch.
+\item Eine eingebaute Auswertung, die im Genauigkeits-Tab live
+  zeigt, wie das eigene Modell gegen die Google-API und eine
+  einfache lineare Baseline abschneidet -- ehrlich, auch wenn
+  das Ergebnis nicht überall zu Gunsten des eigenen Modells
+  ausfällt. Eine Vorhersage ohne Genauigkeits-Aussage wäre für
+  den Nutzer wertlos.
 \end{enumerate}
 
 Dieses Portfolio dokumentiert den \emph{Bau-Aufwand}, die
-Architektur und die Programmier-Eigenleistung. Die
-\emph{wissenschaftliche} Auswertung des Multi-Device-Vergleichs ist
-Gegenstand der separaten Paper-Einreichung
-(\datei{paper/main.pdf} im selben Repo) und nicht Inhalt dieses
-Dokuments.
+Architektur und die Programmier-Eigenleistung der vier Bausteine.
+Die \emph{wissenschaftliche} Auswertung des
+Multi-Device-Vergleichs ist Gegenstand der separaten
+Paper-Einreichung (\datei{paper/main.pdf} im selben Repo) und nicht
+Inhalt dieses Dokuments.
 
 \subsection{Rahmenbedingungen}
 
