@@ -219,12 +219,23 @@ Zukunft. Wer schon einmal mit 30\,\% Akku
 YouTube-Video plötzlich bei 15\,\% mit \glqq{}noch 1 Stunde\grqq{}
 stand, kennt das Problem.
 
-Mit Android~12 hat Google im Oktober 2021 ein eigenes
-ML-basiertes Modell ins System eingebaut
+Akku-Verbrauch ist in Wahrheit nichtlinear und vom Kontext getrieben:
+Streaming verbraucht ein Vielfaches von Lesen, Navigation in der
+Kälte mehr als bei Wärme, eine schwache Mobilfunk-Verbindung mehr
+als WLAN, ein heißes Spiel mehr als der Sperrbildschirm. Ein linearer
+Durchschnitt der letzten Minuten kann diese Dynamik prinzipbedingt
+nicht abbilden -- dafür braucht es ein Modell, das die Beziehung
+zwischen Sensoren und Verbrauch tatsächlich \emph{gelernt} hat.
+
+Genau das ist auf den meisten Smartphones bis heute nicht
+vorhanden: erst mit Android~12 (Oktober~2021) hat Google überhaupt
+ein eigenes ML-Modell ins System eingebaut
 (\code{PowerManager.getBatteryDischargePrediction()})~\cite{android2021powermanager}.
-Auf Pixel-Geräten nutzt der Settings-Screen diesen Wert; auf
-Geräten anderer Hersteller (Xiaomi, Samsung) wird er meist gar
-nicht angezeigt, obwohl die API verfügbar ist.
+Für alle Android-Versionen davor -- und damit für einen großen Teil
+der weltweit aktiven Geräte -- gibt es weiterhin nur die einfache
+lineare Schätzung aus dem Jahr 2014. Eine echte, an das eigene
+Nutzungsverhalten angepasste KI-Vorhersage existiert dort schlicht
+nicht.
 
 \subsection{Konkrete Anwendungsszenarien}
 \label{sec:szenarien}
