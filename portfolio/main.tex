@@ -278,13 +278,21 @@ Onboarding der App hinterlegt -- so sieht der Nutzer beim ersten
 \subsection{Mehrwert aus Nutzer- und Marktsicht}
 \label{sec:mehrwert}
 
-Aus Nutzer- und Marktsicht steht die App auf vier Punkten:
+Aus Nutzer- und Marktsicht steht die App auf fünf Punkten:
 
 \begin{itemize}
 \item \textbf{Eigene Architektur, nicht nur eigene UI.}
   Kern ist ein selbst trainiertes TinyML-Modell, das auf dem Gerät
   läuft -- nicht ein hübscheres Frontend für eine vorhandene API.
   Das unterscheidet die App von jeder anderen Akku-Anzeige.
+
+\item \textbf{Auf das eigene Gerät zuschneidbar.}
+  Das mitgelieferte Modell läuft auf jedem Android-Gerät als Basis;
+  jeder Nutzer kann es darüber hinaus auf den eigenen gesammelten
+  Daten nachtrainieren und so auf die Eigenheiten seines Geräts und
+  seines Nutzungsverhaltens zuschneiden. Eine generische
+  System-Schätzung oder Cloud-API hat diese Möglichkeit nicht --
+  dort bekommt jedes Gerät dieselbe Vorhersage-Logik.
 
 \item \textbf{Konkreter Nutzen.}
   Weniger \glqq{}reicht der Akku noch?\grqq-Momente, weniger
