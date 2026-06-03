@@ -594,214 +594,6 @@ UI-Bausteine:
 \end{longtable}
 }
 
-\subsection{Python-Pipeline im Detail}
-
-Die Auswerte-Seite ist nach \emph{Forschungs-Methodik} organisiert
-(eigener Ordner pro Methode, separater Eval-Ordner). Der Orchestrator
-\datei{run\_pipeline.py} bringt sie in Reihenfolge:
-
-\begin{enumerate}
-\item \datei{methods/tinyml/merge\_devices.py} -- alle Geräte-CSVs zu
-  einer kombinierten CSV zusammenführen
-\item \datei{methods/tinyml/data\_prep.py} -- Discharge-Segmente
-  finden, Sliding-Windows bilden, Segment-Level-Split
-\item \datei{methods/tinyml/train.py} -- Conv1D-Modell trainieren
-\item \datei{methods/tinyml/tflite\_convert.py} -- Konvertierung in
-  drei TFLite-Varianten (dynamic, float16, int8)
-\item \datei{methods/*/predict.py} -- Vorhersagen aller sechs
-  verglichenen Methoden auf dem Test-Set
-\item \datei{evaluation/*.py} -- diverse Auswertungs-Skripte
-\end{enumerate}
-
-\newpage
-
-% ████████████████████████████████████████████████████████████
-%  2  DATENMODELL
-% ████████████████████████████████████████████████████████████
-\section{Datenmodell}
-\label{sec:datenmodell}
-
-\subsection{CSV-Schema}
-
-Pro Messpunkt schreibt die App eine Zeile mit folgenden Spalten:
-
-\begin{table}[H]
-\centering
-\caption{Felder eines CSV-Eintrags}
-\label{tab:csv_schema}
-\small
-\begin{tabular}{lll}
-\toprule
-\textbf{Spalte} & \textbf{Typ} & \textbf{Bedeutung} \\
-\midrule
-\code{session\_id}         & String (8) & Zufalls-ID pro Service-Start \\
-\code{timestamp}           & long (ms)  & Unix-Zeitstempel \\
-\code{datetime}            & String     & YYYY-MM-DD HH:MM:SS \\
-\midrule
-\code{battery\_level}      & Float 0--100 & Akku-Stand in Prozent \\
-\code{screen\_on}          & Int 0/1      & Bildschirm an? \\
-\code{brightness}          & Float 0--100 & Helligkeit normalisiert \\
-\code{active\_app\_category}& Int 0--5    & 0=idle, 1=social, 2=video, 3=gaming, 4=browser, 5=productivity \\
-\code{wifi\_on}            & Int 0/1      & WiFi-verbunden? \\
-\code{mobile\_data\_on}    & Int 0/1      & Mobilfunk aktiv? \\
-\code{charging}            & Int 0/1      & Lädt gerade? \\
-\code{cpu\_usage}          & Float 0--100 & CPU-Frequenz-Auslastung (Proxy) \\
-\code{temperature}         & Float (°C)   & Akku-Temperatur \\
-\code{hotspot\_on}         & Int 0/1      & WLAN-Hotspot aktiv? \\
-\midrule
-\code{system\_estimate\_min}& Float       & Google-API-Schätzung in Minuten \\
-\code{system\_personalized}& Int $-$1/0/1 & Ist Google-Schätzung gerätspezifisch? \\
-\code{own\_prediction\_h}  & Float        & Eigene TinyML-Vorhersage (Stunden) \\
-\code{linear\_baseline\_h} & Float        & Naive Vorhersage aus BatteryManager-Countern \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Die ersten drei Spalten sind Metadaten, die zehn nächsten sind die
-\emph{Features} für das ML-Modell, die letzten vier sind
-Vergleichswerte zur Auswertung.
-
-\subsection{Warum genau diese zehn Features?}
-
-Bei der Auswahl gab es eine harte Regel: \emph{ich darf nur lesen,
-was eine normale App ohne Spezial-Berechtigung lesen kann.} Damit
-fielen einige naheliegende Kandidaten weg:
-
-\begin{itemize}
-\item \textbf{Genaue Stromstärke pro App} (PowerStats HAL): nur
-  System-Apps.
-\item \textbf{Battery Health} (Verschleißzustand): teilweise gesperrt.
-\item \textbf{Kernel-Fuel-Gauge}: gesperrt.
-\end{itemize}
-
-Was übrig blieb, sind die zehn Features oben. Sie decken drei
-Gruppen ab: \textbf{Akkuzustand} (level, temperature, charging),
-\textbf{Nutzungsintensität} (screen, brightness, app\_category,
-cpu\_usage), \textbf{Konnektivität} (wifi, mobile, hotspot).
-
-\subsection{Speicherung und Export}
-
-Die CSV liegt im app-internen Verzeichnis
-(\code{Context.filesDir}). Das ist nur für diese App lesbar -- weder
-andere Apps noch ein angeschlossener PC können die Datei direkt
-sehen (siehe Datenschutz-Subsection~\ref{sec:datenschutz}). Der
-Export erfolgt explizit per Share-Intent durch den Nutzer.
-
-Über vier Geräte hinweg wurden in 45 Tagen
-\textbf{66.001 Messpunkte} in \textbf{180 Sessions} gesammelt.
-
-\subsection{Datenschutz}
-\label{sec:datenschutz}
-
-\subsubsection*{Was wird erhoben}
-
-Die App speichert ausschließlich technische Geräte-Metriken (die
-Spalten oben). Es gibt \emph{keinen} Zugriff auf:
-
-\begin{itemize}
-\item Standort (keine \code{ACCESS\_*\_LOCATION}-Permission),
-\item Kontakte, Anrufprotokolle, SMS,
-\item Mikrofon, Kamera,
-\item Inhalte von Apps (kein Accessibility-Service, kein
-  Screen-Recording),
-\item personenbezogene Identifikatoren wie IMEI oder Telefonnummer.
-\end{itemize}
-
-Das einzige potenziell sensible Feld ist
-\code{active\_app\_category}, und auch das nur als \emph{Kategorie}
-(0--5), nicht als konkreter Paketname.
-
-\subsubsection*{Wo gespeichert wird}
-
-Im internen Verzeichnis der App (\code{Context.filesDir}). Nur
-diese App selbst hat Zugriff; andere Apps können nichts lesen
-(Android-Sandbox); bei Deinstallation werden die Daten automatisch
-mit entfernt; die Datei wird weder in iCloud noch in Google Backup
-synchronisiert. Ein Export findet ausschließlich über expliziten
-Nutzerklick (Share-Intent) statt -- es gibt keinen automatischen
-Upload, keinen Server und keine Telemetrie.
-
-\subsubsection*{Berechtigungen}
-
-\begin{table}[H]
-\centering
-\caption{Im Manifest deklarierte Permissions}
-\label{tab:permissions}
-\small
-\begin{tabular}{lp{8.5cm}}
-\toprule
-\textbf{Permission} & \textbf{Wofür} \\
-\midrule
-\code{FOREGROUND\_SERVICE} & Background-Service mit Notification \\
-\code{FOREGROUND\_SERVICE\_SPECIAL\_USE} & Service-Typ ab Android 14 \\
-\code{WAKE\_LOCK} & Service läuft auch bei Display aus \\
-\code{RECEIVE\_BOOT\_COMPLETED} & Auto-Restart nach Geräte-Neustart \\
-\code{ACCESS\_NETWORK\_STATE} & WiFi-/Mobile-Daten-Status lesen \\
-\code{ACCESS\_WIFI\_STATE} & WiFi-Status, Hotspot-Reflection \\
-\code{PACKAGE\_USAGE\_STATS} & Aktive App lesen (Nutzer muss manuell aktivieren) \\
-\code{POST\_NOTIFICATIONS} & Vorhersage in Notification anzeigen \\
-\code{REQUEST\_IGNORE\_BATTERY\_OPTIMIZATIONS} & Service vor Doze schützen \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Was der Nutzer aktiv freischalten muss.}
-Drei dieser Permissions kann der Nutzer Android nicht einfach
-durchwinken -- sie brauchen ein explizites Antippen, weil sie weit
-mehr können als die App tatsaechlich braucht. Genau das ist auch
-ein wichtiger Datenschutz-Mechanismus von Android. Die App führt
-den Nutzer per Button-Klick direkt in die jeweils richtige
-Systemeinstellung:
-
-\begin{table}[H]
-\centering
-\caption{Berechtigungen mit Nutzer-Aktion}
-\label{tab:user_permissions}
-\small
-\begin{tabular}{p{3.8cm}p{4.0cm}p{6.5cm}}
-\toprule
-\textbf{Berechtigung} & \textbf{Wie wird sie erteilt?} & \textbf{Warum braucht die App sie?} \\
-\midrule
-\textbf{Benachrichtigungen} & Standard-Dialog beim ersten Start (ab Android~13) &
-  Foreground-Service braucht Notification, ueber die er sichtbar
-  ist; ohne POST\_NOTIFICATIONS startet der Service gar nicht. \\
-\textbf{Nutzungsdatenzugriff} & Manuell in den Systemeinstellungen via Button \glqq{}Nutzungsdaten\-zugriff aktivieren\grqq{} &
-  Damit die App weiss, welche App-Kategorie gerade aktiv ist
-  (Social, Video, Spiel, ...) -- eines der zehn Features.
-  Ohne Aktivierung fällt das Feature einfach auf \glqq{}Leerlauf\grqq{}
-  zurueck und die App läuft trotzdem. \\
-\textbf{Akku-Optimierung deaktivieren} & Standard-Dialog via Button \glqq{}Akku-Optimierung deaktivieren\grqq{} &
-  Damit der Service auch nach Stunden Inaktivität nicht von Doze
-  oder herstellerseitigen Aggressive-Killer-Regeln (vor allem MIUI)
-  unterbrochen wird. Auf Pixel-Geräten weniger kritisch. \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{samepage}
-\textbf{Wo der Nutzer das findet.}
-Alle drei Buttons sind im \emph{Settings}-Screen (Zahnrad-Icon
-oben rechts) gebündelt -- in der Sektion \glqq{}Berechtigungen\grqq{}
-mit den Beschriftungen \glqq{}Nutzungsdatenzugriff aktivieren\grqq{} und
-\glqq{}Akku-Optimierung deaktivieren\grqq{}. Ein Tap genügt, dann
-landet der Nutzer direkt auf der passenden System-Einstellung
-(\code{ACTION\_USAGE\_ACCESS\_SETTINGS} bzw.\
-\code{ACTION\_REQUEST\_IGNORE\_BATTERY\_OPTIMIZATIONS}). Der Status
-\glqq{}erteilt\grqq{} bzw.\ \glqq{}fehlt\grqq{} wird im Settings-Screen
-direkt darüber angezeigt.
-\end{samepage}
-
-\subsubsection*{Beim Verteilen in der Familie}
-
-Für die drei Pixel-Geräte habe ich die App-APK an drei
-Familienmitglieder weitergegeben (per E-Mail bzw.\ direkt am
-Phone installiert). Vor der Installation wurde jeweils erklärt,
-welche Daten gesammelt werden (CSV mit 17 Spalten, davon 10 Sensor-Features plus Metadaten und Vergleichswerte), dass sie nur
-lokal auf ihrem Phone liegen, dass die CSV nur zu mir kommt, wenn
-sie sie aktiv per Share-Intent verschicken, und dass keinerlei
-Auto-Upload oder Hintergrund-Übertragung stattfindet. Eine
-Einwilligung hat jeder per WhatsApp bestätigt.
-
 \subsection{Die App in Aktion -- Bedienungsanleitung mit Screenshots}
 \label{sec:bedienung}
 
@@ -1047,6 +839,215 @@ Completion-Rate ab dem fünften Schritt), Confidence als visueller
 Indikator statt nackter Zahl, das eigentliche Feature direkt auf
 der Hauptbühne und Infrastruktur-Knöpfe in einem separaten
 Settings-Screen.
+
+\subsection{Python-Pipeline im Detail}
+
+Die Auswerte-Seite ist nach \emph{Forschungs-Methodik} organisiert
+(eigener Ordner pro Methode, separater Eval-Ordner). Der Orchestrator
+\datei{run\_pipeline.py} bringt sie in Reihenfolge:
+
+\begin{enumerate}
+\item \datei{methods/tinyml/merge\_devices.py} -- alle Geräte-CSVs zu
+  einer kombinierten CSV zusammenführen
+\item \datei{methods/tinyml/data\_prep.py} -- Discharge-Segmente
+  finden, Sliding-Windows bilden, Segment-Level-Split
+\item \datei{methods/tinyml/train.py} -- Conv1D-Modell trainieren
+\item \datei{methods/tinyml/tflite\_convert.py} -- Konvertierung in
+  drei TFLite-Varianten (dynamic, float16, int8)
+\item \datei{methods/*/predict.py} -- Vorhersagen aller sechs
+  verglichenen Methoden auf dem Test-Set
+\item \datei{evaluation/*.py} -- diverse Auswertungs-Skripte
+\end{enumerate}
+
+\newpage
+
+% ████████████████████████████████████████████████████████████
+%  2  DATENMODELL
+% ████████████████████████████████████████████████████████████
+\section{Datenmodell}
+\label{sec:datenmodell}
+
+\subsection{CSV-Schema}
+
+Pro Messpunkt schreibt die App eine Zeile mit folgenden Spalten:
+
+\begin{table}[H]
+\centering
+\caption{Felder eines CSV-Eintrags}
+\label{tab:csv_schema}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Spalte} & \textbf{Typ} & \textbf{Bedeutung} \\
+\midrule
+\code{session\_id}         & String (8) & Zufalls-ID pro Service-Start \\
+\code{timestamp}           & long (ms)  & Unix-Zeitstempel \\
+\code{datetime}            & String     & YYYY-MM-DD HH:MM:SS \\
+\midrule
+\code{battery\_level}      & Float 0--100 & Akku-Stand in Prozent \\
+\code{screen\_on}          & Int 0/1      & Bildschirm an? \\
+\code{brightness}          & Float 0--100 & Helligkeit normalisiert \\
+\code{active\_app\_category}& Int 0--5    & 0=idle, 1=social, 2=video, 3=gaming, 4=browser, 5=productivity \\
+\code{wifi\_on}            & Int 0/1      & WiFi-verbunden? \\
+\code{mobile\_data\_on}    & Int 0/1      & Mobilfunk aktiv? \\
+\code{charging}            & Int 0/1      & Lädt gerade? \\
+\code{cpu\_usage}          & Float 0--100 & CPU-Frequenz-Auslastung (Proxy) \\
+\code{temperature}         & Float (°C)   & Akku-Temperatur \\
+\code{hotspot\_on}         & Int 0/1      & WLAN-Hotspot aktiv? \\
+\midrule
+\code{system\_estimate\_min}& Float       & Google-API-Schätzung in Minuten \\
+\code{system\_personalized}& Int $-$1/0/1 & Ist Google-Schätzung gerätspezifisch? \\
+\code{own\_prediction\_h}  & Float        & Eigene TinyML-Vorhersage (Stunden) \\
+\code{linear\_baseline\_h} & Float        & Naive Vorhersage aus BatteryManager-Countern \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Die ersten drei Spalten sind Metadaten, die zehn nächsten sind die
+\emph{Features} für das ML-Modell, die letzten vier sind
+Vergleichswerte zur Auswertung.
+
+\subsection{Warum genau diese zehn Features?}
+
+Bei der Auswahl gab es eine harte Regel: \emph{ich darf nur lesen,
+was eine normale App ohne Spezial-Berechtigung lesen kann.} Damit
+fielen einige naheliegende Kandidaten weg:
+
+\begin{itemize}
+\item \textbf{Genaue Stromstärke pro App} (PowerStats HAL): nur
+  System-Apps.
+\item \textbf{Battery Health} (Verschleißzustand): teilweise gesperrt.
+\item \textbf{Kernel-Fuel-Gauge}: gesperrt.
+\end{itemize}
+
+Was übrig blieb, sind die zehn Features oben. Sie decken drei
+Gruppen ab: \textbf{Akkuzustand} (level, temperature, charging),
+\textbf{Nutzungsintensität} (screen, brightness, app\_category,
+cpu\_usage), \textbf{Konnektivität} (wifi, mobile, hotspot).
+
+\subsection{Speicherung und Export}
+
+Die CSV liegt im app-internen Verzeichnis
+(\code{Context.filesDir}). Das ist nur für diese App lesbar -- weder
+andere Apps noch ein angeschlossener PC können die Datei direkt
+sehen (siehe Datenschutz-Subsection~\ref{sec:datenschutz}). Der
+Export erfolgt explizit per Share-Intent durch den Nutzer.
+
+Über vier Geräte hinweg wurden in 45 Tagen
+\textbf{66.001 Messpunkte} in \textbf{180 Sessions} gesammelt.
+
+\subsection{Datenschutz}
+\label{sec:datenschutz}
+
+\subsubsection*{Was wird erhoben}
+
+Die App speichert ausschließlich technische Geräte-Metriken (die
+Spalten oben). Es gibt \emph{keinen} Zugriff auf:
+
+\begin{itemize}
+\item Standort (keine \code{ACCESS\_*\_LOCATION}-Permission),
+\item Kontakte, Anrufprotokolle, SMS,
+\item Mikrofon, Kamera,
+\item Inhalte von Apps (kein Accessibility-Service, kein
+  Screen-Recording),
+\item personenbezogene Identifikatoren wie IMEI oder Telefonnummer.
+\end{itemize}
+
+Das einzige potenziell sensible Feld ist
+\code{active\_app\_category}, und auch das nur als \emph{Kategorie}
+(0--5), nicht als konkreter Paketname.
+
+\subsubsection*{Wo gespeichert wird}
+
+Im internen Verzeichnis der App (\code{Context.filesDir}). Nur
+diese App selbst hat Zugriff; andere Apps können nichts lesen
+(Android-Sandbox); bei Deinstallation werden die Daten automatisch
+mit entfernt; die Datei wird weder in iCloud noch in Google Backup
+synchronisiert. Ein Export findet ausschließlich über expliziten
+Nutzerklick (Share-Intent) statt -- es gibt keinen automatischen
+Upload, keinen Server und keine Telemetrie.
+
+\subsubsection*{Berechtigungen}
+
+\begin{table}[H]
+\centering
+\caption{Im Manifest deklarierte Permissions}
+\label{tab:permissions}
+\small
+\begin{tabular}{lp{8.5cm}}
+\toprule
+\textbf{Permission} & \textbf{Wofür} \\
+\midrule
+\code{FOREGROUND\_SERVICE} & Background-Service mit Notification \\
+\code{FOREGROUND\_SERVICE\_SPECIAL\_USE} & Service-Typ ab Android 14 \\
+\code{WAKE\_LOCK} & Service läuft auch bei Display aus \\
+\code{RECEIVE\_BOOT\_COMPLETED} & Auto-Restart nach Geräte-Neustart \\
+\code{ACCESS\_NETWORK\_STATE} & WiFi-/Mobile-Daten-Status lesen \\
+\code{ACCESS\_WIFI\_STATE} & WiFi-Status, Hotspot-Reflection \\
+\code{PACKAGE\_USAGE\_STATS} & Aktive App lesen (Nutzer muss manuell aktivieren) \\
+\code{POST\_NOTIFICATIONS} & Vorhersage in Notification anzeigen \\
+\code{REQUEST\_IGNORE\_BATTERY\_OPTIMIZATIONS} & Service vor Doze schützen \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Was der Nutzer aktiv freischalten muss.}
+Drei dieser Permissions kann der Nutzer Android nicht einfach
+durchwinken -- sie brauchen ein explizites Antippen, weil sie weit
+mehr können als die App tatsaechlich braucht. Genau das ist auch
+ein wichtiger Datenschutz-Mechanismus von Android. Die App führt
+den Nutzer per Button-Klick direkt in die jeweils richtige
+Systemeinstellung:
+
+\begin{table}[H]
+\centering
+\caption{Berechtigungen mit Nutzer-Aktion}
+\label{tab:user_permissions}
+\small
+\begin{tabular}{p{3.8cm}p{4.0cm}p{6.5cm}}
+\toprule
+\textbf{Berechtigung} & \textbf{Wie wird sie erteilt?} & \textbf{Warum braucht die App sie?} \\
+\midrule
+\textbf{Benachrichtigungen} & Standard-Dialog beim ersten Start (ab Android~13) &
+  Foreground-Service braucht Notification, ueber die er sichtbar
+  ist; ohne POST\_NOTIFICATIONS startet der Service gar nicht. \\
+\textbf{Nutzungsdatenzugriff} & Manuell in den Systemeinstellungen via Button \glqq{}Nutzungsdaten\-zugriff aktivieren\grqq{} &
+  Damit die App weiss, welche App-Kategorie gerade aktiv ist
+  (Social, Video, Spiel, ...) -- eines der zehn Features.
+  Ohne Aktivierung fällt das Feature einfach auf \glqq{}Leerlauf\grqq{}
+  zurueck und die App läuft trotzdem. \\
+\textbf{Akku-Optimierung deaktivieren} & Standard-Dialog via Button \glqq{}Akku-Optimierung deaktivieren\grqq{} &
+  Damit der Service auch nach Stunden Inaktivität nicht von Doze
+  oder herstellerseitigen Aggressive-Killer-Regeln (vor allem MIUI)
+  unterbrochen wird. Auf Pixel-Geräten weniger kritisch. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{samepage}
+\textbf{Wo der Nutzer das findet.}
+Alle drei Buttons sind im \emph{Settings}-Screen (Zahnrad-Icon
+oben rechts) gebündelt -- in der Sektion \glqq{}Berechtigungen\grqq{}
+mit den Beschriftungen \glqq{}Nutzungsdatenzugriff aktivieren\grqq{} und
+\glqq{}Akku-Optimierung deaktivieren\grqq{}. Ein Tap genügt, dann
+landet der Nutzer direkt auf der passenden System-Einstellung
+(\code{ACTION\_USAGE\_ACCESS\_SETTINGS} bzw.\
+\code{ACTION\_REQUEST\_IGNORE\_BATTERY\_OPTIMIZATIONS}). Der Status
+\glqq{}erteilt\grqq{} bzw.\ \glqq{}fehlt\grqq{} wird im Settings-Screen
+direkt darüber angezeigt.
+\end{samepage}
+
+\subsubsection*{Beim Verteilen in der Familie}
+
+Für die drei Pixel-Geräte habe ich die App-APK an drei
+Familienmitglieder weitergegeben (per E-Mail bzw.\ direkt am
+Phone installiert). Vor der Installation wurde jeweils erklärt,
+welche Daten gesammelt werden (CSV mit 17 Spalten, davon 10 Sensor-Features plus Metadaten und Vergleichswerte), dass sie nur
+lokal auf ihrem Phone liegen, dass die CSV nur zu mir kommt, wenn
+sie sie aktiv per Share-Intent verschicken, und dass keinerlei
+Auto-Upload oder Hintergrund-Übertragung stattfindet. Eine
+Einwilligung hat jeder per WhatsApp bestätigt.
+
 
 \newpage
 
