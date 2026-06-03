@@ -1538,6 +1538,88 @@ Den Rest der Woche viel Zeit in die Aufbereitung beider Abgabe-
 Dokumente (Portfolio und separates Paper) gesteckt, in Pipeline-
 Konsistenz-Checks und in das Schreiben dieses Erfahrungsberichts.
 
+\subsubsection*{Woche 8 (KW 20: 12.--18.\,Mai)}
+
+\textbf{Polish nach Abgabe-Phase.}
+Die Doku am Stück gegengelesen und viele Stellen mit zu plakativer
+Marketing-Sprache identifiziert. Kleinere App-Bugfixes (UI-Glitches
+im LiveFragment, ein CSV-Header-Edge-Case beim Schema-Wechsel
+zwischen alter und neuer Spaltenanordnung). Die Pixel-Datensammlung
+läuft im Hintergrund weiter.
+
+\subsubsection*{Woche 9 (KW 21: 19.--25.\,Mai)}
+
+\textbf{Doku-Schliff Section~0 (Alleinstellungsmerkmal und
+Problemstellung).}
+Den USP-Abschnitt komplett überarbeitet -- das eine Hauptfeature
+(TinyML on-device, vom Nutzer nachtrainierbar) klar nach vorne, die
+Hersteller-Lücke als Nebenargument zurückgestuft und durch das
+stärkere Argument ersetzt, dass alle Android-Versionen vor 12 (also
+über zehn Jahre Geräte) überhaupt keine ML-basierte Akku-Vorhersage
+im System haben. Außerdem die unbelegte \glqq{}seit Android~5
+(2014)\grqq{}-Datierung entfernt -- lineare Akku-Vorhersagen gab es
+schon auf Android~1.x.
+
+\subsubsection*{Woche 10 (KW 22: 26.\,Mai -- 1.\,Juni)}
+
+\textbf{Computer Vision wieder aufgenommen.}
+Klausurvorbereitung CV gestartet -- Convolutions, Pooling, Backprop
+durch CNNs. Spürbarer Synergie-Effekt: viele Konzepte aus dem
+TinyML-Projekt (Conv1D, INT8-Quantisierung, Sliding-Windows) lassen
+sich im CV-Kontext noch einmal aus der Grundlagen-Perspektive
+einordnen. Einige Dinge wirklich erst beim zweiten Durchgang
+verstanden -- besonders, warum Quantisierung beim Inferenz-Pfad
+keine nennenswerte Genauigkeit kostet, aber den Speicher-Footprint
+drastisch reduziert.
+
+\subsubsection*{Woche 11 (KW 23: 2.--8.\,Juni)}
+
+\textbf{Statistik~2 Wiederholung gestartet, parallel
+Architektur-Grafik renoviert.}
+Statistik~2 -- Hypothesentests, Konfidenzintervalle, Likelihood.
+Bezug zum Paper hergestellt: Bootstrap-CI und Permutationstests in
+der Auswertungs-Schicht haben jetzt einen Namen und einen Kontext.
+Parallel die alte Gesamtarchitektur-PNG im Portfolio aktualisiert
+(zeigte noch die Pre-Refactor-UI mit einer einzelnen Activity),
+neu aus der überarbeiteten \datei{architektur\_gesamt.puml} via
+\code{plantuml.jar} gerendert.
+
+\subsubsection*{Woche 12 (KW 24: 9.--15.\,Juni)}
+
+\textbf{Statistik~2 intensiver.}
+Probeklausur-Aufgaben durchgerechnet, Verteilungs-Tabellen
+nachgeschlagen, Hypothesentest-Schemata strukturiert. Parallel
+weiter an der Statistik-Formelsammlung gearbeitet
+(LaTeX-\code{subfiles}, pro Kapitel ein eigenes \code{.tex},
+zentrale Formelsammlung als Referenz).
+
+\subsubsection*{Woche 13 (KW 25: 16.--22.\,Juni)}
+
+\textbf{Computer Vision Klausur-Fokus.}
+Augmentation, Loss-Funktionen, Architektur-Varianten (ResNet,
+U-Net) durchgegangen. Vorlesungs-Übungen aus dem Skript
+durchgerechnet, Lerngruppe abgestimmt.
+
+\subsubsection*{Woche 14 (KW 26: 23.--29.\,Juni)}
+
+\textbf{Statistik~2 Klausur-Fokus.}
+Letzte Schleife vor der Klausur: Probeklausuren unter Zeitdruck
+gerechnet, Edge Cases identifiziert (welche Tests bei welcher
+Verteilungs-Annahme), Klausur-Strategie überlegt.
+
+\subsubsection*{Woche 15 (KW 27: 30.\,Juni -- 6.\,Juli)}
+
+\textbf{Finaler Doku-Korrekturdurchgang plus Klausurvorbereitung
+verdichtet.}
+Letzte vollständige Lese-Runde der Portfolio-Doku mit Fokus auf
+Tippfehler und finale Konsistenz-Checks. Klausurvorbereitung CV und
+Statistik~2 in dieser Woche parallel verdichtet.
+
+\subsubsection*{Woche 16 (KW 28: 7.--12.\,Juli)}
+
+\textbf{Prüfungsphase startet.}
+Übergang vom Lernen ins Schreiben der Klausuren.
+
 \subsection{Schlüssel-Entscheidungen, Fehler und Trade-offs}
 \label{sec:entscheidungen}
 
