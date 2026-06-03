@@ -1299,10 +1299,10 @@ Konfiguration und Orchestrator                       & $\approx$\;300 \\
   (CPU-Frequenz-Proxy, App-Kategorie-Mapping, Hotspot-Reflection).
 \item Datenmodell, CSV-Schema und FileProvider-Konfiguration für
   den Share-Export.
-\item Pipeline-Architektur (sechs verglichene Methoden je eigenes
-  Modul, Trennung von Methoden- und Auswertungs-Schicht).
-\item Konkrete Implementierung der analytischen Baselines (Linear,
-  Exponential mit Fallback und Cap gegen Divergenz).
+\item Pipeline-Architektur (modulare Trennung von Trainings- und
+  Auswertungs-Schicht).
+\item Konkrete Implementierung der linearen Baseline als
+  Vergleichswert zur TinyML-Vorhersage.
 \item Segment-Level-Split als Anti-Leakage-Mechanismus.
 \item Auswertungs-Skripte: Genauigkeits-Metriken, Per-Device-Analyse,
   Daten-Diagnose.
