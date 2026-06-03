@@ -269,17 +269,16 @@ fünf Minuten erreichbar.
   ist hier deutlich nützlicher als ein generischer Durchschnitt.
 \end{itemize}
 
-In jedem dieser Fälle ist der Mehrwert nicht abstrakt, sondern
-direkt erlebbar: weniger Ladestress, weniger spontane Notwendigkeit
-zum Powerbank-Anschluss, weniger \glqq{}hätte ich das früher
-gewusst\grqq{}-Momente. Ein interner Onboarding-Screen der App greift
-genau diese Beispiele auf, damit der Nutzen schon beim ersten Start
-greifbar ist.
+Allen Szenarien gemeinsam: weniger Stress beim Ladesuchen, kein
+hektisches Powerbank-Kramen, kein \glqq{}hätte ich das früher
+gewusst\grqq. Genau diese vier Situationen sind als Slide~1 im
+Onboarding der App hinterlegt -- so sieht der Nutzer beim ersten
+Öffnen sofort, wofür sie gemacht ist.
 
 \subsection{Mehrwert aus Nutzer- und Marktsicht}
 \label{sec:mehrwert}
 
-Aus einer BWL-orientierten Sicht laesst sich die App ueber vier
+Aus einer BWL-orientierten Sicht lässt sich die App über vier
 einfache Argumente legitimieren -- nicht weil verkauft werden muss,
 sondern weil die Lösung in jeder dieser Dimensionen sauber
 positioniert ist:
@@ -816,7 +815,7 @@ zeigen:
     eigentlichen Conv1D-Schichten als Detail-Ansicht: Input-Matrix
     10\,$\times$\,10, 16~Feature-Maps, 16 gemittelte Pool-Werte,
     ein Dense-Output. Eine sequentielle Forward-Pass-Animation
-    laesst eine \glqq{}Welle\grqq{} von oben nach unten durch die
+    lässt eine \glqq{}Welle\grqq{} von oben nach unten durch die
     Schichten laufen, damit nachvollziehbar wird, wie das Modell
     intern rechnet.
   \item \emph{Live-Sparkline} der letzten drei Stunden Akkuverlauf
@@ -831,7 +830,7 @@ zeigen:
 \item \emph{Tab \glqq{}Genauigkeit\grqq{}.} Zeigt einen
   3-Wege-Score \glqq{}Wer war heute genauer?\grqq{}\ mit Medaillen
   (eigenes Modell vs. Google-API vs. Linear-Baseline), berechnet
-  ueber den letzten beobachteten Discharge-Lauf.
+  über den letzten beobachteten Discharge-Lauf.
 \item \emph{Settings hinter dem Zahnrad.} Alle Infrastruktur-
   Bedienelemente (Service-Status mit Laufzeit, Permissions-Check,
   Start/Stopp, CSV-Export, Modell-Info-Karte) sind bewusst aus
@@ -839,7 +838,7 @@ zeigen:
   App genau \emph{ein} Feature sieht und nicht ein Feature-Buffet.
 \item \emph{Erweiterte Notification.} Statt nur \glqq{}Akku noch
   X\,h Y\,min\grqq{} steht in der Sperrbildschirm-Anzeige jetzt
-  zusaetzlich die Confidence-Pille -- die Vorhersage hat eine
+  zusätzlich die Confidence-Pille -- die Vorhersage hat eine
   Verlässlichkeits-Aussage immer mit dabei.
 \end{itemize}
 
@@ -1005,7 +1004,7 @@ Upload, keinen Server und keine Telemetrie.
 \paragraph{Was der Nutzer aktiv freischalten muss.}
 Drei dieser Permissions kann der Nutzer Android nicht einfach
 durchwinken -- sie brauchen ein explizites Antippen, weil sie weit
-mehr können als die App tatsaechlich braucht. Genau das ist auch
+mehr können als die App tatsächlich braucht. Genau das ist auch
 ein wichtiger Datenschutz-Mechanismus von Android. Die App führt
 den Nutzer per Button-Klick direkt in die jeweils richtige
 Systemeinstellung:
@@ -1020,13 +1019,13 @@ Systemeinstellung:
 \textbf{Berechtigung} & \textbf{Wie wird sie erteilt?} & \textbf{Warum braucht die App sie?} \\
 \midrule
 \textbf{Benachrichtigungen} & Standard-Dialog beim ersten Start (ab Android~13) &
-  Foreground-Service braucht Notification, ueber die er sichtbar
+  Foreground-Service braucht Notification, über die er sichtbar
   ist; ohne POST\_NOTIFICATIONS startet der Service gar nicht. \\
 \textbf{Nutzungsdatenzugriff} & Manuell in den Systemeinstellungen via Button \glqq{}Nutzungsdaten\-zugriff aktivieren\grqq{} &
   Damit die App weiss, welche App-Kategorie gerade aktiv ist
   (Social, Video, Spiel, ...) -- eines der zehn Features.
   Ohne Aktivierung fällt das Feature einfach auf \glqq{}Leerlauf\grqq{}
-  zurueck und die App läuft trotzdem. \\
+  zurück und die App läuft trotzdem. \\
 \textbf{Akku-Optimierung deaktivieren} & Standard-Dialog via Button \glqq{}Akku-Optimierung deaktivieren\grqq{} &
   Damit der Service auch nach Stunden Inaktivität nicht von Doze
   oder herstellerseitigen Aggressive-Killer-Regeln (vor allem MIUI)
@@ -1578,7 +1577,7 @@ schwach. In den letzten Tagen vor Abgabe deshalb noch ein
   Google und Linear-Baseline).
 \item Alle Infrastruktur-Buttons in eine separate
   \emph{Settings}-Activity hinter ein Zahnrad-Icon ausgelagert,
-  damit die Hauptbühne der App das eigene Hauptfeature traegt
+  damit die Hauptbühne der App das eigene Hauptfeature trägt
   und kein Knopf-Buffet wird.
 \item Confidence-Anzeige sowohl im Live-Tab als auch in der
   Notification, damit der Vorhersage immer eine Verlässlichkeits-
@@ -1628,7 +1627,7 @@ macht die wichtigsten davon explizit -- inklusive der Fehler, die
 mich dorthin geführt haben.
 
 \paragraph{Die Story in vier Wendepunkten.}
-Vier Momente haben den Verlauf des Projekts inhaltlich gepraegt.
+Vier Momente haben den Verlauf des Projekts inhaltlich geprägt.
 Sie sind in Abbildung~\ref{fig:storyline} chronologisch eingezeichnet.
 
 \begin{figure}[H]
@@ -1702,13 +1701,13 @@ W1 & 10 Features pro Messpunkt &
   Kompromiss aus Vollständigkeit und Speicher-Overhead \\
 W2 & Statistik-Grundlagen parallel auffrischen &
   Erst loslegen, Theorie später &
-  Hat den Aha-Moment in W3 erst moeglich gemacht \\
+  Hat den Aha-Moment in W3 erst möglich gemacht \\
 W3 & Segment-Level-Split &
   Random-Split (initial) &
   Random war Data-Leakage; MAE wurde von Fake-0,53\,h zu echtem 9,96\,h \\
 W3--4 & Multi-Device-Datensammlung &
   Nur Xiaomi (eigenes Gerät) &
-  Xiaomi-Daten zu 88\,\% ueber 75\,\% -- zu wenig Entlade-Dynamik \\
+  Xiaomi-Daten zu 88\,\% über 75\,\% -- zu wenig Entlade-Dynamik \\
 W5 & INT8-Quantisierung (14,4\,KB) &
   Float32-Modell ($\sim$\,50\,KB) &
   TFLite-INT8 reicht in der Genauigkeit, ist deutlich kleiner \\
@@ -1728,7 +1727,7 @@ Durchgängig & KI-Modus zweigeteilt &
 \end{tabular}
 \end{table}
 
-\paragraph{Was ich rueckblickend anders gemacht hätte.}
+\paragraph{Was ich rückblickend anders gemacht hätte.}
 Drei ehrliche Lerneffekte aus dem Verlauf -- bewusst keine
 nachträgliche Glättung der Geschichte:
 
@@ -1737,8 +1736,8 @@ nachträgliche Glättung der Geschichte:
   ersten drei Wochen hat methodisch wenig gebracht. Hätte ich
   von Anfang an parallele Datensammlung auf mindestens zwei
   Geräten organisiert, wäre der Verteilungs-Aha-Moment
-  (Akku zu 88\,\% ueber 75\,\%) zwei Wochen früher gekommen.
-\item \emph{UI-Investition nicht so spaet.} Der UI-Refactor in
+  (Akku zu 88\,\% über 75\,\%) zwei Wochen früher gekommen.
+\item \emph{UI-Investition nicht so spät.} Der UI-Refactor in
   Woche 7 war für die Verteidigung essenziell, lief aber unter
   Zeitdruck. Eine \glqq{}30-Minuten-UI-Pflege\grqq{} pro Woche
   hätte das verteilt und entspannter gemacht.
@@ -1841,7 +1840,7 @@ Aufgabe:
 
 Genutzt wurde \textbf{Claude Pro} (Subscription), nicht der
 API-Zugang. Der Subscription-Modus deckelt das Budget automatisch
-ueber Zeitfenster -- ein zusaetzlicher Schutz gegen unbeabsichtigte
+über Zeitfenster -- ein zusätzlicher Schutz gegen unbeabsichtigte
 Endlos-Schleifen.
 
 \textbf{Bilanz.}
@@ -1862,12 +1861,12 @@ Debugging vor Ort.
 \item \emph{Bewährung im Realbetrieb.} Die App lief 45~Tage am
   Stück auf vier verschiedenen Geräten unter realer Alltags-
   Nutzung -- kein Crash, kein Daten-Verlust. Der
-  Foreground-Service hat ueber Boot-Reboots und das versehentliche
-  Wegwischen aus dem Recent-Apps-Menue hinweg selbstaendig
+  Foreground-Service hat über Boot-Reboots und das versehentliche
+  Wegwischen aus dem Recent-Apps-Menü hinweg selbständig
   wieder gestartet. Diese 180~ungeplant getesteten Restart-Pfade
   sind das eigentliche Funktions-Argument für eine App, die im
   Hintergrund laufen soll.
-\item \emph{Drei unabhaengige Tester.} Drei Familienmitglieder
+\item \emph{Drei unabhängige Tester.} Drei Familienmitglieder
   haben die App mehrere Wochen lang ohne Eingreifen genutzt -- die
   App musste also bedienbar genug sein, um ohne Anleitung im
   Alltag zu funktionieren. Die UI mit Onboarding und 2-Tab-Layout
@@ -1896,7 +1895,7 @@ Debugging vor Ort.
   sauberer.
 \item Der Genauigkeits-Vergleich der drei Methoden (eigenes Modell
   vs.~Google vs.~Linear) im Genauigkeits-Tab basiert auf dem
-  letzten Discharge-Lauf -- ein laengerer Verlauf ueber mehrere
+  letzten Discharge-Lauf -- ein längerer Verlauf über mehrere
   Tage wäre aussagekräftiger.
 \end{itemize}
 
