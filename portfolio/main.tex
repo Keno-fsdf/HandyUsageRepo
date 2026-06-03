@@ -313,13 +313,12 @@ Aus Nutzer- und Marktsicht steht die App auf fünf Punkten:
 
 \subsection{Zielsetzung}
 
-Ziel der Arbeit ist eine Android-App, die das in
-Abschnitt~\ref{sec:usp} beschriebene Hauptfeature praktisch
-umsetzt: eine eigene Restlaufzeit-Vorhersage durch ein
-TinyML-Modell, das vollständig auf dem Gerät läuft, dort vom
+Ziel der Arbeit ist die Umsetzung des in
+Abschnitt~\ref{sec:usp} beschriebenen Hauptfeatures innerhalb
+einer Android-App: eine eigene Restlaufzeit-Vorhersage durch ein
+TinyML-Modell, das vollständig auf dem Gerät läuft und vom
 Nutzer auf den eigenen gesammelten Daten nachtrainiert werden
-kann -- und auch auf Android-Versionen funktioniert, die im
-System gar keine ML-basierte Akku-Schätzung haben.
+kann.
 
 Damit dieses Hauptfeature belastbar wird, müssen vier Bausteine
 zusammenspielen:
@@ -336,8 +335,7 @@ zusammenspielen:
   Smartphones flüssig zu inferieren, und klein genug, um es mit
   jeder neuen Trainings-Runde durch eine neue Version ersetzen
   zu können. Vorhersage erscheint in Notification und in drei
-  spezialisierten Tabs (Live, Algorithmus, Genauigkeit) --
-  zusammen mit der Google-API als Vergleichswert.
+  spezialisierten Tabs (Live, Algorithmus, Genauigkeit).
 \item Eine Python-Trainings-Pipeline am PC, die die aus der App
   exportierte CSV einliest, daraus ein nutzerspezifisches Modell
   trainiert und es als neue \code{.tflite}-Datei zurück in die
@@ -351,13 +349,6 @@ zusammenspielen:
   ausfällt. Eine Vorhersage ohne Genauigkeits-Aussage wäre für
   den Nutzer wertlos.
 \end{enumerate}
-
-Dieses Portfolio dokumentiert den \emph{Bau-Aufwand}, die
-Architektur und die Programmier-Eigenleistung der vier Bausteine.
-Die \emph{wissenschaftliche} Auswertung des
-Multi-Device-Vergleichs ist Gegenstand der separaten
-Paper-Einreichung (\datei{paper/main.pdf} im selben Repo) und nicht
-Inhalt dieses Dokuments.
 
 \subsection{Rahmenbedingungen}
 
