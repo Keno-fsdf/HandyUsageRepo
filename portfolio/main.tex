@@ -342,9 +342,12 @@ zusammenspielen:
 \item Eine Python-Trainings-Pipeline am PC, die die aus der App
   exportierte CSV einliest, daraus ein nutzerspezifisches Modell
   trainiert und es als neue \code{.tflite}-Datei zurück in die
-  App deployt. Genau das macht den \glqq{}vom Nutzer auf eigene
-  Daten nachtrainierbar\grqq{}-Anspruch des USPs operationell:
-  ohne diesen Schritt wäre das mitgelieferte Modell statisch.
+  App deployt. Das mitgelieferte Modell läuft schon direkt nach
+  Installation. Die Pipeline ist ein optionaler Extra-Schritt für
+  Nutzer, die das Modell auf ihre eigenen Daten zuschneiden
+  möchten -- und macht damit den
+  \glqq{}nachtrainierbar\grqq{}-Anspruch des USPs praktisch
+  durchführbar.
 \item Eine eingebaute Auswertung, die im Genauigkeits-Tab live
   zeigt, wie das eigene Modell gegen die Google-API und eine
   einfache lineare Baseline abschneidet -- ehrlich, auch wenn
