@@ -378,10 +378,10 @@ TFLite-Modell.
 \textbf{Kennzahl} & \textbf{Wert} \\
 \midrule
 Code-Umfang gesamt        & $\approx$\;5.600 Zeilen (Kotlin + Python + XML) \\
-Android-App               & 18 Kotlin-Module (App-Lifecycle, Service, Daten, UI-Tabs + Onboarding + Settings, Predictor, Confidence, Accuracy, Algorithm-View + drei Custom-Visualisierungen inkl. Modell-Architektur) \\
+Android-App               & 20 Kotlin-Module (App-Lifecycle, Service, Daten, UI-Tabs + Onboarding + Settings, Predictor, Confidence, Accuracy, Algorithm-View + drei Custom-Visualisierungen inkl. Modell-Architektur) \\
 Python-Pipeline           & 25 Module in zwei Schichten (\code{methods/}, \code{evaluation/}) \\
 Test-Geräte               & 4 (Xiaomi 2107113SG + Pixel 7 / 8 / 9 Pro, davon 3 bei Familienmitgliedern) \\
-Feld-Sammlung             & 45 Tage Dauerbetrieb, 180 Service-Sessions \\
+Feld-Sammlung             & 48 Tage Dauerbetrieb, 180 Service-Sessions \\
 Datensatz                 & 66.001 Messpunkte $\times$ 10 Features \\
 TFLite-Modell             & 14{,}4\,KB INT8-quantisiert, $\sim$\,5\,$\mu$s pro Inferenz \\
 \bottomrule
@@ -706,7 +706,7 @@ weggeklickt hat.}
 
 \paragraph{Eigenes Modell trainieren (aus Settings erreichbar).}
 Wer das mitgelieferte Modell durch eines ersetzen möchte, das auf
-den eigenen 45+\,Tagen Daten trainiert ist, findet hier eine
+den eigenen Daten trainiert ist, findet hier eine
 Anleitung in fünf Schritten inklusive Repo-Link.
 
 \begin{figure}[H]
@@ -881,7 +881,7 @@ andere Apps noch ein angeschlossener PC können die Datei direkt
 sehen (siehe Datenschutz-Subsection~\ref{sec:datenschutz}). Der
 Export erfolgt explizit per Share-Intent durch den Nutzer.
 
-Über vier Geräte hinweg wurden in 45 Tagen
+Über vier Geräte hinweg wurden in 48 Tagen
 \textbf{66.001 Messpunkte} in \textbf{180 Sessions} gesammelt.
 
 \subsection{Datenschutz}
@@ -1278,7 +1278,7 @@ Auswertungs-Schicht.
 \toprule
 \textbf{Bereich} & \textbf{Zeilen (ohne Leerzeilen)} \\
 \midrule
-Android-App Kotlin (14 Dateien)                      & $\approx$\;1.450 \\
+Android-App Kotlin (20 Dateien)                      & $\approx$\;1.450 \\
 Android-App Ressourcen (XML-Layouts + Drawables)     & $\approx$\;650 \\
 Python-Pipeline (\code{methods/}, 13 Module)         & $\approx$\;1.150 \\
 Python-Auswertung (\code{evaluation/}, 12 Module)    & $\approx$\;2.050 \\
@@ -1818,7 +1818,7 @@ Debugging vor Ort.
 \textbf{Was funktioniert:}
 
 \begin{itemize}
-\item \emph{Bewährung im Realbetrieb.} Die App lief 45~Tage am
+\item \emph{Bewährung im Realbetrieb.} Die App lief 48~Tage am
   Stück auf vier verschiedenen Geräten unter realer Alltags-
   Nutzung -- kein Crash, kein Daten-Verlust. Der
   Foreground-Service hat über Boot-Reboots und das versehentliche
