@@ -190,14 +190,18 @@ die Modell-Architektur bis zum UI-Refactor -- ordnen sich diesem
 Hauptfeature unter.
 
 Das mitgelieferte Conv1D-Netz ist mit 14{,}4\,KB kleiner als eine
-WhatsApp-Sprachnachricht, läuft INT8-quantisiert auf jeder
-Android-Version ohne spürbaren Energie- oder Speicher-Overhead und
-hält sämtliche Sensordaten lokal -- es gibt keinen Server-Roundtrip.
-Daten werden in der App gesammelt, am PC trainiert und das fertige
-TFLite-Modell wieder zurück in die App deployt; die App ist damit
-nicht nur Konsument eines vortrainierten Modells, sondern Teil einer
-schließbaren Trainings-Schleife, die geräte- und nutzerspezifisch
-nachjustiert werden kann.
+WhatsApp-Sprachnachricht. Es läuft INT8-quantisiert auf jeder
+Android-Version ohne spürbaren Energie- oder Speicher-Overhead, und
+alle Sensordaten bleiben dabei lokal auf dem Gerät. Es gibt keinen
+Server-Roundtrip.
+
+Jeder Nutzer kann das Modell mit eigenen Daten nachtrainieren.
+Dafür sammelt er die Daten in der App, trainiert am PC ein neues
+Modell und deployt die fertige TFLite-Datei zurück in die App. So
+lässt sich das Modell auf sein konkretes Gerät und sein
+Nutzungsverhalten zuschneiden. Die App ist damit nicht nur Konsument
+eines vortrainierten Modells, sondern Teil einer schließbaren
+Trainings-Schleife.
 
 Auf älteren Geräten ist die App \emph{überhaupt} die einzige
 verfügbare ML-Vorhersage: erst mit Android~12 (Oktober~2021) hat
