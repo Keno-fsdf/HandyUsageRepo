@@ -175,23 +175,6 @@
 \section{Ausgangssituation und Zielsetzung}
 \label{sec:ausgangssituation}
 
-\subsection{Problemstellung}
-
-Smartphone-Akkuanzeigen funktionieren auf den meisten Geräten seit
-Android~5 (2014) nach einem einfachen Prinzip: man rechnet den
-durchschnittlichen Verbrauch der letzten Stunden linear in die
-Zukunft. Wer schon einmal mit 30\,\% Akku
-\glqq{}noch 4 Stunden\grqq{} im Display hatte und dann nach einem
-YouTube-Video plötzlich bei 15\,\% mit \glqq{}noch 1 Stunde\grqq{}
-stand, kennt das Problem.
-
-Mit Android~12 hat Google im Oktober 2021 ein eigenes
-ML-basiertes Modell ins System eingebaut
-(\code{PowerManager.getBatteryDischargePrediction()})~\cite{android2021powermanager}.
-Auf Pixel-Geräten nutzt der Settings-Screen diesen Wert; auf
-Geräten anderer Hersteller (Xiaomi, Samsung) wird er meist gar
-nicht angezeigt, obwohl die API verfügbar ist.
-
 \subsection{Alleinstellungsmerkmal}
 \label{sec:usp}
 
@@ -222,6 +205,23 @@ Akku-Vorhersage-Lösungen und prägen die Architektur der gesamten Arbeit:
   sondern Teil einer schließbaren Trainings-Schleife, die
   geräte- und nutzerspezifisch nachjustiert werden kann.
 \end{enumerate}
+
+\subsection{Problemstellung}
+
+Smartphone-Akkuanzeigen funktionieren auf den meisten Geräten seit
+Android~5 (2014) nach einem einfachen Prinzip: man rechnet den
+durchschnittlichen Verbrauch der letzten Stunden linear in die
+Zukunft. Wer schon einmal mit 30\,\% Akku
+\glqq{}noch 4 Stunden\grqq{} im Display hatte und dann nach einem
+YouTube-Video plötzlich bei 15\,\% mit \glqq{}noch 1 Stunde\grqq{}
+stand, kennt das Problem.
+
+Mit Android~12 hat Google im Oktober 2021 ein eigenes
+ML-basiertes Modell ins System eingebaut
+(\code{PowerManager.getBatteryDischargePrediction()})~\cite{android2021powermanager}.
+Auf Pixel-Geräten nutzt der Settings-Screen diesen Wert; auf
+Geräten anderer Hersteller (Xiaomi, Samsung) wird er meist gar
+nicht angezeigt, obwohl die API verfügbar ist.
 
 \subsection{Konkrete Anwendungsszenarien}
 \label{sec:szenarien}
