@@ -178,33 +178,30 @@
 \subsection{Alleinstellungsmerkmal}
 \label{sec:usp}
 
-Drei Aspekte unterscheiden den hier verfolgten Ansatz von vergleichbaren
-Akku-Vorhersage-Lösungen und prägen die Architektur der gesamten Arbeit:
+\begin{quote}
+\large\itshape Eine eigene Akku-Vorhersage durch ein 14{,}4\,KB
+großes TinyML-Modell, das vollständig offline auf jedem
+Android-Gerät läuft -- auch dort, wo Googles eigene Anzeige
+fehlt.
+\end{quote}
 
-\begin{enumerate}
-\item \textbf{Schließt eine Lücke, die selbst Google offen lässt.}
-  Die seit Android~12 verfügbare
-  \code{PowerManager.getBatteryDischargePrediction()}-API liefert
-  zwar einen ML-basierten Wert, wird aber von den meisten
-  Hersteller-Launchern (Xiaomi, Samsung) gar nicht angezeigt. Die
-  App stellt eine eigene, vergleichbare Vorhersage \emph{auf jedem
-  Gerät} bereit -- unabhängig davon, ob der Hersteller die
-  System-API in seiner Oberfläche freigibt.
+\noindent Das ist das eine Feature, um das sich die gesamte Arbeit
+dreht. Alle weiteren Entscheidungen -- von der Sensorauswahl über
+die Modell-Architektur bis zum UI-Refactor -- ordnen sich diesem
+Hauptfeature unter.
 
-\item \textbf{Vollständig on-device ohne Cloud-Anbindung.} Das
-  quantisierte TFLite-Modell ist mit 14{,}4\,KB klein genug, um
-  auf jeder Android-Version ohne nennenswerten Speicher- oder
-  Energie-Overhead zu laufen. Sämtliche Sensordaten verlassen das
-  Gerät nicht -- es entstehen weder Cloud-Kosten noch
-  Datenschutz-Implikationen.
-
-\item \textbf{Vollständiger MLOps-Zyklus statt isolierter
-  Inferenz.} Daten werden in der App gesammelt, am PC trainiert
-  und das fertige Modell wieder in die App zurück-deployt. Die App
-  ist damit nicht nur Konsument eines vortrainierten Modells,
-  sondern Teil einer schließbaren Trainings-Schleife, die
-  geräte- und nutzerspezifisch nachjustiert werden kann.
-\end{enumerate}
+Hersteller wie Xiaomi und Samsung zeigen Googles eigene
+\code{PowerManager.getBatteryDischargePrediction()}-API in ihren
+Launchern nicht an, obwohl die Schnittstelle seit Android~12
+verfügbar ist. Die App schließt genau diese Lücke -- mit einem
+eigenen Modell, das kleiner ist als eine WhatsApp-Sprachnachricht,
+auf jeder Android-Version ohne spürbaren Energie- oder
+Speicher-Overhead läuft und keine Sensordaten an einen Server
+schickt. Daten werden in der App gesammelt, am PC trainiert und das
+fertige TFLite-Modell wieder zurück in die App deployt; die App ist
+damit nicht nur Konsument eines vortrainierten Modells, sondern Teil
+einer schließbaren Trainings-Schleife, die geräte- und
+nutzerspezifisch nachjustiert werden kann.
 
 \subsection{Problemstellung}
 
