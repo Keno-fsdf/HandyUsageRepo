@@ -396,37 +396,34 @@ TFLite-Modell             & 14{,}4\,KB INT8-quantisiert, $\sim$\,5\,$\mu$s pro I
 \section{Architekturmodell}
 \label{sec:architektur}
 
-\subsection{Was passiert im Inneren -- in einfachen Worten}
+\subsection{Was passiert im Inneren}
 \label{sec:einordnung}
 
-Bevor wir technisch werden: hier eine bewusst nicht-technische
-Beschreibung dessen, was die App tatsächlich tut. Wer Akkuanzeigen
-kennt, hat in 60~Sekunden den ganzen Mechanismus verstanden:
+Die App arbeitet in drei aufeinander aufbauenden Schritten:
 
 \begin{enumerate}
-\item \textbf{Daten sammeln (Beobachten):} Alle 30~Sekunden schreibt
-  die App zehn Werte vom Handy auf -- zum Beispiel den aktuellen
-  Akkustand, die Bildschirm-Helligkeit, ob gerade YouTube läuft, die
-  Temperatur des Geräts und einige mehr. Das ist nichts anderes,
-  als wenn man stündlich Tagebuch über sein eigenes Verhalten
-  schreiben würde. Über mehrere Wochen entsteht so eine Tabelle
-  mit über 66.000~Zeilen.
-\item \textbf{Muster lernen (Training auf dem PC):} Diese Tabelle
-  wird auf den Laptop kopiert und einem kleinen Programm (dem
-  \glqq{}Modell\grqq{}) gezeigt. Das Programm lernt Zusammenhänge
-  wie: \emph{Wenn die Helligkeit hoch ist, YouTube läuft und die
-  Temperatur 38\,$^\circ$C beträgt, dann hält der Akku noch
-  ungefähr 2~Stunden.} Es lernt diese Zusammenhänge nicht aus
-  Büchern, sondern indem es die Tabelle viele Male durchrechnet
-  und seine Vorhersagen mit dem tatsächlichen Akku-Verlauf
-  abgleicht.
-\item \textbf{Im Alltag vorhersagen (Modell zurück im Handy):} Das
-  fertig gelernte Modell ist nur 14,4\,KB groß -- kleiner als ein
-  WhatsApp-Sprachmemo. Es wandert zurück in die App, läuft dort
-  ohne Internetverbindung und sagt im Hintergrund alle 30~Sekunden
-  eine neue Restlaufzeit voraus. Zum Vergleich zeigt die App
-  gleichzeitig Googles eigene Vorhersage und einen ganz simplen
-  Wert nach dem Motto \glqq{}so wie es bisher lief, läuft es weiter\grqq{}.
+\item \textbf{Daten sammeln.} Alle 30~Sekunden schreibt die App
+  zehn Werte vom Handy in eine CSV-Datei -- aktueller Akkustand,
+  Bildschirm-Helligkeit, aktive App-Kategorie (z.\,B. Video,
+  Browser, Spiel), Geräte-Temperatur, CPU-Last,
+  Netzwerk-Zustand und so weiter. Über mehrere Wochen entsteht
+  so eine Tabelle mit rund 66.000~Zeilen.
+\item \textbf{Modell trainieren am PC.} Die Tabelle wird auf den
+  PC übertragen und dort von einem neuronalen Netz (Conv1D +
+  Dense) durchgearbeitet. In jeder Trainings-Iteration vergleicht
+  das Modell seine vorhergesagte Restlaufzeit mit dem
+  tatsächlichen Akku-Verlauf in der Tabelle und justiert seine
+  internen Gewichte so, dass die Differenz schrumpft. Nach
+  wenigen Minuten hat es Zusammenhänge gelernt wie:
+  \emph{Helligkeit hoch, Video-App aktiv, Temperatur
+  38\,$^\circ$C $\to$ Restlaufzeit etwa 2~Stunden.}
+\item \textbf{Vorhersagen im Alltag.} Das fertig trainierte Modell
+  ist nur 14{,}4\,KB groß -- kleiner als ein WhatsApp-Sprachmemo.
+  Es wird als \datei{.tflite}-Datei zurück in die App deployt,
+  läuft dort offline und liefert alle 30~Sekunden eine neue
+  Restlaufzeit. Parallel zeigt die App Googles eigene Vorhersage
+  und eine lineare Baseline (Annahme: der Verbrauch der letzten
+  Minuten setzt sich konstant fort) als Vergleichswerte.
 \end{enumerate}
 
 \textbf{Warum genau diese Aufteilung?} Die drei Schritte sind
