@@ -907,10 +907,10 @@ fielen einige naheliegende Kandidaten weg:
 \item \textbf{Kernel-Fuel-Gauge}: gesperrt.
 \end{itemize}
 
-Was übrig blieb, sind die zehn Features oben. Sie decken drei
-Gruppen ab: \textbf{Akkuzustand} (level, temperature, charging),
+Die zehn Features gliedern sich in drei Gruppen:
+\textbf{Akkuzustand} (level, temperature, charging),
 \textbf{Nutzungsintensität} (screen, brightness, app\_category,
-cpu\_usage), \textbf{Konnektivität} (wifi, mobile, hotspot).
+cpu\_usage) und \textbf{Konnektivität} (wifi, mobile, hotspot).
 
 \subsection{Speicherung und Export}
 
@@ -1318,14 +1318,9 @@ konfiguriert ist, wird das beste Modell zurückgegeben.}
 
 \subsection{Code-Umfang und Eigenleistung}
 
-Über die sieben Bearbeitungswochen sind drei Schichten parallel
-entstanden -- die Android-App in Kotlin, die ML-Pipeline am PC und
-die Auswertungs-Schicht. Tabelle~\ref{tab:codeumfang} zeigt den
-Umfang nach Bereich; die wichtigsten Brocken sind die
-Auswertungs-Schicht ($\approx$\,2.050 Zeilen reine
-Auswertungs-Logik) und die Android-App
-($\approx$\,850 Zeilen Kotlin, die produktionsnah auf vier Geräten
-laufen).
+Das Projekt umfasst drei parallel entstandene Schichten: die
+Android-App in Kotlin, die ML-Pipeline am PC und die
+Auswertungs-Schicht.
 
 \begin{table}[H]
 \centering
