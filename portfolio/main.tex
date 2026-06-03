@@ -327,12 +327,12 @@ Damit dieses Hauptfeature belastbar wird, müssen vier Bausteine
 zusammenspielen:
 
 \begin{enumerate}
-\item Eine Android-App, die im Hintergrund alle 30~Sekunden zehn
-  Sensor-Features sammelt (Akku, Helligkeit, App-Kategorie, CPU,
-  Temperatur, Netzwerk-Zustand, \ldots) und einen
-  Foreground-Service betreibt, der Boot-Reboots und das
-  Wegwischen aus der Recent-Apps-Übersicht übersteht. Ohne
-  saubere Datensammlung kein verlässliches Modell.
+\item Eine Hintergrund-Datensammlung, die alle 30~Sekunden zehn
+  Sensor-Features aufzeichnet (Akku, Helligkeit, App-Kategorie,
+  CPU, Temperatur, Netzwerk-Zustand, \ldots) und über einen
+  Foreground-Service auch Boot-Reboots und das Wegwischen aus
+  der Recent-Apps-Übersicht übersteht. Ohne saubere
+  Datensammlung kein verlässliches Modell.
 \item Ein quantisiertes TFLite-Modell ($<$\,15\,KB), das in der App
   on-device läuft -- klein genug, um auch auf älteren
   Smartphones flüssig zu inferieren, und klein genug, um es mit
