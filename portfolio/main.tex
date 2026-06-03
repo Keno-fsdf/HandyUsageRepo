@@ -200,11 +200,14 @@ nicht nur Konsument eines vortrainierten Modells, sondern Teil einer
 schließbaren Trainings-Schleife, die geräte- und nutzerspezifisch
 nachjustiert werden kann.
 
-Als angenehmer Nebeneffekt liefert die App damit auch dort eine
-Restlaufzeit-Vorhersage, wo das System sonst gar nichts anzeigt --
-etwa auf Geräten von Xiaomi oder Samsung, deren Hersteller-Launcher
-Googles eigene \code{PowerManager.getBatteryDischargePrediction()}-API
-nicht sichtbar machen.
+Als angenehmer Nebeneffekt macht die App zugleich \emph{Googles
+eigene} Restlaufzeit-Schätzung sichtbar: die seit Android~12
+verfügbare \code{PowerManager.getBatteryDischargePrediction()}-API
+wird zwar auf Pixel-Geräten im System angezeigt, von
+Hersteller-Oberflächen wie Xiaomi, Samsung oder Motorola dagegen
+gar nicht. Die App liest sie trotzdem aus und blendet sie im
+Genauigkeits-Tab als Vergleichswert neben der eigenen TinyML-Vorhersage
+ein.
 
 \subsection{Problemstellung}
 
