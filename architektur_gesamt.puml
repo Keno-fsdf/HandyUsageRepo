@@ -10,98 +10,95 @@ skinparam PackagePadding 14
 
 top to bottom direction
 
-title Architektur: 6-Wege-Vergleich für TinyML-Akkulaufzeit-Vorhersage\n
+title Gesamtarchitektur: Akkuvorhersage mit TinyML\n
 
 ' ============================================================
-'  ANDROID APP (oben) - Datensammlung + On-Device-Inferenz
+'  ANDROID APP — UI + Datensammlung + On-Device-Inferenz
 ' ============================================================
 package "Android Smartphone" as phone #E3F2FD {
 
-    [UI Layer\n(Kotlin / XML)\n---\nLive-TinyML | Live-Linear\nStart/Stopp | CSV-Export] as ui #BBDEFB
+    package "UI Layer (Kotlin / XML)" as uilayer #BBDEFB {
+        [OnboardingActivity\n(4 Slides,\nbeim ersten Start)] as onboarding
+        [MainActivity\n(BottomNavigation)] as mainact
+        [LiveFragment\n(Vorhersage +\n10 Live-Sensoren)] as live
+        [AlgorithmFragment\n(Conv1D-Visualisierung +\nModelDeepDive-Sheet)] as algo
+        [AccuracyFragment\n(3-Wege-Score +\nVerlauf)] as accuracy
+        [SettingsActivity\n(Permissions, CSV-Export,\nOnboarding-Replay,\nBasis-Daten-Reset,\nTrain-Own-Anleitung)] as settings
+    }
 
-    [DataCollectorService\n(Foreground, alle 30s)\n---\n10 Feature-Extraktoren\n+ Google-API-Wert\n+ Personalized-Flag\n+ Linear-Baseline] as service #C8E6C9
+    [DataCollectorService\n(Foreground, alle 30s)\n---\n10 Feature-Extraktoren\n+ Notification mit\nConfidence-Pille] as service #C8E6C9
 
-    [BatteryPredictor\n---\nTFLite Interpreter (INT8)\nStandardScaler (Kotlin)\nRingpuffer w=10] as inferenz #FFF9C4
+    [BootReceiver\n(Auto-Restart nach\nReboot / Wegwischen)] as boot #C8E6C9
+
+    [BatteryPredictor\n---\nTFLite Interpreter (INT8)\nStandardScaler\nRingPuffer w=10] as inferenz #FFF9C4
+
+    [AccuracyComputer\n---\neigenes Modell vs\nGoogle-API vs\nLineare Baseline] as accComputer #FFF9C4
+
+    [ConfidenceLevel\n(buffer + battery\nbasiert: rot/gelb/grün)] as confidence #FFF9C4
 
     [Android System APIs\n---\nBatteryManager | PowerManager\nUsageStatsManager\nConnectivityManager\n/sys/.../cpufreq] as apis #E0E0E0
 
     database "App Storage" as storage {
-        [battery_data.csv\n(14 Spalten)]
-        [battery_model.tflite\n(14 KB INT8)]
+        [battery_data.csv\n(eigene Sammlung)] as csv_own
+        [assets/sample_data.csv\n(Basis-Daten,\nautom. geladen)] as csv_basis
+        [assets/battery_model.tflite\n(14,4 KB INT8)] as tflite_app
     }
 }
 
 ' ============================================================
-'  PYTHON PIPELINE (unten) - Training + Vergleich + Reporting
+'  PYTHON PIPELINE — Training + TFLite-Export
 ' ============================================================
 package "Entwicklungsrechner (run_pipeline.py)" as pc #FFF3E0 {
 
-    [configs/default.yaml\n(zentrale Hyperparameter)] as cfg #FFE0B2
+    [Phase 1: Datenvorbereitung\n(prepare_data.py)\n---\nCSV laden | Entlade-Segmente\nSliding-Window (w=10)\nSegment-Level-Split\nStandardScaler fit] as p1 #FFCCBC
 
-    [Stage data_prep\n---\nEntladesegmente | Sliding-Window\nSEGMENT-LEVEL Split (kein Leakage!)\nzwei Targets: y_extrap, y_real\nStandardScaler] as data #FFCCBC
+    [Phase 2: Modelltraining\n(train_model.py)\n---\nConv1D + Dense\nAdam + MSE\nEarlyStopping] as p2 #FFCCBC
 
-    package "Stage train (sechs Methoden)" as train_pkg #FFCCBC {
-        [methods/tinyml\nConv1D Training] as m1
-        [methods/random_forest\nSanity-Modell] as m2
-        [methods/mean_predictor\nFloor-Baseline] as m3
-        [methods/linear_baseline\ndrain-rate] as m4
-        [methods/exponential_fit\na + c·exp(-k·t)] as m5
-        [methods/google_api\nextract aus CSV] as m6
-    }
-
-    [Stage tflite_convert\n---\ndynamic_range | float16 | int8_full\nGröße + Latenz pro Variante] as tfl #FFCCBC
-
-    package "Stage evaluate" as eval_pkg #D1C4E9 {
-        [accuracy + Bootstrap 95% CI] as e1
-        [significance\n(Permutationstests)] as e2
-        [data_diagnostics\n(Pearson, Spearman, MI)] as e3
-        [feature_importance\n(Permutation auf RF)] as e4
-        [per_segment_analysis\n(Battery-Level / Segmentlänge)] as e5
-        [efficiency\n(Latenz / Größe / Params)] as e6
-    }
-
-    [report_generator\n→ reports/REPORT.md\n→ reports/main_table.csv] as rep #B39DDB
+    [Phase 3: TFLite-Konvertierung\n(convert_tflite.py)\n---\nINT8-Quantisierung\nValidierung\nGröße / Latenz prüfen] as p3 #FFCCBC
 
     database "Dateisystem" as fs {
-        [data/raw, data/processed] as fdata
-        [models/\n*.keras, *.tflite, *.joblib] as fmodel
-        [reports/\n*.json, REPORT.md, figures/] as freports
+        [data/ Rohdaten + Splits] as fdata
+        [models/ *.keras, *.tflite] as fmodel
+        [reports/ Plots, Metriken] as freports
     }
 }
 
 ' ============================================================
-'  ANDROID INTERNE VERBINDUNGEN
+'  Verbindungen App (intern)
 ' ============================================================
-ui --> service : Start/Stopp
-service --> apis : liest Sensordaten
-service --> storage : schreibt CSV
+onboarding --> mainact : nach Abschluss
+mainact --> live
+mainact --> algo
+mainact --> accuracy
+mainact --> settings : Zahnrad-Icon
+settings --> service : Start / Stopp
+boot --> service : nach Reboot
+service --> apis : liest Sensoren
+service --> csv_own : schreibt CSV
 service --> inferenz : aktuelle Features
-inferenz --> ui : eigene Vorhersage anzeigen
-storage --> inferenz : lädt .tflite
+inferenz --> live : Vorhersage
+inferenz --> service : für Notification
+confidence --> live : Verlässlichkeits-Badge
+confidence --> service : Pille in Notification
+tflite_app --> inferenz : Modell laden
+csv_basis --> accComputer : Erst-Vergleich\n(Basis-Daten)
+csv_own --> accComputer : Verlauf
+accComputer --> accuracy : 3-Wege-Score
 
 ' ============================================================
-'  PYTHON INTERNE VERBINDUNGEN
+'  Verbindungen PC (intern)
 ' ============================================================
-cfg ..> data
-cfg ..> train_pkg
-cfg ..> tfl
-cfg ..> eval_pkg
-data --> train_pkg : npz-Splits
-m1 --> tfl : .keras
-tfl --> eval_pkg : .tflite-Varianten
-train_pkg --> eval_pkg : predictions_*.npz
-eval_pkg --> rep
-data ..> fdata : speichert
-train_pkg ..> fmodel
-tfl ..> fmodel
-eval_pkg ..> freports
-rep ..> freports
+p1 --> p2 : npz-Splits
+p2 --> p3 : .keras-Modell
+p1 ..> fdata : speichert
+p2 ..> fmodel
+p3 ..> fmodel
 
 ' ============================================================
-'  ZWISCHEN DEN SYSTEMEN
+'  Zwischen den Systemen
 ' ============================================================
-storage -[#2196F3,bold,dashed]down-> fdata : **CSV Export**\n(via Share Intent)
-fmodel -[#4CAF50,bold,dashed]up-> storage : **.tflite + Scaler-Werte**\n(in assets/ einbetten)
+csv_own -[#2196F3,bold,dashed]down-> fdata : **CSV Export**\n(via Share Intent)
+fmodel -[#4CAF50,bold,dashed]up-> tflite_app : **.tflite zurück**\n(in assets/ einbetten)
 
 ' ============================================================
 '  LEGENDE
@@ -110,10 +107,10 @@ legend bottom right
   |= Farbe |= Bedeutung |
   |<#E3F2FD> | Android Smartphone |
   |<#FFF3E0> | Entwicklungsrechner |
-  |<#C8E6C9> | Datensammlung |
+  |<#BBDEFB> | UI-Komponenten |
+  |<#C8E6C9> | Datensammlung / Service |
   |<#FFF9C4> | On-Device-Inferenz |
-  |<#FFCCBC> | Methods (Modelle + Baselines) |
-  |<#D1C4E9> | Evaluation (Metriken + Stat. Tests) |
+  |<#FFCCBC> | Pipeline-Phasen |
   |<#2196F3> | Datenfluss (CSV) |
   |<#4CAF50> | Modell-Deployment |
 endlegend
