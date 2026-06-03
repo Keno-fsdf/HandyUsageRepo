@@ -439,10 +439,9 @@ PC für Schritt~2). Das hat zwei Gründe:
   PC ist es in wenigen Minuten erledigt.
 \item Das fertige Modell ist dafür so klein, dass es im Handy
   problemlos im Hintergrund läuft, ohne dass der Nutzer etwas
-  davon merkt. Diese Asymmetrie -- \emph{trainieren ist teuer,
-  vorhersagen ist billig} -- ist typisch für ML-Systeme und der
-  Grund, warum es überhaupt sinnvoll ist, ein Modell auf einem
-  Gerät einzusetzen.
+  davon merkt. \emph{Trainieren ist teuer, vorhersagen ist
+  billig} -- diese Asymmetrie macht den On-Device-Einsatz
+  überhaupt erst möglich.
 \end{itemize}
 
 \textbf{Verortung im Kurs \glqq{}Mobile und Ubiquitäre Anwendungen\grqq{}.}
@@ -612,14 +611,11 @@ deshalb der UI-Refactor in Woche~7, dessen Ergebnis im Folgenden
 gezeigt wird.
 
 Im Zuge des Portfolio-Abschlusses wurde die UI vollständig
-überarbeitet, mit klarem Fokus auf das eine USP-Feature (eigene
-Vorhersage transparent sichtbar machen). Der Refactor folgt
-explizit den etablierten Mobile-Onboarding- und Explainable-AI-
-Best-Practices: vier Slides statt fünf (App-Onboarding-Studien
-zeigen einen deutlichen Abfall der Completion-Rate ab dem fünften
-Schritt), Confidence als visueller Indikator statt nackter Zahl,
-das eigentliche Feature direkt auf der Hauptbühne und
-Infrastruktur-Knöpfe in einem separaten Settings-Screen.
+überarbeitet, mit klarem Fokus auf das eine USP-Feature: die
+eigene Vorhersage transparent sichtbar machen. Konkret heißt
+das vier Onboarding-Slides, Confidence als visueller Indikator
+statt nackter Zahl, das Hauptfeature direkt auf der Startseite
+und Infrastruktur-Knöpfe in einem separaten Settings-Screen.
 
 \paragraph{Welcome-Bildschirm: Onboarding (vier Slides).}
 Beim allerersten Öffnen wird automatisch das vierteilige Onboarding
@@ -830,14 +826,6 @@ zeigen:
   zusätzlich die Confidence-Pille -- die Vorhersage hat eine
   Verlässlichkeits-Aussage immer mit dabei.
 \end{itemize}
-
-Die Refactor-Entscheidung folgt explizit den etablierten Mobile-
-Onboarding- und Explainable-AI-Best-Practices: drei Slides statt
-fünf (App-Onboarding-Studien zeigen einen deutlichen Abfall der
-Completion-Rate ab dem fünften Schritt), Confidence als visueller
-Indikator statt nackter Zahl, das eigentliche Feature direkt auf
-der Hauptbühne und Infrastruktur-Knöpfe in einem separaten
-Settings-Screen.
 
 \subsection{Python-Pipeline im Detail}
 
@@ -1609,12 +1597,6 @@ Konsistenz-Checks und in das Schreiben dieses Erfahrungsberichts.
 \subsection{Schlüssel-Entscheidungen, Fehler und Trade-offs}
 \label{sec:entscheidungen}
 
-Ein Teil der Glaubwürdigkeit dieser Arbeit liegt nicht in dem,
-was am Ende funktioniert, sondern in den Entscheidungen, die
-unterwegs gegen das Naheliegende getroffen wurden. Dieser Abschnitt
-macht die wichtigsten davon explizit -- inklusive der Fehler, die
-mich dorthin geführt haben.
-
 \paragraph{Die Story in vier Wendepunkten.}
 Vier Momente haben den Verlauf des Projekts inhaltlich geprägt.
 Sie sind in Abbildung~\ref{fig:storyline} chronologisch eingezeichnet.
@@ -1717,8 +1699,7 @@ Durchgängig & KI-Modus zweigeteilt &
 \end{table}
 
 \paragraph{Was ich rückblickend anders gemacht hätte.}
-Drei ehrliche Lerneffekte aus dem Verlauf -- bewusst keine
-nachträgliche Glättung der Geschichte:
+Drei Lerneffekte aus dem Verlauf:
 
 \begin{itemize}
 \item \emph{Früher Multi-Device.} Die Xiaomi-only-Phase in den
@@ -1764,7 +1745,6 @@ nachträgliche Glättung der Geschichte:
 
 Während des Projekts habe ich \textbf{Claude Code} (Anthropic, Modell
 Opus~4.7 mit 1M-Token-Kontext) als Programmier-Assistent verwendet.
-Dieser Abschnitt ist bewusst transparent gehalten.
 
 \textbf{Wofür Claude genutzt wurde:}
 
