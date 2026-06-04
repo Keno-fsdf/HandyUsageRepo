@@ -1380,9 +1380,8 @@ Modell garantiert übereinstimmt.
 \textbf{Setup und erste Datensammlung.}
 In dieser Woche das Repo angelegt und das Android-Projekt
 aufgesetzt. Erste Version
-des \code{DataCollectorService} mit Claude geprototypt --
-Foreground-Services aus der Vorlesung am laufenden Code
-nachvollzogen. Innerhalb der Woche lief die erste Messung auf dem
+des \code{DataCollectorService} mit Claude geprototypt.
+Innerhalb der Woche lief die erste Messung auf dem
 Xiaomi durch. Hauptproblem in dieser Woche: die
 \code{PACKAGE\_USAGE\_STATS}-Permission ist nicht via
 Standard-Dialog vergebbar -- der Nutzer muss in den Einstellungen
@@ -1410,15 +1409,12 @@ Confounder-Erkennung.
 
 \subsubsection*{Woche 3 (KW 15: 6.--12.\,April)}
 
-\textbf{Erstes Modell, erste Auswertung -- erstes Erschrecken.}
-Genug Daten zusammen ($\sim$11.000 Messpunkte), erstes Training
-durchgelaufen, MAE 0.53\,h. Habe das stolz aufgeschrieben. Dann
-stutzig geworden: warum ist das so viel besser als die
-Google-API? Beim Nachprüfen festgestellt, dass das ein klassisches
-Data-Leakage-Artefakt vom Random-Split war -- exakt das Muster,
-das ich eine Woche zuvor in den Statistik-Grundlagen wiederholt
-hatte. Pipeline auf Segment-Level-Split umgestellt $\to$ MAE wird
-zu 9.96\,h. Das war der methodische Wendepunkt der Arbeit.
+\textbf{Erstes Training -- und sofort verdächtig.}
+Bei $\sim$11.000 Messpunkten ergab das Modell einen MAE von
+0,53\,h, deutlich besser als die Google-API. Beim Nachprüfen
+festgestellt: ein klassisches Data-Leakage-Artefakt vom
+Random-Split. Pipeline auf Segment-Level-Split umgestellt
+$\to$ MAE 9,96\,h.
 
 Diese Phase habe ich besonders eng mit Claude im Desktop-App-Modus
 gearbeitet: jede Pipeline-Änderung wurde gegen die alten
@@ -1428,8 +1424,7 @@ Pixel~7~Pro weitergegeben.
 
 \subsubsection*{Woche 4 (KW 16: 13.--19.\,April)}
 
-\textbf{Multi-Device wird real -- und parallel Embedded-ML-Stoff
-durchgegangen.}
+\textbf{Multi-Device wird real.}
 APK an zwei weitere Familienmitglieder verteilt (Pixel~8~Pro,
 Pixel~9~Pro~XL). Wichtig vor allem die Aufklärung darüber, was
 genau gesammelt wird -- ich habe einen Mini-Datenschutz-Hinweis
@@ -1439,48 +1434,38 @@ zugestimmt. Parallel das CSV-Schema erweitert
 Logger so gebaut, dass er bei Schema-Wechsel die alte Datei
 sicher parkt.
 
-Diese Woche wollte ich früh genug verstehen, welche Stellschrauben
-es bei der späteren Modell-Konvertierung gibt. Habe deshalb
-einige Abende mit Embedded-ML-Material gegrindet, vor allem zu
-INT8-Quantisierung, Post-Training-Quantization und der Frage, was
-eigentlich auf Mobile passiert,
-wenn ein Float32-Modell auf INT8 gequetscht wird. Hat später den
-TFLite-Konvertierungs-Schritt deutlich beschleunigt -- ich wusste
-schon, was per-channel- vs.~per-tensor-Quantization bedeutet,
-bevor mir die TFLite-Doku das erzählen musste.
-
 \subsubsection*{Woche 5 (KW 17: 20.--26.\,April)}
 
 \textbf{Auswertungs-Tiefe.}
 Pipeline so umgebaut, dass sie alle vier Geräte-CSVs konsolidiert
-und auswertet. Mean-Predictor und Random Forest als
-Sanity-Modelle hinzugefügt, weil ein
-\glqq{}TinyML schlägt nichts\grqq{} wenig aussagekräftig wäre,
-ohne zu zeigen womit es überhaupt verglichen wird. Dazu noch die
-analytischen Baselines (Linear, Exponential) implementiert.
+und auswertet. Die lineare Baseline als Vergleichswert zur
+TinyML-Vorhersage implementiert -- damit zeigt der
+Genauigkeits-Tab in der App live drei Vorhersage-Quellen
+(eigenes TinyML-Modell, Google-API und lineare Baseline) mit
+ihrem jeweiligen MAE im letzten Discharge-Lauf.
 
-Diese Woche viel mit Claude im Sandbox-Container gearbeitet:
-zwei der drei Baseline-Implementierungen sind kleine, gut
-isolierte Skripte gewesen -- ideal um sie im Auto-Approve-Modus
-laufen zu lassen, während ich parallel an der eigentlichen
-Auswertungs-Logik weitergearbeitet habe. Der Effekt ist spürbar
-gewesen: zwei parallele Threads statt einer linearen Sequenz.
+Die Baseline-Implementierung war ein klar isoliertes Skript -- gut
+geeignet, um sie im Sandbox-Container mit Claude im
+Auto-Approve-Modus laufen zu lassen, während ich parallel an der
+Auswertungs-Logik weitergearbeitet habe.
 
 \subsubsection*{Woche 6 (KW 18: 27.\,April -- 3.\,Mai)}
 
 \textbf{Auswertungs-Infrastruktur fertig stellen.}
 Auswertungs-Skripte für Modell-Genauigkeit, Gerät-Vergleiche und
 Datenverteilungs-Diagnose in die Pipeline integriert.
-Zwischendurch die Xiaomi-Datensammlung beendet (28.\,April) -- die
-finale Datenmenge stand fest: 66.001 Messpunkte. Der Wechsel von
-Single-Device auf Multi-Device zeigte spürbar klarere Unterschiede
-zwischen den Methoden als noch zuvor; das hat die Entscheidung
-bestätigt, die Datensammlung über mehrere Geräte hinweg auszudehnen.
+Zwischendurch die Xiaomi-Datensammlung beendet (28.\,April); die
+Pixel-Geräte sammelten weiter. Der Wechsel von Single-Device auf
+Multi-Device zeigte spürbar klarere Unterschiede zwischen den
+Methoden als noch zuvor; das hat die Entscheidung bestätigt, die
+Datensammlung über mehrere Geräte hinweg auszudehnen.
 
 \subsubsection*{Woche 7 (KW 19--20: 4.--11.\,Mai)}
 
 \textbf{Konsolidierung, UI-Refactor und Dokumentation.}
-Pixel-Datensammlung beendet (10.\,Mai). Die Per-Device-Auswertung
+Pixel-Datensammlung beendet (10.\,Mai). Damit stand die finale
+Multi-Device-Datenmenge fest: 66.001 Messpunkte über alle vier
+Geräte. Die Per-Device-Auswertung
 zeigte deutlich unterschiedliche Modell-Performance je nach Gerät;
 beim Hineinschauen in die Datenverteilung wurde der Grund sichtbar:
 auf dem Xiaomi war der Akku 88\,\% der Zeit über 75\,\%, also
