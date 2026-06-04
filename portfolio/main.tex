@@ -1255,14 +1255,19 @@ def find_discharge_segments(df, min_length, max_gap_ms):
 
 \subsection{Trainings-Verlauf}
 
-Abbildung~\ref{fig:training_curves} zeigt den Trainings- und
-Validierungs-Verlauf des Conv1D-Modells über die 21~Epochen, nach
-denen EarlyStopping greift.
+Abbildung~\ref{fig:training_curves} zeigt den Verlauf von Trainings-
+und Validation-MAE (mittlerer absoluter Fehler in Stunden) des
+TinyML-Modells während der 21~Epochen, nach denen EarlyStopping
+greift. Trainings- und Validation-Kurve liegen über den gesamten
+Verlauf nah beieinander und sinken gemeinsam ab -- das ist das
+gewünschte Signal dafür, dass das Modell nicht überanpasst
+(Overfitting), sondern die gelernten Muster auf bisher ungesehene
+Daten überträgt.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\linewidth]{training_curves.png}
-\caption{Trainings- und Validation-MAE des Conv1D-Modells.
+\caption{Trainings- und Validation-MAE des TinyML-Modells.
 Auf dem Multi-Device-Datensatz erreicht das Modell nach
 21~Epochen ein Validation-MAE von ca.\ 5\,h. Da
 EarlyStopping mit \code{restore\_best\_weights=True}
