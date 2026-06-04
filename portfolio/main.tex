@@ -785,6 +785,12 @@ TinyML-Trainings-Pipeline in vier Schritten durch:
   verglichen).
 \end{enumerate}
 
+Methodisch zentral sind dabei der \textbf{Segment-Level-Split} in
+Schritt~2 (verhindert Data-Leakage, weil aufeinanderfolgende
+Messpunkte stark korreliert sind) und die
+\textbf{INT8-Quantisierung} in Schritt~4 (ermöglicht die
+14{,}4\,KB-Modellgröße).
+
 Die eigentliche Genauigkeits-Auswertung gegen die Google-API und
 eine lineare Baseline läuft direkt in der App im
 Genauigkeits-Tab (siehe Abschnitt~\ref{sec:bedienung}). Damit
