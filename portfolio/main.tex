@@ -417,9 +417,7 @@ Die App arbeitet in drei aufeinander aufbauenden Schritten:
   ist nur 14{,}4\,KB groß -- kleiner als ein WhatsApp-Sprachmemo.
   Es wird als \datei{.tflite}-Datei zurück in die App deployt,
   läuft dort offline und liefert alle 30~Sekunden eine neue
-  Restlaufzeit. Parallel zeigt die App Googles eigene Vorhersage
-  und eine lineare Baseline (Annahme: der Verbrauch der letzten
-  Minuten setzt sich konstant fort) als Vergleichswerte.
+  Restlaufzeit.
 \end{enumerate}
 
 \textbf{Warum genau diese Aufteilung?} Die drei Schritte sind
@@ -441,12 +439,11 @@ PC für Schritt~2). Das hat zwei Gründe:
 
 Die drei Phasen aus Abschnitt~\ref{sec:einordnung} verteilen sich
 auf zwei Geräte-Welten (Android-App und PC-Pipeline), die über
-CSV-Dateien und das \datei{.tflite}-Modell als Schnittstellen
-miteinander kommunizieren. Abbildung~\ref{fig:datenfluss} zeigt
-den Datenfluss vereinfacht,
-Abbildung~\ref{fig:architektur_gesamt} auf der folgenden Seite die
-vollständige Detail-Architektur mit allen Unterkomponenten und
-internen Verbindungen.
+CSV-Dateien und das TinyML-Modell als Schnittstellen miteinander
+kommunizieren. Abbildung~\ref{fig:datenfluss} zeigt den Datenfluss
+vereinfacht, Abbildung~\ref{fig:architektur_gesamt} auf der
+folgenden Seite die vollständige Detail-Architektur mit allen
+Unterkomponenten und internen Verbindungen.
 
 \begin{figure}[H]
 \centering
@@ -482,7 +479,7 @@ internen Verbindungen.
     {(On-Device-Inferenz)};
 
 \draw[arrow] (app1) -- node[lbl] {CSV-Export} (python);
-\draw[arrow] (python) -- node[lbl] {.tflite + Scaler} (app2);
+\draw[arrow] (python) -- node[lbl] {Trainiertes Modell} (app2);
 
 \end{tikzpicture}
 \caption{Vereinfachter Datenfluss zwischen den Systemkomponenten}
