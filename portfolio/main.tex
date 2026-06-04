@@ -535,22 +535,22 @@ UI-Bausteine:
 \datei{BootReceiver.kt}         & Startet den Service nach Geräte-Neustart \\
 \midrule
 \multicolumn{2}{l}{\textit{App-Lifecycle und Onboarding}} \\
-\datei{MainActivity.kt}         & Tab-Container mit Bottom-Navigation, Settings-Icon, Onboarding-Weiche \\
+\datei{MainActivity.kt}         & Tab-Container mit Bottom-Navigation, Settings-Icon und Onboarding-Routing beim Erststart \\
 \datei{OnboardingActivity.kt}   & Vier-Slide-Erstkontakt: Anwendungsszenarien, Sammeln-Lernen-Vorhersagen-Prinzip und Modell-Größen-Vergleich (14,4\,KB) \\
 \datei{OnboardingPagerAdapter.kt} & ViewPager2-Adapter für die Onboarding-Slides \\
 \midrule
 \multicolumn{2}{l}{\textit{UI-Tabs}} \\
-\datei{LiveFragment.kt}         & Hauptvorhersage gross, Confidence-Pille, Live-Anzeige der 10 Sensor-Werte als animierte Karten \\
-\datei{AlgorithmFragment.kt}    & Erklärt in vier Schritten + USP-Block, wie aus Sensoren die Vorhersage wird; bindet die drei Custom Canvas-Views ein \\
+\datei{LiveFragment.kt}         & Prominente Vorhersage-Anzeige, Confidence-Pille und Live-Anzeige der 10 Sensor-Werte als animierte Karten \\
+\datei{AlgorithmFragment.kt}    & Erklärt in vier Schritten, wie aus Sensoren die Vorhersage wird, und bindet die drei Custom Canvas-Views ein \\
 \datei{DataflowView.kt}, \datei{BatteryHistoryChart.kt}, \datei{ConvLayerView.kt} & Drei Custom Canvas-Views: animierter Sensor-zu-Vorhersage-Datenfluss, Sparkline-Akkuverlauf mit Vorhersage-Extension und Conv1D-Modell-Architektur (Details siehe Abschnitt~\ref{sec:bedienung}) \\
 \datei{ModelDeepDiveSheet.kt}   & Bottom-Sheet im Algorithmus-Tab: zeigt bei Tap auf die Modell-Architektur die ausführliche Erklärung \\
 \datei{AccuracyFragment.kt}     & Genauigkeits-Tab mit 3-Wege-Score (TinyML / Google / Linear) \\
 \datei{AccuracyComputer.kt}     & Liest die CSV-Daten und berechnet den MAE der drei Methoden im letzten Discharge-Lauf \\
 \midrule
 \multicolumn{2}{l}{\textit{Infrastruktur-UI}} \\
-\datei{SettingsActivity.kt}     & Hinter dem Zahnrad-Icon: Service-Status, Permissions, CSV-Export, Modell-Info, Onboarding-Replay, Basis-Daten-Reset und Verlinkung zur Train-Own-Anleitung \\
+\datei{SettingsActivity.kt}     & Hinter dem Zahnrad-Icon: Service-Steuerung, Permissions, CSV-Export, Modell-Info und mehrere Sub-Aktionen (Onboarding-Replay, Basis-Daten-Reset, Train-Own-Anleitung) \\
 \datei{TrainOwnModelActivity.kt} & Schritt-für-Schritt-Anleitung, wie der Nutzer ein eigenes Modell auf seinen Daten trainieren und in die App deployen kann \\
-\datei{ConfidenceBadge.kt}      & Wiederverwendbare Pille mit Punkt und Label (grün / gelb / rot) \\
+\datei{ConfidenceBadge.kt}      & Wiederverwendbarer Confidence-Chip mit Farbkodierung (grün / gelb / rot) \\
 \datei{ConfidenceLevel.kt}      & Enum + Heuristik (Buffer-Größe + Akkustand) \\
 \end{longtable}
 }
