@@ -1327,9 +1327,7 @@ Konfiguration und Orchestrator                       & $\approx$\;300 \\
   (zwei Convolutions, GlobalAveragePooling, zwei Dense).
 \item TFLite-Konvertierungs-API (Standard-Funktionen von TensorFlow).
 \item \code{scikit-learn}: \code{StandardScaler},
-  \code{RandomForestRegressor}~\cite{breiman2001random},
   \code{train\_test\_split}.
-\item \code{scipy}: \code{curve\_fit} für den exponentiellen Fit.
 \end{itemize}
 
 \textbf{Probleme und wie sie gelöst wurden:}
@@ -1342,8 +1340,6 @@ Konfiguration und Orchestrator                       & $\approx$\;300 \\
 \item \emph{TinyML auf Single-Device zeigt MAE 0.5\,h Artefakt:}
   Segment-Level-Split eingeführt, korrigiert den scheinbaren Wert
   auf 9.96\,h.
-\item \emph{Exponential-Fit divergiert manchmal in 30.000\,h:}
-  72-h-Cap als Sanity-Bound.
 \end{itemize}
 
 \subsection{Reproduzierbarkeit der Pipeline}
