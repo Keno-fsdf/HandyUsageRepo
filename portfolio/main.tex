@@ -1179,7 +1179,8 @@ Mechanismen sorgen dafür, dass die Datensammlung nicht abreißt:
 \item \textbf{Foreground-Service} mit dauerhafter Notification.
 \item \textbf{Auto-Restart nach Wegwischen} der App-Karte. Wenn der
   Nutzer die App in der Übersicht wegwischt, registriert sich der
-  Service über \code{AlarmManager.setExactAndAllowWhileIdle()}
+  Service über
+  \code{AlarmManager.\allowbreak setExact\allowbreak AndAllowWhileIdle()}
   einen Restart in 1 Sekunde.
 \item \textbf{Auto-Restart nach Geräte-Neustart} über einen
   \code{BootReceiver}, der das \code{BOOT\_COMPLETED}-Intent
@@ -1396,7 +1397,7 @@ Datensammlung bricht beim Wegwischen aus der App-Übersicht ab.
 Drei Tage damit verbracht herauszufinden, wie man auf
 Xiaomi-MIUI einen Service vor dem Aggressive-Killing schützt.
 Lösung: \code{onTaskRemoved} $\to$
-\code{AlarmManager.setExactAndAllowWhileIdle} $\to$ Service kommt
+\code{AlarmManager.\allowbreak setExact\allowbreak AndAllowWhileIdle} $\to$ Service kommt
 1 Sekunde später wieder. Plus \code{BootReceiver} damit nach
 Neustart automatisch weitergesammelt wird.
 
