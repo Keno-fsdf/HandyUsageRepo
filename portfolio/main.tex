@@ -1401,35 +1401,40 @@ Lösung: \code{onTaskRemoved} $\to$
 1 Sekunde später wieder. Plus \code{BootReceiver} damit nach
 Neustart automatisch weitergesammelt wird.
 
-Parallel zu den langen Debugging-Abenden habe ich einige Stunden
-investiert, um Statistik-Grundlagen aufzufrischen, die ich für
-die spätere Modell-Auswertung brauche: Cross-Validation,
+Parallel dazu Statistik-Grundlagen aufgefrischt, die für die
+spätere Modell-Auswertung relevant werden: Cross-Validation,
 Train/Test/Validation-Splits, Data-Leakage-Mechanismen und
 Confounder-Erkennung.
 
 \subsubsection*{Woche 3 (KW 15: 6.--12.\,April)}
 
 \textbf{Erstes Training -- und sofort verdächtig.}
-Bei $\sim$11.000 Messpunkten ergab das Modell einen MAE von
-0,53\,h, deutlich besser als die Google-API. Beim Nachprüfen
-festgestellt: ein klassisches Data-Leakage-Artefakt vom
-Random-Split. Pipeline auf Segment-Level-Split umgestellt
-$\to$ MAE 9,96\,h.
+Mit rund 11.000 Messpunkten lief das erste Training. Das Modell
+zeigte einen MAE (mittlerer absoluter Fehler) von nur 0,53
+Stunden -- deutlich besser als die Google-API. Beim Nachprüfen
+stellte sich heraus, dass dieser Wert ein Artefakt war: der
+zufällige Train/Test-Split hatte aufeinanderfolgende Messpunkte
+auf beide Sets verteilt, sodass die Trainingsdaten praktisch die
+Testdaten vorwegnahmen (Data Leakage). Nach Umstellung auf einen
+Segment-Level-Split -- bei dem ganze Discharge-Phasen entweder
+komplett im Trainings- oder komplett im Test-Set landen -- lag
+der MAE realistisch bei 9,96 Stunden.
 
-Diese Phase habe ich besonders eng mit Claude im Desktop-App-Modus
-gearbeitet: jede Pipeline-Änderung wurde gegen die alten
-Ergebnisse gegenchecked, mit gegenseitigem Auditieren der
-Trainings-Logs. Am 12.\,April App-APK an ein Familienmitglied mit
-Pixel~7~Pro weitergegeben.
+In dieser Phase eng mit Claude gearbeitet: jede Pipeline-Änderung
+wurde gegen die vorherigen Ergebnisse geprüft. Am 12.~April
+App-APK an ein Familienmitglied mit Pixel~7~Pro weitergegeben.
 
 \subsubsection*{Woche 4 (KW 16: 13.--19.\,April)}
 
 \textbf{Multi-Device wird real.}
 APK an zwei weitere Familienmitglieder verteilt (Pixel~8~Pro,
-Pixel~9~Pro~XL). Wichtig vor allem die Aufklärung darüber, was
-genau gesammelt wird -- ich habe einen Mini-Datenschutz-Hinweis
-schriftlich geschickt und mündlich erklärt. Alle drei haben
-zugestimmt. Parallel das CSV-Schema erweitert
+Pixel~9~Pro~XL); damit waren insgesamt drei Test-Personen
+unterwegs. Vorher jeweils erklärt, was die App sammelt
+(Akkustand, App-Kategorie und ähnliche Geräte-Metriken, alle
+Daten bleiben lokal). Auf den Pixel-Geräten hat es länger
+gedauert, den Service stabil zum Laufen zu bringen, weil die
+Auto-Restart-Logik aus Woche~2 pro Hersteller-Variante leicht
+angepasst werden musste. Parallel das CSV-Schema erweitert
 (\code{system\_personalized}, \code{linear\_baseline\_h}) und den
 Logger so gebaut, dass er bei Schema-Wechsel die alte Datei
 sicher parkt.
@@ -1471,60 +1476,18 @@ beim Hineinschauen in die Datenverteilung wurde der Grund sichtbar:
 auf dem Xiaomi war der Akku 88\,\% der Zeit über 75\,\%, also
 kaum Entlade-Dynamik zum Lernen vorhanden.
 
-\textbf{UI-Refactor.} Der bisherige
-Single-Screen-Stand der App war für eine reine
-Datensammlungs-Phase ausreichend, für die Verteidigung aber zu
-schwach. In den letzten Tagen vor Abgabe deshalb noch ein
-überschaubarer aber inhaltlich entscheidender Refactor durch:
+\textbf{UI-Refactor.} Der bisherige Single-Screen-Stand der App
+war für die Datensammlungs-Phase ausreichend, für die Abgabe
+aber zu schwach. Deshalb in den letzten Tagen ein
+überschaubarer Refactor: Vier-Slide-Onboarding, Trennung in
+\emph{Live}-, \emph{Algorithmus}- und \emph{Genauigkeit}-Tabs,
+Infrastruktur-Buttons in eine separate \emph{Settings}-Activity
+hinter ein Zahnrad-Icon ausgelagert und die Confidence-Pille
+sowohl im Live-Tab als auch in der Notification eingebaut.
 
-\begin{itemize}
-\item Vier-Slide-Onboarding inklusive Modell-Größen-Vergleich
-  als Wow-Moment beim ersten Start.
-\item Trennung der App in zwei klar getrennte Tabs (\emph{Live}
-  mit Vorhersage + Confidence-Pille + den 10 Live-Sensoren,
-  \emph{Genauigkeit} mit dem 3-Wege-Score zwischen eigenem Modell,
-  Google und Linear-Baseline).
-\item Alle Infrastruktur-Buttons in eine separate
-  \emph{Settings}-Activity hinter ein Zahnrad-Icon ausgelagert,
-  damit die Hauptbühne der App das eigene Hauptfeature trägt
-  und kein Knopf-Buffet wird.
-\item Confidence-Anzeige sowohl im Live-Tab als auch in der
-  Notification, damit der Vorhersage immer eine Verlässlichkeits-
-  Information beiliegt.
-\end{itemize}
-
-Dieser Refactor lief vollständig im Sandbox-Container mit
-Claude im Auto-Approve-Modus: viele wiederholte XML-Layout-Edits,
-neue Fragments, neue Drawables. Genau die Art von Arbeit, die
-mit manueller Bestätigung pro Datei händisch erschöpfend
-gewesen wäre, im Container aber durchlaufen konnte, während ich
-parallel am Portfolio weitergeschrieben habe.
-
-\textbf{Eine ehrliche kleine Sackgasse zur Architektur-Visualisierung.}
-Im Algorithmus-Tab zeigt die obere Schicht der Conv1D-Architektur
-eine 10$\times$10-Matrix als Heatmap. Diese ist standardmäßig mit
-einem ruhigen Pseudo-Zufalls-Muster gefüllt, das die spätere
-Forward-Pass-Animation gut transportiert. Ich habe in den letzten
-Tagen vor Abgabe kurz überlegt, diese Matrix stattdessen mit den
-echten Sensor-Werten der letzten zehn Messpunkte zu füttern, um
-zu sagen: \glqq{}auch der Input-Layer ist live\grqq{}. Die
-Implementierung dafür war in 30 Minuten gebaut. Beim Testen auf
-dem Gerät stellte sich aber heraus: die meisten Sensoren ändern
-sich über fünf Minuten kaum (Akkustand schwankt um wenige
-Prozent, Hotspot ist konstant aus, Ladezustand konstant). Die
-Matrix sah dadurch aus wie horizontale Streifen mit konstanten
-Werten -- visuell schlechter als die ruhig pulsierende Pseudo-
-Heatmap und für den Betrachter ohne mündliche Erklärung auch
-nicht aussagekräftiger. Also habe ich die Live-Variante wieder
-verworfen und die abstrakte Architektur-Skizze beibehalten. Das
-Output-Element (die fertige Vorhersage) ist und bleibt ohnehin
-echt -- nur die inneren Schichten sind bewusst als skizzierte
-Pulsations-Animation belassen, weil INT8-Aktivierungen visuell
-keinen Mehrwert hätten.
-
-Den Rest der Woche viel Zeit in die Aufbereitung des Portfolios
-gesteckt, in Pipeline-Konsistenz-Checks und in das Schreiben
-dieses Erfahrungsberichts.
+Den Rest der Woche viel Zeit in das Portfolio gesteckt, plus
+Pipeline-Konsistenz-Checks und das Schreiben dieses
+Erfahrungsberichts.
 
 \subsubsection*{Woche 8 (KW 20: 12.--18.\,Mai)}
 
