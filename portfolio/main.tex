@@ -1119,9 +1119,9 @@ private fun isHotspotOn(): Boolean {
 }
 \end{lstlisting}
 
-\subsection{On-Device-Inferenz mit TFLite}
+\subsection{On-Device-Inferenz mit dem TinyML-Modell}
 
-Der \code{BatteryPredictor} hält das TFLite-Modell und einen
+Der \code{BatteryPredictor} hält das TinyML-Modell und einen
 Ringpuffer mit den letzten 10 Datenpunkten. Erst wenn der Puffer
 voll ist, wird vorhergesagt. Wichtig: die Features müssen mit
 denselben StandardScaler-Werten normalisiert werden, mit denen das
