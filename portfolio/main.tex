@@ -441,9 +441,9 @@ PC für Schritt~2). Das hat zwei Gründe:
 
 \subsection{Gesamtarchitektur im Überblick}
 
-Das System gliedert sich in zwei klar getrennte Hälften, die durch
-CSV-Dateien und das \datei{.tflite}-Modell als Schnittstellen
-kommunizieren:
+Das System verteilt drei Phasen auf zwei Geräte-Welten (Android-App
+und PC-Pipeline), die über CSV-Dateien und das
+\datei{.tflite}-Modell als Schnittstellen miteinander kommunizieren:
 
 \begin{enumerate}
 \item \textbf{Datenerhebung (Android-App)} -- alle 30 Sekunden ein
