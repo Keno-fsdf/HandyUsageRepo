@@ -1566,7 +1566,7 @@ Sie sind in Abbildung~\ref{fig:storyline} chronologisch eingezeichnet.
     every node/.style={font=\footnotesize},
     box/.style={
         rectangle, draw, rounded corners=4pt,
-        minimum height=1.0cm, text width=2.6cm, align=center,
+        minimum height=1.2cm, text width=2.8cm, align=center,
         font=\footnotesize\bfseries,
     },
     okbox/.style={box, fill=thwsorange!15},
@@ -1578,35 +1578,36 @@ Sie sind in Abbildung~\ref{fig:storyline} chronologisch eingezeichnet.
 % Zeitachse
 \draw[arrow] (-0.5,0) -- (15.5,0);
 \foreach \x/\w in {0.5/W1, 2.5/W2, 4.5/W3, 6.5/W4, 8.5/W5, 10.5/W6, 12.5/W7, 14.5/Abgabe}
-    \node[below, lbl] at (\x,-0.15) {\w};
+    \node[below, lbl] at (\x,-0.2) {\w};
 
-% Wendepunkte
-\node[okbox, anchor=south] (p1) at (2.5, 0.4)
+% Wendepunkte -- mehr Abstand vertikal und horizontal
+\node[okbox, anchor=south] (p1) at (2.5, 0.8)
     {Stats-Grund\-lagen aufgefrischt};
-\node[lbl, below=0.0cm of p1] {wirkt erst später};
+\node[lbl, below=3pt of p1] {wirkt erst später};
 
-\node[badbox, anchor=south] (p2) at (5.5, 1.8)
-    {Leakage-Schock: MAE 0,53\,h ist Fake};
-\node[lbl, below=0.0cm of p2] {Random-Split $\to$ Segment-Split};
+\node[badbox, anchor=south] (p2) at (5, 3.0)
+    {Leakage-Schock: MAE 0,53\,h war Fake};
+\node[lbl, below=3pt of p2] {Random-Split $\to$ Segment-Split};
 
-\node[okbox, anchor=south] (p3) at (8.5, 1.8)
+\node[okbox, anchor=south] (p3) at (9, 3.0)
     {Multi-Device statt Single-Device};
-\node[lbl, below=0.0cm of p3] {Xiaomi-only zu wenig Dynamik};
+\node[lbl, below=3pt of p3] {Xiaomi-only zu wenig Dynamik};
 
-\node[okbox, anchor=south] (p4) at (13, 0.4)
-    {UI-Refactor in 2-Tabs + Onboarding};
-\node[lbl, below=0.0cm of p4] {Single-Screen war zu rau};
+\node[okbox, anchor=south] (p4) at (12.5, 0.8)
+    {UI-Refactor: 3 Tabs + Onboarding};
+\node[lbl, below=3pt of p4] {Single-Screen war zu rau};
 
-% Verbindungslinien (Story)
-\draw[arrow, dashed] (p1.east) to[bend left=10] (p2.west);
-\draw[arrow] (p2.east) to[bend right=10] (p3.west);
-\draw[arrow] (p3.east) to[bend left=10] (p4.west);
+% Verbindungslinien (Story) -- klar getrennt
+\draw[arrow, dashed] (p1.north) to[bend left=20] (p2.south);
+\draw[arrow] (p2.east) -- (p3.west);
+\draw[arrow] (p3.south) to[bend left=20] (p4.north);
 
 \end{tikzpicture}
-\caption{Die vier Wendepunkte der Projekt-Story. Orange: bewusste
-Entscheidung, Rot: vermiedener Irrtum. Gestrichelte Linien
-deuten an, dass sich der Stats-Aufwand in Woche 2 erst eine Woche
-später beim Leakage-Schock auszahlt.}
+\caption{Die vier Wendepunkte der Projekt-Story.
+Orange = bewusste Entscheidung, Rot = vermiedener Irrtum.
+Die gestrichelte Linie deutet an, dass die in Woche~2
+aufgefrischten Statistik-Grundlagen sich erst in
+Woche~3 beim Leakage-Schock ausgezahlt haben.}
 \label{fig:storyline}
 \end{figure}
 
