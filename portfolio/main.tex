@@ -848,10 +848,12 @@ was eine normale App ohne Spezial-Berechtigung lesen kann.} Damit
 fielen einige naheliegende Kandidaten weg:
 
 \begin{itemize}
-\item \textbf{Genaue Stromstärke pro App} (PowerStats HAL): nur
-  System-Apps.
-\item \textbf{Battery Health} (Verschleißzustand): teilweise gesperrt.
-\item \textbf{Kernel-Fuel-Gauge}: gesperrt.
+\item \textbf{Genaue Stromstärke pro App} (PowerStats-API, nur
+  für System-Apps freigeschaltet): nicht zugänglich.
+\item \textbf{Battery Health} (Verschleißzustand des Akkus):
+  teilweise gesperrt.
+\item \textbf{Direkter Kernel-Zugriff auf Akku-Rohdaten}
+  (Fuel-Gauge): gesperrt.
 \end{itemize}
 
 Die zehn Features gliedern sich in drei Gruppen:
