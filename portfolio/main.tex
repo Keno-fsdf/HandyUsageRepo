@@ -441,19 +441,14 @@ PC für Schritt~2). Das hat zwei Gründe:
 
 \subsection{Gesamtarchitektur im Überblick}
 
-Das System verteilt drei Phasen auf zwei Geräte-Welten (Android-App
-und PC-Pipeline), die über CSV-Dateien und das
-\datei{.tflite}-Modell als Schnittstellen miteinander kommunizieren:
-
-\begin{enumerate}
-\item \textbf{Datenerhebung (Android-App)} -- alle 30 Sekunden ein
-  Datenpunkt mit 10 Features, gespeichert in CSV.
-\item \textbf{Modelltraining (Python-Pipeline)} -- liest die
-  konsolidierte CSV, trainiert Conv1D, konvertiert nach TFLite.
-\item \textbf{On-Device-Inferenz (Android-App)} -- das TFLite-Modell
-  läuft direkt im Phone und liefert die Vorhersage in der
-  Notification.
-\end{enumerate}
+Die drei Phasen aus Abschnitt~\ref{sec:einordnung} verteilen sich
+auf zwei Geräte-Welten (Android-App und PC-Pipeline), die über
+CSV-Dateien und das \datei{.tflite}-Modell als Schnittstellen
+miteinander kommunizieren. Abbildung~\ref{fig:datenfluss} zeigt
+den Datenfluss vereinfacht,
+Abbildung~\ref{fig:architektur_gesamt} auf der folgenden Seite die
+vollständige Detail-Architektur mit allen Unterkomponenten und
+internen Verbindungen.
 
 \begin{figure}[H]
 \centering
@@ -495,10 +490,6 @@ und PC-Pipeline), die über CSV-Dateien und das
 \caption{Vereinfachter Datenfluss zwischen den Systemkomponenten}
 \label{fig:datenfluss}
 \end{figure}
-
-Die vollständige Detail-Architektur mit allen Unterkomponenten,
-internen Verbindungen und Schnittstellen zeigt
-Abbildung~\ref{fig:architektur_gesamt} auf der folgenden Seite.
 
 \begin{landscape}
 \thispagestyle{empty}
