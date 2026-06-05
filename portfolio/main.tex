@@ -1577,28 +1577,21 @@ verwendet.
 \textbf{Wofür Claude genutzt wurde:}
 
 \begin{itemize}
-\item \emph{Code-Refactoring} -- Umstrukturierung von einem
-  monolithischen Trainings-Skript zu einer modularen Pipeline
-  (\code{methods/}, \code{evaluation/}).
-\item \emph{Boilerplate} -- TFLite-Konvertierungs-Boilerplate,
-  Argument-Parser, Standard-Plot-Code (matplotlib).
-\item \emph{Recherche-Beschleunigung} -- Suche nach relevanter
-  Android- und TinyML-Literatur.
-\item \emph{Auswertungs-Skripte} -- Modell-Genauigkeit,
-  Gerät-spezifische Auswertung und Daten-Diagnose nach meinen
-  Vorgaben.
-\item \emph{Schreibhilfe für die Dokumentation} -- Verfassen und
-  Überarbeiten großer Teile dieses Portfolios, Strukturierung,
-  Umformulierungen, Tabellen-Formatierung, Korrektur-Lesen.
-\item \emph{Audit-Runden} -- systematisches Aufspüren eigener
-  Fehler (inkonsistente Zahlen, methodische Schwächen,
-  Confounder-Verdacht).
+\item \emph{Code} -- Boilerplate, Refactoring und
+  Auswertungs-Skripte nach meinen Vorgaben.
+\item \emph{Dokumentation} -- Verfassen, Umformulieren und
+  Strukturieren großer Teile dieses Portfolios.
+\item \emph{Recherche} -- Suche nach relevanter Android- und
+  ML-Literatur.
+\item \emph{Methodische Kontrolle} -- systematische Audit-Runden
+  über Code und Dokumentation (Konsistenz-Checks, methodische
+  Schwächen, Confounder-Verdacht, KI-Halluzinationen).
 \item \emph{Versionsverwaltung} -- Commits und Pushes wurden
   gemeinsam mit Claude orchestriert. Jeder Commit trägt einen
-  \code{Co-Authored-By: Claude}-Footer, dadurch ist die
-  KI-Beteiligung pro Änderung direkt im Git-Verlauf des
-  öffentlichen Repos (\code{Keno-fsdf/HandyUsageRepo} auf GitHub)
-  nachvollziehbar -- nicht nur in dieser Selbstauskunft.
+  \code{Co-Authored-By: Claude}-Footer; die KI-Beteiligung pro
+  Änderung ist damit direkt im Git-Verlauf des öffentlichen Repos
+  (\code{Keno-fsdf/HandyUsageRepo}) nachvollziehbar -- nicht nur
+  in dieser Selbstauskunft.
 \end{itemize}
 
 \textbf{Was ich selbst gemacht habe:}
@@ -1610,52 +1603,31 @@ verwendet.
 \item Datensammlung auf den vier Geräten -- inklusive
   App-Verteilung an drei Familienmitglieder.
 \item Alle methodischen Entscheidungen: Feature-Auswahl,
-  Segment-Level-Split (Trainingsdaten-Aufbereitung), Auswahl der drei
-  in der App angezeigten Vergleichswerte.
-\item Kritisches Hinterfragen der KI-Vorschläge, wenn etwas
-  verdächtig wirkte. Im Verlauf wurden so mehrere eigene Fehler
-  (z.\,B.\ falsche Autoren bei drei Quellen, zu plakative Aussagen)
-  korrigiert.
-\item Alle Anpassungen am Android-Manifest, Permissions,
-  geräte-spezifisches Debugging (MIUI-Service-Stirbt-Problem).
+  Trainingsdaten-Aufbereitung, Auswahl der in der App angezeigten
+  Vergleichswerte.
+\item Kritisches Hinterfragen der KI-Vorschläge und Korrektur
+  eigener Fehler (z.\,B.\ inkonsistente Zahlen, KI-Halluzinationen
+  bei Quellen-Autoren, zu plakative Aussagen).
+\item Geräte-spezifisches Debugging (MIUI-Service-Stirbt-Problem)
+  und alle Anpassungen am Android-Manifest sowie Permissions.
 \end{itemize}
 
-\textbf{Setup und Sicherheits-Rahmen der KI-Nutzung.}
-Die KI lief in zwei klar getrennten Modi, je nach Risiko der
-Aufgabe:
-
-\begin{itemize}
-\item \emph{Desktop-App-Modus (mit manueller Bestätigung).}
-  Verwendet für die meisten Aufgaben am Haupt-Code:
-  Refactoring, Schreibhilfe, Code-Review, Audit-Runden. Jede Datei-
-  und Shell-Aktion musste explizit bestätigt werden -- der Mehr-
-  Aufwand ist die Versicherung gegen versehentliche Schäden am
-  Hauptprojekt.
-\item \emph{Sandbox-Container mit Auto-Approve.} Verwendet für
-  riskantere oder experimentelle Aufgaben (z.\,B. Aufsetzen
-  unbekannter Pipelines, breite Code-Suchen auf fremden Repos).
-  Hier lief Claude in einem Docker-Container mit eingeschränktem
-  Datei- und Netzwerk-Zugriff -- nur das jeweilige Projekt war
-  sichtbar, und nur eine kleine Domain-Whitelist (Anthropic API,
-  GitHub, PyPI, npm) erreichbar. So konnte die KI eigenständig
-  arbeiten, ohne dass ein potenzieller Fehler auf das Host-System
-  durchschlagen konnte.
-\end{itemize}
-
-Genutzt wurde \textbf{Claude Pro} (Subscription), nicht der
-API-Zugang. Der Subscription-Modus deckelt das Budget automatisch
-über Zeitfenster -- ein zusätzlicher Schutz gegen unbeabsichtigte
-Endlos-Schleifen.
+\textbf{Setup und Sicherheits-Rahmen.}
+Die KI lief in zwei Modi, je nach Risiko der Aufgabe: einem mit
+manueller Bestätigung jeder Datei- und Shell-Aktion (für die
+meisten Aufgaben am Haupt-Code) und einem Sandbox-Container mit
+Auto-Approve und eingeschränktem Datei- und Netzwerk-Zugriff
+(für riskantere oder experimentelle Aufgaben). Genutzt wurde
+\textbf{Claude Pro} (Subscription), nicht der API-Zugang.
 
 \textbf{Bilanz.}
 Realistisch eingeschätzt: ohne KI-Unterstützung hätte ich das
-Projekt in dieser Tiefe nicht geschafft. Die KI
-war besonders nützlich für Boilerplate und Recherche-Beschleunigung
-sowie für methodische Disziplin (Konsistenz-Checks über große
-Code-Mengen). Was die KI \emph{nicht} ersetzt hat: die Entscheidung,
-was gemacht wird, das Verstehen der Ergebnisse, das Verteidigen von
-Trade-offs, und vor allem die handfeste Geräte-Logistik und das
-Debugging vor Ort.
+Projekt in dieser Tiefe nicht geschafft. Besonders wertvoll waren
+Code-Beschleunigung, Recherche und die methodischen
+Konsistenz-Checks über große Code- und Doku-Mengen. Was die KI
+\emph{nicht} ersetzt hat: die Entscheidung, was gemacht wird, das
+Verstehen der Ergebnisse, das Verteidigen von Trade-offs und vor
+allem die handfeste Geräte-Logistik und das Debugging vor Ort.
 
 \vfill
 
