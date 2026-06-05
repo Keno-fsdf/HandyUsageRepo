@@ -727,7 +727,7 @@ const TOTAL = 15;
     x: 6.45, y: 2.95, w: 3.0, h: 0.3,
     fontSize: 12, bold: true, color: COL.good, fontFace: "Calibri", margin: 0,
   });
-  s.addText("Die TinyML-Quantisierungs-Pipeline funktioniert wie beworben. Auf der Effizienz-Seite ist TinyML konkurrenzfähig — die Schwäche liegt nur bei der Genauigkeit.", {
+  s.addText("Die TinyML-Quantisierungs-Pipeline funktioniert wie beworben. Effizienz ist die Stärke von TinyML — bei der Genauigkeit gibt es nur kleine Abschläge.", {
     x: 6.45, y: 3.3, w: 3.0, h: 1.5,
     fontSize: 11, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
   });
