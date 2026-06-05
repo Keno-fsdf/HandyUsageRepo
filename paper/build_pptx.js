@@ -82,7 +82,7 @@ const TOTAL = 15;
     x: 0.6, y: 3.05, w: 1.4, h: 0.06, fill: { color: COL.bad }, line: { type: "none" },
   });
 
-  s.addText("Ein methodisch ehrlicher Erfahrungsbericht aus dem Multi-Device-Vergleich", {
+  s.addText("Multi-Device-Vergleich von sechs Methoden", {
     x: 0.6, y: 3.2, w: 8.8, h: 0.45,
     fontSize: 16, italic: true, color: "CADCFC", fontFace: "Calibri",
   });
