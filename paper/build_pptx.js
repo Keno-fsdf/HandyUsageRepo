@@ -530,7 +530,7 @@ const TOTAL = 15;
     x: 0.5, y: 1.4, w: 9, h: 0.32,
     fill: { color: "F0F4F8" }, line: { color: COL.border, width: 0.5 },
   });
-  s.addText("p < 0,05 = Unterschied ist nicht durch Zufall erklaerbar (signifikant). n.s. = nicht signifikant, beide Methoden statistisch ununterscheidbar.", {
+  s.addText("p < 0,05 = signifikant (Unterschied nicht durch Zufall erklaerbar). n.s. = nicht signifikant (beide Methoden statistisch ununterscheidbar).", {
     x: 0.7, y: 1.42, w: 8.6, h: 0.28,
     fontSize: 10, italic: true, color: COL.secondary, fontFace: "Calibri", margin: 0, valign: "middle",
   });
