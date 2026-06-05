@@ -19,9 +19,4 @@ Colby Banbury, Vijay~Janapa Reddi, Peter Torelli, Jeremy Holleman, Nat
 \newblock In {\em Proceedings of the Neural Information Processing Systems
   Track on Datasets and Benchmarks}, 2021.
 
-\bibitem{breiman2001random}
-Leo Breiman.
-\newblock Random forests.
-\newblock {\em Machine Learning}, 45(1):5--32, 2001.
-
 \end{thebibliography}
