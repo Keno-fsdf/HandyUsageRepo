@@ -1531,9 +1531,9 @@ Nur noch für die Klausuren gelernt.
 \subsection{Schlüssel-Entscheidungen, Fehler und Trade-offs}
 \label{sec:entscheidungen}
 
-\paragraph{Die Story in vier Wendepunkten.}
-Vier Momente haben den Verlauf des Projekts inhaltlich geprägt.
-Sie sind in Abbildung~\ref{fig:storyline} chronologisch eingezeichnet.
+\paragraph{Vier Wendepunkte im Projektverlauf.}
+Abbildung~\ref{fig:storyline} zeigt die vier Punkte, an denen das
+Projekt inhaltlich abgeknickt ist.
 
 \begin{figure}[H]
 \centering
@@ -1578,17 +1578,17 @@ Sie sind in Abbildung~\ref{fig:storyline} chronologisch eingezeichnet.
 \draw[arrow] (p3.south) to[bend left=20] (p4.north);
 
 \end{tikzpicture}
-\caption{Die vier Wendepunkte der Projekt-Story.
+\caption{Die vier Wendepunkte im Projektverlauf.
 Orange = bewusste Entscheidung, Rot = vermiedener Irrtum.
 Die gestrichelte Linie deutet an, dass die in Woche~2
-aufgefrischten Statistik-Grundlagen sich erst in
-Woche~3 beim Leakage-Schock ausgezahlt haben.}
+aufgefrischten Statistik-Grundlagen sich erst in Woche~3 beim
+Leakage-Schock ausgezahlt haben.}
 \label{fig:storyline}
 \end{figure}
 
 \paragraph{Die wichtigsten Entscheidungen im Detail.}
-Die folgende Tabelle macht acht zentrale Stell-Entscheidungen
-sichtbar, inklusive der jeweils verworfenen Alternative.
+Tabelle~\ref{tab:entscheidungen} listet die zentralen Entscheidungen
+mit der jeweils verworfenen Alternative.
 
 \begin{table}[H]
 \centering
@@ -1608,7 +1608,7 @@ W1 & 10 Features pro Messpunkt &
   Kompromiss aus Vollständigkeit und Speicher-Overhead \\
 W2 & Statistik-Grundlagen parallel auffrischen &
   Erst loslegen, Theorie später &
-  Hat den Aha-Moment in W3 erst möglich gemacht \\
+  Hat den Leakage-Fund in W3 erst möglich gemacht \\
 W3 & Segment-Level-Split &
   Random-Split (initial) &
   Random war Data-Leakage; MAE wurde von Fake-0,53\,h zu echtem 9,96\,h \\
@@ -1618,12 +1618,12 @@ W3--4 & Multi-Device-Datensammlung &
 W5 & INT8-Quantisierung (14,4\,KB) &
   Float32-Modell ($\sim$\,50\,KB) &
   TFLite-INT8 reicht in der Genauigkeit, ist deutlich kleiner \\
-W7 & Ein Hauptfeature stolz, 2 Tabs + Settings &
+W7 & Drei Tabs + Settings mit klarem Hauptfeature &
   Single-Screen mit allen Funktionen &
-  Feature-Buffet verwirrt; klare Story besser für Verteidigung \\
+  Feature-Buffet verwirrt; klare Struktur liest sich besser \\
 W7 & Feature-Importance-Anzeige verworfen &
   Bar-Chart der Sensor-Wichtigkeit &
-  battery\_level dominiert zu stark -- wäre entlarvend statt sexy \\
+  battery\_level dominiert zu stark -- visuell wenig aussagekräftig \\
 W7 & Architektur-Heatmap als skizzierte Pulsation &
   Input-Layer live mit echten Sensor-Werten füttern &
   Echte Werte änderten sich über 5\,Min kaum -- horizontale Streifen statt aussagekräftige Heatmap, visuell schlechter \\
@@ -1639,18 +1639,17 @@ Drei Lerneffekte aus dem Verlauf:
 
 \begin{itemize}
 \item \emph{Früher Multi-Device.} Die Xiaomi-only-Phase in den
-  ersten drei Wochen hat methodisch wenig gebracht. Hätte ich
-  von Anfang an parallele Datensammlung auf mindestens zwei
-  Geräten organisiert, wäre der Verteilungs-Aha-Moment
-  (Akku zu 88\,\% über 75\,\%) zwei Wochen früher gekommen.
-\item \emph{UI-Investition nicht so spät.} Der UI-Refactor in
-  Woche 7 war für die Verteidigung essenziell, lief aber unter
-  Zeitdruck. Eine \glqq{}30-Minuten-UI-Pflege\grqq{} pro Woche
-  hätte das verteilt und entspannter gemacht.
+  ersten drei Wochen hat methodisch wenig gebracht. Mit
+  parallelen Geräten von Anfang an wäre der Verteilungs-Befund
+  (Akku zu 88\,\% über 75\,\%) zwei Wochen früher sichtbar
+  geworden.
+\item \emph{UI-Investition früher.} Der UI-Refactor in Woche~7
+  war wichtig für die Abgabe, lief aber unter Zeitdruck. Pro
+  Woche eine kleine UI-Pflege hätte das verteilt.
 \item \emph{Statistik-Grundlagen früher.} Die in W2
   aufgefrischten Grundlagen (Cross-Validation, Leakage) waren
-  goldwert. Idealerweise hätte ich sie nicht aus Reflex in
-  Woche 2 nachgeholt, sondern schon vor Projekt-Start dabeigehabt.
+  nützlich. Vor Projektstart parat zu haben hätte den Leakage-
+  Fund in W3 schneller möglich gemacht.
 \end{itemize}
 
 \subsection{KI-Nutzung}
