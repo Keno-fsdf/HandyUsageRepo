@@ -89,10 +89,11 @@ const TOTAL = 15;
 
   s.addText([
     { text: "Keno Schürger", options: { bold: true, breakLine: true } },
+    { text: "Matrikelnr.: 5023033", options: { color: "9CB4DE", breakLine: true } },
     { text: "Technische Hochschule Würzburg-Schweinfurt (THWS)", options: { color: "9CB4DE", breakLine: true } },
     { text: "Vertiefungsseminar - Sommersemester 2026", options: { color: "9CB4DE" } },
   ], {
-    x: 0.6, y: 4.2, w: 8.8, h: 1.1,
+    x: 0.6, y: 4.05, w: 8.8, h: 1.25,
     fontSize: 14, color: "FFFFFF", fontFace: "Calibri",
   });
 
