@@ -407,7 +407,7 @@ const TOTAL = 15;
   s.background = { color: COL.bg };
   slideTitle(s, "Methodik-Kernpunkt: Segment-Level-Split");
 
-  s.addText("Problem: Random-Shuffle über Sliding-Window-Sequenzen leckt Future-Information", {
+  s.addText("Problem: Bei zufälliger Aufteilung sieht das Modell unbemerkt Daten aus der Zukunft", {
     x: 0.5, y: 1.05, w: 9, h: 0.4,
     fontSize: 14, italic: true, color: COL.muted, fontFace: "Calibri",
   });
