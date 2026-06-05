@@ -1,4 +1,4 @@
-// Verteidigungs-Praesentation fuer das Paper:
+// Verteidigungs-Präsentation für das Paper:
 // "App-Level TinyML for Smartphone Battery-Life Prediction"
 // Output: Paper_Verteidigung.pptx
 //
@@ -8,8 +8,8 @@ const pptxgen = require("pptxgenjs");
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_16x9"; // 10" x 5.625"
-pres.author = "Keno Schuerger";
-pres.title = "TinyML fuer Akkulaufzeit-Vorhersage auf Android - Verteidigung";
+pres.author = "Keno Schürger";
+pres.title = "TinyML für Akkulaufzeit-Vorhersage auf Android - Verteidigung";
 
 // ============================================================
 // Farbpalette
@@ -46,7 +46,7 @@ function addPageNumber(slide, n, total) {
 }
 
 function addFooter(slide) {
-  slide.addText("K. Schuerger - TinyML fuer Akkulaufzeit-Vorhersage", {
+  slide.addText("K. Schürger - TinyML für Akkulaufzeit-Vorhersage", {
     x: 0.5, y: 5.3, w: 7, h: 0.25,
     fontSize: 9, color: COL.muted, fontFace: "Calibri",
   });
@@ -68,7 +68,7 @@ const TOTAL = 15;
   const s = pres.addSlide();
   s.background = { color: COL.bgDark };
 
-  s.addText("App-Level TinyML fuer", {
+  s.addText("App-Level TinyML für", {
     x: 0.6, y: 1.5, w: 8.8, h: 0.7,
     fontSize: 36, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "left",
   });
@@ -88,8 +88,8 @@ const TOTAL = 15;
   });
 
   s.addText([
-    { text: "Keno Schuerger", options: { bold: true, breakLine: true } },
-    { text: "Technische Hochschule Wuerzburg-Schweinfurt (THWS)", options: { color: "9CB4DE", breakLine: true } },
+    { text: "Keno Schürger", options: { bold: true, breakLine: true } },
+    { text: "Technische Hochschule Würzburg-Schweinfurt (THWS)", options: { color: "9CB4DE", breakLine: true } },
     { text: "Vertiefungsseminar - Sommersemester 2026", options: { color: "9CB4DE" } },
   ], {
     x: 0.6, y: 4.2, w: 8.8, h: 1.1,
@@ -126,7 +126,7 @@ const TOTAL = 15;
   const labels = [
     { head: "Methode", body: "TinyML\nvs.\n5 andere Methoden", col: COL.tinyml },
     { head: "Achse 1", body: "Genauigkeit\n(C-Index, MAE)", col: COL.exp },
-    { head: "Achse 2", body: "Effizienz\n(Latenz, Modellgroesse)", col: COL.google },
+    { head: "Achse 2", body: "Effizienz\n(Latenz, Modellgröße)", col: COL.google },
   ];
   labels.forEach((l, i) => {
     s.addShape(pres.shapes.RECTANGLE, {
@@ -180,13 +180,13 @@ const TOTAL = 15;
   s.addText([
     { text: "PowerManager.getBatteryDischargePrediction()", options: { bullet: true, breakLine: true } },
     { text: "Erstes ML-Modell direkt im Android-System", options: { bullet: true, breakLine: true } },
-    { text: "Laeuft im Systemprozess - privilegierter Zugriff", options: { bullet: true } },
+    { text: "Läuft im Systemprozess - privilegierter Zugriff", options: { bullet: true } },
   ], {
     x: 5.2, y: 1.55, w: 4.3, h: 1.8,
     fontSize: 13, color: COL.text, fontFace: "Calibri", paraSpaceAfter: 6,
   });
 
-  // Highlight: plain-language framing (Erlaeuterung der Forschungsfrage)
+  // Highlight: plain-language framing (Erläuterung der Forschungsfrage)
   s.addShape(pres.shapes.RECTANGLE, {
     x: 0.5, y: 3.7, w: 9, h: 1.0,
     fill: { color: "FFF6E5" }, line: { color: COL.google, width: 1 },
@@ -195,7 +195,7 @@ const TOTAL = 15;
     x: 0.7, y: 3.78, w: 8.6, h: 0.3,
     fontSize: 11, bold: true, color: COL.google, fontFace: "Calibri", margin: 0,
   });
-  s.addText("Kann eine Drittanbieter-App, die nur oeffentliche Sensor-APIs nutzt, mit der System-API mithalten - oder ueberhaupt etwas Sinnvolles lernen?", {
+  s.addText("Kann eine Drittanbieter-App, die nur öffentliche Sensor-APIs nutzt, mit der System-API mithalten - oder überhaupt etwas Sinnvolles lernen?", {
     x: 0.7, y: 4.05, w: 8.6, h: 0.6,
     fontSize: 14, italic: true, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
   });
@@ -216,7 +216,7 @@ const TOTAL = 15;
     {
       head: "Li et al. (2018)",
       sub: "Smartphone Battery Prediction at Scale",
-      body: "51 Nutzer, 21 Monate. Fuehrt den Concordance-Index als Standard-Metrik ein, weil das 'severe data missing problem' (User entladen selten auf 0%) MAE unzuverlaessig macht.",
+      body: "51 Nutzer, 21 Monate. Führt den Concordance-Index als Standard-Metrik ein, weil das 'severe data missing problem' (User entladen selten auf 0%) MAE unzuverlässig macht.",
       col: COL.primary,
     },
     {
@@ -227,14 +227,14 @@ const TOTAL = 15;
     },
     {
       head: "Banbury et al. (2021) - MLPerf Tiny",
-      sub: "Industriestandard-Benchmark fuer TinyML",
+      sub: "Industriestandard-Benchmark für TinyML",
       body: "Misst Accuracy, Latency, Energy gemeinsam. Smartphone-Anwendungen fehlen in der Literatur (siehe Heydari & Mahmoud 2025, Alajlan & Ibrahim 2022).",
       col: COL.google,
     },
     {
       head: "Albelali & Ahmed (2025)",
       sub: "Hidden Leaks in Time Series Forecasting",
-      body: "Random-Shuffle-Splits ueber Sliding-Window-Sequenzen lecken Future-Information. RMSE Gain bis 20.5% bei 10-fold CV (LSTM).",
+      body: "Random-Shuffle-Splits über Sliding-Window-Sequenzen lecken Future-Information. RMSE Gain bis 20.5% bei 10-fold CV (LSTM).",
       col: COL.bad,
     },
   ];
@@ -277,12 +277,12 @@ const TOTAL = 15;
 {
   const s = pres.addSlide();
   s.background = { color: COL.bg };
-  slideTitle(s, "Datensammlung: 4 Geraete, 45 Tage");
+  slideTitle(s, "Datensammlung: 4 Geräte, 45 Tage");
 
   // Big stat row
   const stats = [
     { val: "66.001", lbl: "Messungen" },
-    { val: "4", lbl: "Geraete" },
+    { val: "4", lbl: "Geräte" },
     { val: "45 Tage", lbl: "Zeitraum" },
     { val: "180", lbl: "Sessions" },
   ];
@@ -305,7 +305,7 @@ const TOTAL = 15;
   // Per-Device Tabelle
   const tableData = [
     [
-      { text: "Geraet", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
+      { text: "Gerät", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
       { text: "Messungen", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
       { text: "Sessions", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
       { text: "Aktive Tage", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
@@ -408,7 +408,7 @@ const TOTAL = 15;
   s.background = { color: COL.bg };
   slideTitle(s, "Methodik-Kernpunkt: Segment-Level-Split");
 
-  s.addText("Problem: Random-Shuffle ueber Sliding-Window-Sequenzen leckt Future-Information", {
+  s.addText("Problem: Random-Shuffle über Sliding-Window-Sequenzen leckt Future-Information", {
     x: 0.5, y: 1.05, w: 9, h: 0.4,
     fontSize: 14, italic: true, color: COL.muted, fontFace: "Calibri",
   });
@@ -423,7 +423,7 @@ const TOTAL = 15;
       { text: "Inflation", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
     ],
     ["Single Device (Xiaomi)", "9.024", "0.53 h", { text: "9.96 h", options: { bold: true, color: COL.bad } }, { text: "~19x", options: { bold: true, color: COL.bad } }],
-    ["Multi-Device (4 Geraete)", "20.842", "4.00 h", { text: "4.97 h", options: { bold: true, color: COL.exp } }, { text: "~1.24x", options: { bold: true, color: COL.exp } }],
+    ["Multi-Device (4 Geräte)", "20.842", "4.00 h", { text: "4.97 h", options: { bold: true, color: COL.exp } }, { text: "~1.24x", options: { bold: true, color: COL.exp } }],
   ];
   s.addTable(tableData, {
     x: 0.5, y: 1.55, w: 9,
@@ -432,7 +432,7 @@ const TOTAL = 15;
     border: { type: "solid", pt: 0.5, color: COL.border },
   });
 
-  // Take-aways (direkt unter der Tabelle anschliessen)
+  // Take-aways (direkt unter der Tabelle anschließen)
   s.addShape(pres.shapes.RECTANGLE, {
     x: 0.5, y: 2.85, w: 9, h: 2.2,
     fill: { color: "F8FAFC" }, line: { color: COL.border, width: 1 },
@@ -442,9 +442,9 @@ const TOTAL = 15;
     fontSize: 14, bold: true, color: COL.primary, fontFace: "Calibri", margin: 0,
   });
   s.addText([
-    { text: "Single-Device: random-shuffle taeuscht eine 19x bessere Performance vor - reines Leakage-Artefakt.", options: { bullet: true, breakLine: true } },
+    { text: "Single-Device: random-shuffle täuscht eine 19x bessere Performance vor - reines Leakage-Artefakt.", options: { bullet: true, breakLine: true } },
     { text: "Multi-Device: nur noch 1.24x Inflation, im Bereich von Albelali & Ahmed (2025) mit 10-fold CV.", options: { bullet: true, breakLine: true } },
-    { text: "Eigener methodischer Beitrag: Inflation ist data-diversity-dependent. Empfehlung fuer Folgearbeiten in dieser Domaene: Splitting-Strategie explizit nennen.", options: { bullet: true } },
+    { text: "Eigener methodischer Beitrag: Inflation ist data-diversity-dependent. Empfehlung für Folgearbeiten in dieser Domäne: Splitting-Strategie explizit nennen.", options: { bullet: true } },
   ], {
     x: 0.7, y: 3.35, w: 8.6, h: 1.6,
     fontSize: 13, color: COL.text, fontFace: "Calibri", margin: 0, paraSpaceAfter: 8,
@@ -467,12 +467,12 @@ const TOTAL = 15;
     fontSize: 12, italic: true, color: COL.muted, fontFace: "Calibri",
   });
 
-  // Mini-Erklaer-Strip: C-Index in einem Satz fuer Nicht-ML-Hoerer
+  // Mini-Erklär-Strip: C-Index in einem Satz für Nicht-ML-Hörer
   s.addShape(pres.shapes.RECTANGLE, {
     x: 0.5, y: 1.4, w: 9, h: 0.32,
     fill: { color: "F0F4F8" }, line: { color: COL.border, width: 0.5 },
   });
-  s.addText("C-Index: Anteil korrekt geordneter Vorhersage-Paare. 0,5 = Muenzwurf, 1,0 = perfekt. MAE: durchschnittliche Abweichung in Stunden.", {
+  s.addText("C-Index: Anteil korrekt geordneter Vorhersage-Paare. 0,5 = Münzwurf, 1,0 = perfekt. MAE: durchschnittliche Abweichung in Stunden.", {
     x: 0.7, y: 1.42, w: 8.6, h: 0.28,
     fontSize: 10, italic: true, color: COL.secondary, fontFace: "Calibri", margin: 0, valign: "middle",
   });
@@ -525,12 +525,12 @@ const TOTAL = 15;
     fontSize: 12, italic: true, color: COL.muted, fontFace: "Calibri",
   });
 
-  // Mini-Erklaer-Strip: p-Wert in einem Satz fuer Nicht-Statistik-Hoerer
+  // Mini-Erklär-Strip: p-Wert in einem Satz für Nicht-Statistik-Hörer
   s.addShape(pres.shapes.RECTANGLE, {
     x: 0.5, y: 1.4, w: 9, h: 0.32,
     fill: { color: "F0F4F8" }, line: { color: COL.border, width: 0.5 },
   });
-  s.addText("p < 0,05 = signifikant (Unterschied nicht durch Zufall erklaerbar). n.s. = nicht signifikant (beide Methoden statistisch ununterscheidbar).", {
+  s.addText("p < 0,05 = signifikant (Unterschied nicht durch Zufall erklärbar). n.s. = nicht signifikant (beide Methoden statistisch ununterscheidbar).", {
     x: 0.7, y: 1.42, w: 8.6, h: 0.28,
     fontSize: 10, italic: true, color: COL.secondary, fontFace: "Calibri", margin: 0, valign: "middle",
   });
@@ -544,10 +544,10 @@ const TOTAL = 15;
       { text: "p", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
       { text: "Befund", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
     ],
-    ["TinyML vs. Mean", "0.666", "0.500", "+0.166", "0.005", { text: "** signifikant ueber Floor", options: { color: COL.good } }],
-    ["RF vs. Mean", "0.686", "0.500", "+0.186", "0.005", { text: "** signifikant ueber Floor", options: { color: COL.good } }],
+    ["TinyML vs. Mean", "0.666", "0.500", "+0.166", "0.005", { text: "** signifikant über Floor", options: { color: COL.good } }],
+    ["RF vs. Mean", "0.686", "0.500", "+0.186", "0.005", { text: "** signifikant über Floor", options: { color: COL.good } }],
     ["Linear vs. Exponential", "0.776", "0.773", "+0.003", "0.30", { text: "n.s.", options: { color: COL.muted } }],
-    ["Linear vs. Google", "0.776", "0.777", "-0.001", { text: "0.83", options: { bold: true, color: COL.bad } }, { text: "n.s. - ueberraschend!", options: { color: COL.bad, italic: true } }],
+    ["Linear vs. Google", "0.776", "0.777", "-0.001", { text: "0.83", options: { bold: true, color: COL.bad } }, { text: "n.s. - überraschend!", options: { color: COL.bad, italic: true } }],
     ["TinyML vs. Google", "0.666", "0.777", "-0.111", "0.005", { text: "** Google klar besser", options: { color: COL.good } }],
   ];
   s.addTable(tableData, {
@@ -561,14 +561,14 @@ const TOTAL = 15;
     x: 0.5, y: 3.85, w: 9, h: 1.3,
     fill: { color: "FFF5F5" }, line: { color: COL.bad, width: 1 },
   });
-  s.addText("Ueberraschender Befund", {
+  s.addText("Überraschender Befund", {
     x: 0.7, y: 3.9, w: 8.6, h: 0.3,
     fontSize: 13, bold: true, color: COL.bad, fontFace: "Calibri", margin: 0,
   });
   s.addText([
-    { text: "Linear-Drain-Rate-Baseline ist statistisch nicht von Google-API unterscheidbar (p=0.83 fuer C, p=0.55 fuer MAE).", options: { bullet: true, breakLine: true } },
-    { text: "Beide ML-Modelle (TinyML, RF) signifikant ueber Mean, aber unter der Spitzengruppe.", options: { bullet: true, breakLine: true } },
-    { text: "Implikation: 'einfach BatteryManager-Counter lesen' ist auf Aggregat-Ebene konkurrenzfaehig mit dem System-ML-Estimator.", options: { bullet: true } },
+    { text: "Linear-Drain-Rate-Baseline ist statistisch nicht von Google-API unterscheidbar (p=0.83 für C, p=0.55 für MAE).", options: { bullet: true, breakLine: true } },
+    { text: "Beide ML-Modelle (TinyML, RF) signifikant über Mean, aber unter der Spitzengruppe.", options: { bullet: true, breakLine: true } },
+    { text: "Implikation: 'einfach BatteryManager-Counter lesen' ist auf Aggregat-Ebene konkurrenzfähig mit dem System-ML-Estimator.", options: { bullet: true } },
   ], {
     x: 0.7, y: 4.2, w: 8.6, h: 0.95,
     fontSize: 11, color: COL.text, fontFace: "Calibri", margin: 0, paraSpaceAfter: 2,
@@ -586,7 +586,7 @@ const TOTAL = 15;
   s.background = { color: COL.bg };
   slideTitle(s, "Ergebnis 3: Per-Device (Hardware-Effekt)");
 
-  s.addText("Derselbe TinyML-Conv1D, evaluiert pro Geraet - der praktisch relevanteste Befund", {
+  s.addText("Derselbe TinyML-Conv1D, evaluiert pro Gerät - der praktisch relevanteste Befund", {
     x: 0.5, y: 1.05, w: 9, h: 0.35,
     fontSize: 12, italic: true, color: COL.muted, fontFace: "Calibri",
   });
@@ -625,7 +625,7 @@ const TOTAL = 15;
     valGridLine: { color: COL.border, size: 0.5 },
     catGridLine: { style: "none" },
     chartArea: { fill: { color: "FFFFFF" } },
-    title: "C-Index nach Geraet (vs. y_extrap)",
+    title: "C-Index nach Gerät (vs. y_extrap)",
     showTitle: true, titleFontSize: 12, titleColor: COL.primary,
   });
 
@@ -636,7 +636,7 @@ const TOTAL = 15;
   });
   s.addText([
     { text: "TinyML: 0.79 (Pixel 7 Pro) bis 0.59 (Xiaomi)", options: { bullet: true, breakLine: true } },
-    { text: "Analytische Baselines stabiler ueber Geraete", options: { bullet: true, breakLine: true } },
+    { text: "Analytische Baselines stabiler über Geräte", options: { bullet: true, breakLine: true } },
     { text: "Pixel 9 Pro XL: Linear (0.73) > Google (0.68)", options: { bullet: true, breakLine: true, bold: true } },
     { text: "Pixel 8 Pro: nur n=98 (breite CIs)", options: { bullet: true } },
   ], {
@@ -653,7 +653,7 @@ const TOTAL = 15;
     x: 6.6, y: 3.92, w: 2.8, h: 0.28,
     fontSize: 11, bold: true, color: COL.google, fontFace: "Calibri", margin: 0,
   });
-  s.addText("Xiaomi-Daten: Akku 88.8% der Zeit ueber 75% (mean 94%). Wenig Discharge-Dynamik zum Lernen. Sensor-Qualitaet UND Datenverteilung gemischt.", {
+  s.addText("Xiaomi-Daten: Akku 88.8% der Zeit über 75% (mean 94%). Wenig Discharge-Dynamik zum Lernen. Sensor-Qualität UND Datenverteilung gemischt.", {
     x: 6.6, y: 4.2, w: 2.8, h: 0.8,
     fontSize: 9.5, italic: true, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
   });
@@ -703,7 +703,7 @@ const TOTAL = 15;
   const tableData = [
     [
       { text: "Variante", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
-      { text: "Groesse (KB)", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
+      { text: "Größe (KB)", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
       { text: "Avg Latenz", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
     ],
     ["Keras Float32", "109.18", "47.1 ms"],
@@ -737,12 +737,12 @@ const TOTAL = 15;
 }
 
 // ============================================================
-// SLIDE 12 - Diskussion: zwei Schluessel-Befunde (konsolidiert)
+// SLIDE 12 - Diskussion: zwei Schlüssel-Befunde (konsolidiert)
 // ============================================================
 {
   const s = pres.addSlide();
   s.background = { color: COL.bg };
-  slideTitle(s, "Diskussion: Zwei Schluessel-Befunde");
+  slideTitle(s, "Diskussion: Zwei Schlüssel-Befunde");
 
   // ===== LINKE SPALTE: TinyML lernt Signal =====
   s.addShape(pres.shapes.RECTANGLE, {
@@ -763,7 +763,7 @@ const TOTAL = 15;
   s.addText([
     { text: "Single Device: ", options: { bold: true } },
     { text: "TinyML C=0.50 = Mean-Predictor", options: { color: COL.bad, breakLine: true } },
-    { text: "  RF C=0.51, beide nicht ueber Floor", options: { color: COL.muted, breakLine: true } },
+    { text: "  RF C=0.51, beide nicht über Floor", options: { color: COL.muted, breakLine: true } },
     { text: "  ", options: { breakLine: true } },
     { text: "Multi-Device (jetzt): ", options: { bold: true } },
     { text: "TinyML C=0.67", options: { color: COL.good, bold: true, breakLine: true } },
@@ -805,7 +805,7 @@ const TOTAL = 15;
     x: 5.45, y: 2.0, w: 4.0, h: 2.4,
     fontSize: 11, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top", paraSpaceAfter: 2,
   });
-  s.addText("Hardware-Zugang traegt nichts Messbares fuer 'Stunden bis 0%' bei.", {
+  s.addText("Hardware-Zugang trägt nichts Messbares für 'Stunden bis 0%' bei.", {
     x: 5.45, y: 4.5, w: 4.0, h: 0.4,
     fontSize: 11, italic: true, bold: true, color: COL.primary, fontFace: "Calibri", margin: 0,
   });
@@ -825,15 +825,15 @@ const TOTAL = 15;
   const lims = [
     {
       head: "Right-censored Daten",
-      body: "Akku wird im Alltag nie auf 0% entladen. Strukturelle Eigenschaft der Domaene - gleiche Beobachtung bei Li et al. (2018) mit 51 Nutzern. Deshalb C-Index als Primaer-Metrik statt MAE.",
+      body: "Akku wird im Alltag nie auf 0% entladen. Strukturelle Eigenschaft der Domäne - gleiche Beobachtung bei Li et al. (2018) mit 51 Nutzern. Deshalb C-Index als Primär-Metrik statt MAE.",
     },
     {
       head: "Multi-Device, aber nicht Cross-Device",
-      body: "Training sieht alle vier Geraete. Eine Leave-One-Device-Out-Studie - also Test auf einem komplett ungesehenen Geraet - ist offene Folgearbeit.",
+      body: "Training sieht alle vier Geräte. Eine Leave-One-Device-Out-Studie - also Test auf einem komplett ungesehenen Gerät - ist offene Folgearbeit.",
     },
     {
       head: "TinyML auf Pixel 9 Pro XL anomal schlecht",
-      body: "TinyML C=0.60 waehrend RF auf demselben Geraet C=0.76 erreicht. Keine kausale Erklaerung im aktuellen Datensatz - offen fuer Folgearbeiten.",
+      body: "TinyML C=0.60 während RF auf demselben Gerät C=0.76 erreicht. Keine kausale Erklärung im aktuellen Datensatz - offen für Folgearbeiten.",
     },
   ];
 
@@ -875,17 +875,17 @@ const TOTAL = 15;
   const concl = [
     {
       head: "Genauigkeit",
-      body: "TinyML schlaegt Mean (C 0.67), bleibt aber hinter Linear/Exp/Google (C ~ 0.77). Google nicht signifikant besser als Linear.",
+      body: "TinyML schlägt Mean (C 0.67), bleibt aber hinter Linear/Exp/Google (C ~ 0.77). Google nicht signifikant besser als Linear.",
       col: COL.tinyml,
     },
     {
       head: "Effizienz",
-      body: "TFLite-Quantisierung funktioniert. 14.4 KB, 4.5 us. Auf dieser Achse hat TinyML uneingeschraenkt seinen Wert.",
+      body: "TFLite-Quantisierung funktioniert. 14.4 KB, 4.5 us. Auf dieser Achse hat TinyML uneingeschränkt seinen Wert.",
       col: COL.exp,
     },
     {
       head: "Hardware & Daten-Coverage",
-      body: "TinyML 0.79 auf Pixel 7 Pro, 0.59 auf Xiaomi. Engpass: Sensor-Qualitaet UND Discharge-Dynamik-Coverage (Xiaomi-Akku 88.8% der Zeit voll). Nicht die Modellarchitektur.",
+      body: "TinyML 0.79 auf Pixel 7 Pro, 0.59 auf Xiaomi. Engpass: Sensor-Qualität UND Discharge-Dynamik-Coverage (Xiaomi-Akku 88.8% der Zeit voll). Nicht die Modellarchitektur.",
       col: COL.google,
     },
   ];
@@ -906,13 +906,13 @@ const TOTAL = 15;
     });
   });
 
-  s.addText("Methodischer Beitrag: Segment-Level-Split als Standard fuer Sliding-Window-Time-Series in Mobile-Sensing.", {
+  s.addText("Methodischer Beitrag: Segment-Level-Split als Standard für Sliding-Window-Time-Series in Mobile-Sensing.", {
     x: 0.5, y: 4.55, w: 9, h: 0.5,
     fontSize: 14, italic: true, color: "CADCFC", fontFace: "Calibri", align: "center",
   });
 
   // Footer + Seitenzahl in hellem Schriftton (dunkler Hintergrund)
-  s.addText("K. Schuerger - TinyML fuer Akkulaufzeit-Vorhersage", {
+  s.addText("K. Schürger - TinyML für Akkulaufzeit-Vorhersage", {
     x: 0.5, y: 5.3, w: 7, h: 0.25,
     fontSize: 9, color: "9CB4DE", fontFace: "Calibri",
   });
@@ -929,7 +929,7 @@ const TOTAL = 15;
   const s = pres.addSlide();
   s.background = { color: COL.bgDark };
 
-  // Grosser Dank-Block, mittig
+  // Großer Dank-Block, mittig
   s.addText("Vielen Dank", {
     x: 0.6, y: 1.6, w: 8.8, h: 0.9,
     fontSize: 54, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center",
@@ -948,15 +948,15 @@ const TOTAL = 15;
 
   // Subtle attribution unten
   s.addText([
-    { text: "Keno Schuerger", options: { bold: true, breakLine: true } },
-    { text: "TinyML fuer Akkulaufzeit-Vorhersage auf Android", options: { color: "9CB4DE" } },
+    { text: "Keno Schürger", options: { bold: true, breakLine: true } },
+    { text: "TinyML für Akkulaufzeit-Vorhersage auf Android", options: { color: "9CB4DE" } },
   ], {
     x: 0.6, y: 4.15, w: 8.8, h: 0.9,
     fontSize: 13, color: "FFFFFF", fontFace: "Calibri", align: "center",
   });
 
   // Footer + Seitenzahl in hellem Schriftton (dunkler Hintergrund)
-  s.addText("K. Schuerger - TinyML fuer Akkulaufzeit-Vorhersage", {
+  s.addText("K. Schürger - TinyML für Akkulaufzeit-Vorhersage", {
     x: 0.5, y: 5.3, w: 7, h: 0.25,
     fontSize: 9, color: "9CB4DE", fontFace: "Calibri",
   });
