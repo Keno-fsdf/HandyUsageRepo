@@ -90,10 +90,16 @@ const TOTAL = 16;
   s.addText([
     { text: "Keno Schuerger", options: { bold: true, breakLine: true } },
     { text: "Technische Hochschule Wuerzburg-Schweinfurt (THWS)", options: { color: "9CB4DE", breakLine: true } },
-    { text: "Vertiefungsseminar - Mai 2026", options: { color: "9CB4DE" } },
+    { text: "Vertiefungsseminar - Sommersemester 2026", options: { color: "9CB4DE" } },
   ], {
     x: 0.6, y: 4.2, w: 8.8, h: 1.1,
     fontSize: 14, color: "FFFFFF", fontFace: "Calibri",
+  });
+
+  // Seitenzahl auch auf der Titelfolie (heller Schrift, weil dunkler Hintergrund)
+  s.addText("1 / " + TOTAL, {
+    x: 9.0, y: 5.3, w: 0.9, h: 0.25,
+    fontSize: 9, color: "9CB4DE", align: "right", fontFace: "Calibri",
   });
 }
 
@@ -180,12 +186,12 @@ const TOTAL = 16;
     fontSize: 13, color: COL.text, fontFace: "Calibri", paraSpaceAfter: 6,
   });
 
-  // Highlight: research question
+  // Highlight: plain-language framing (Erlaeuterung der Forschungsfrage)
   s.addShape(pres.shapes.RECTANGLE, {
     x: 0.5, y: 3.7, w: 9, h: 1.0,
     fill: { color: "FFF6E5" }, line: { color: COL.google, width: 1 },
   });
-  s.addText("Forschungsfrage", {
+  s.addText("Worum es im Kern geht", {
     x: 0.7, y: 3.78, w: 8.6, h: 0.3,
     fontSize: 11, bold: true, color: COL.google, fontFace: "Calibri", margin: 0,
   });
@@ -934,44 +940,60 @@ const TOTAL = 16;
     x: 0.5, y: 4.55, w: 9, h: 0.5,
     fontSize: 14, italic: true, color: "CADCFC", fontFace: "Calibri", align: "center",
   });
+
+  // Footer + Seitenzahl in hellem Schriftton (dunkler Hintergrund)
+  s.addText("K. Schuerger - TinyML fuer Akkulaufzeit-Vorhersage", {
+    x: 0.5, y: 5.3, w: 7, h: 0.25,
+    fontSize: 9, color: "9CB4DE", fontFace: "Calibri",
+  });
+  s.addText("15 / " + TOTAL, {
+    x: 9.0, y: 5.3, w: 0.9, h: 0.25,
+    fontSize: 9, color: "9CB4DE", align: "right", fontFace: "Calibri",
+  });
 }
 
 // ============================================================
-// SLIDE 16 - Q&A / Backup
+// SLIDE 16 - Q&A (schlicht)
 // ============================================================
 {
   const s = pres.addSlide();
-  s.background = { color: COL.bg };
-  slideTitle(s, "Vielen Dank - Fragen?");
+  s.background = { color: COL.bgDark };
 
-  s.addText("Vorbereitete Antworten auf erwartete Fragen", {
-    x: 0.5, y: 1.05, w: 9, h: 0.4,
-    fontSize: 14, italic: true, color: COL.muted, fontFace: "Calibri",
+  // Grosser Dank-Block, mittig
+  s.addText("Vielen Dank", {
+    x: 0.6, y: 1.6, w: 8.8, h: 0.9,
+    fontSize: 54, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center",
   });
 
-  const qa = [
-    { q: "Warum kein positives Ergebnis?", a: "Das positive Ergebnis (MAE 0.5h Single-Device) war Leakage-Artefakt. Die saubere Methodik enthuellt das. Beitrag der Arbeit ist genau diese Korrektur." },
-    { q: "Warum nur 4 Geraete, kein Cross-Device-Test?", a: "Methodisch ehrliche Limitation. Aber: Hauptbefund (Informations-Asymmetrie) ist nicht geraet-spezifisch und auf 4 Geraeten bestaetigt." },
-    { q: "Wieso Linear ~ Google?", a: "p=0.83 fuer C, p=0.55 fuer MAE. Drain-Rate ist das dominante Signal. Googles Hardware-Zugang bringt fuer 'Stunden bis 0%' keinen Mehrwert." },
-    { q: "Was tun fuer Folgestudien?", a: "Leave-One-Device-Out, kontrollierte Vollentlade-Zyklen, Multi-Device-Sweep ueber N>=5 Geraete." },
-  ];
-  qa.forEach((p, i) => {
-    const y = 1.5 + i * 0.85;
-    s.addShape(pres.shapes.RECTANGLE, {
-      x: 0.5, y: y, w: 0.08, h: 0.75, fill: { color: COL.primary }, line: { type: "none" },
-    });
-    s.addText("F: " + p.q, {
-      x: 0.75, y: y, w: 8.6, h: 0.3,
-      fontSize: 12, bold: true, color: COL.primary, fontFace: "Calibri", margin: 0,
-    });
-    s.addText("A: " + p.a, {
-      x: 0.75, y: y + 0.3, w: 8.6, h: 0.45,
-      fontSize: 11, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
-    });
+  // Akzent-Linie unter dem Dank
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 4.3, y: 2.55, w: 1.4, h: 0.06,
+    fill: { color: COL.bad }, line: { type: "none" },
   });
 
-  addFooter(s);
-  addPageNumber(s, 16, TOTAL);
+  s.addText("Fragen?", {
+    x: 0.6, y: 2.85, w: 8.8, h: 0.7,
+    fontSize: 32, italic: true, color: "CADCFC", fontFace: "Calibri", align: "center",
+  });
+
+  // Subtle attribution unten
+  s.addText([
+    { text: "Keno Schuerger", options: { bold: true, breakLine: true } },
+    { text: "TinyML fuer Akkulaufzeit-Vorhersage auf Android", options: { color: "9CB4DE" } },
+  ], {
+    x: 0.6, y: 4.15, w: 8.8, h: 0.9,
+    fontSize: 13, color: "FFFFFF", fontFace: "Calibri", align: "center",
+  });
+
+  // Footer + Seitenzahl in hellem Schriftton (dunkler Hintergrund)
+  s.addText("K. Schuerger - TinyML fuer Akkulaufzeit-Vorhersage", {
+    x: 0.5, y: 5.3, w: 7, h: 0.25,
+    fontSize: 9, color: "9CB4DE", fontFace: "Calibri",
+  });
+  s.addText("16 / " + TOTAL, {
+    x: 9.0, y: 5.3, w: 0.9, h: 0.25,
+    fontSize: 9, color: "9CB4DE", align: "right", fontFace: "Calibri",
+  });
 }
 
 // ============================================================
