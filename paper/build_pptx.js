@@ -59,7 +59,7 @@ function slideTitle(slide, title) {
   });
 }
 
-const TOTAL = 16;
+const TOTAL = 15;
 
 // ============================================================
 // SLIDE 1 - Titelseite (dunkler Hintergrund)
@@ -463,8 +463,18 @@ const TOTAL = 16;
   slideTitle(s, "Ergebnis 1: Common Subset (n=2.827)");
 
   s.addText("vs. y_extrap, 95% Bootstrap-CI, leakage-freier Multi-Device-Split", {
-    x: 0.5, y: 1.05, w: 9, h: 0.35,
+    x: 0.5, y: 1.05, w: 9, h: 0.3,
     fontSize: 12, italic: true, color: COL.muted, fontFace: "Calibri",
+  });
+
+  // Mini-Erklaer-Strip: C-Index in einem Satz fuer Nicht-ML-Hoerer
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 0.5, y: 1.4, w: 9, h: 0.32,
+    fill: { color: "F0F4F8" }, line: { color: COL.border, width: 0.5 },
+  });
+  s.addText("C-Index: Anteil korrekt geordneter Vorhersage-Paare. 0,5 = Muenzwurf, 1,0 = perfekt. MAE: durchschnittliche Abweichung in Stunden.", {
+    x: 0.7, y: 1.42, w: 8.6, h: 0.28,
+    fontSize: 10, italic: true, color: COL.secondary, fontFace: "Calibri", margin: 0, valign: "middle",
   });
 
   const tableData = [
@@ -483,19 +493,19 @@ const TOTAL = 16;
     [{ text: "Google API", options: { color: COL.google, bold: true } }, "3.24", "8.55", { text: "0.777 [0.767, 0.785]", options: { bold: true, color: COL.good } }, "60.1%"],
   ];
   s.addTable(tableData, {
-    x: 0.5, y: 1.45, w: 9,
+    x: 0.5, y: 1.85, w: 9,
     colW: [2.6, 1.2, 1.2, 2.6, 1.4],
     fontSize: 12, fontFace: "Calibri",
     border: { type: "solid", pt: 0.5, color: COL.border },
   });
 
   s.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 4.4, w: 9, h: 0.7,
+    x: 0.5, y: 4.55, w: 9, h: 0.6,
     fill: { color: "EDF7EE" }, line: { color: COL.good, width: 1 },
   });
   s.addText("Beide ML-Modelle schlagen Mean-Predictor signifikant. Linear, Exp und Google bilden eine gemeinsame Spitzengruppe bei C ~ 0.77.", {
-    x: 0.7, y: 4.45, w: 8.6, h: 0.6,
-    fontSize: 13, italic: true, color: COL.text, fontFace: "Calibri", margin: 0, valign: "middle",
+    x: 0.7, y: 4.58, w: 8.6, h: 0.55,
+    fontSize: 12, italic: true, color: COL.text, fontFace: "Calibri", margin: 0, valign: "middle",
   });
 
   addFooter(s);
@@ -511,8 +521,18 @@ const TOTAL = 16;
   slideTitle(s, "Ergebnis 2: Statistische Signifikanz");
 
   s.addText("Paarweise Permutationstests auf C-Index (Common Subset n=2.827)", {
-    x: 0.5, y: 1.05, w: 9, h: 0.35,
+    x: 0.5, y: 1.05, w: 9, h: 0.3,
     fontSize: 12, italic: true, color: COL.muted, fontFace: "Calibri",
+  });
+
+  // Mini-Erklaer-Strip: p-Wert in einem Satz fuer Nicht-Statistik-Hoerer
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 0.5, y: 1.4, w: 9, h: 0.32,
+    fill: { color: "F0F4F8" }, line: { color: COL.border, width: 0.5 },
+  });
+  s.addText("p < 0,05 = Unterschied ist nicht durch Zufall erklaerbar (signifikant). n.s. = nicht signifikant, beide Methoden statistisch ununterscheidbar.", {
+    x: 0.7, y: 1.42, w: 8.6, h: 0.28,
+    fontSize: 10, italic: true, color: COL.secondary, fontFace: "Calibri", margin: 0, valign: "middle",
   });
 
   const tableData = [
@@ -531,33 +551,27 @@ const TOTAL = 16;
     ["TinyML vs. Google", "0.666", "0.777", "-0.111", "0.005", { text: "** Google klar besser", options: { color: COL.good } }],
   ];
   s.addTable(tableData, {
-    x: 0.5, y: 1.45, w: 9,
+    x: 0.5, y: 1.8, w: 9,
     colW: [2.6, 0.8, 0.8, 1.0, 0.8, 3.0],
     fontSize: 11.5, fontFace: "Calibri",
     border: { type: "solid", pt: 0.5, color: COL.border },
   });
 
   s.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 3.55, w: 9, h: 1.65,
+    x: 0.5, y: 3.85, w: 9, h: 1.3,
     fill: { color: "FFF5F5" }, line: { color: COL.bad, width: 1 },
   });
   s.addText("Ueberraschender Befund", {
-    x: 0.7, y: 3.62, w: 8.6, h: 0.32,
-    fontSize: 14, bold: true, color: COL.bad, fontFace: "Calibri", margin: 0,
+    x: 0.7, y: 3.9, w: 8.6, h: 0.3,
+    fontSize: 13, bold: true, color: COL.bad, fontFace: "Calibri", margin: 0,
   });
   s.addText([
     { text: "Linear-Drain-Rate-Baseline ist statistisch nicht von Google-API unterscheidbar (p=0.83 fuer C, p=0.55 fuer MAE).", options: { bullet: true, breakLine: true } },
-    { text: "Beide ML-Modelle (TinyML, Random Forest) signifikant ueber Mean-Predictor, aber signifikant unter der Spitzengruppe.", options: { bullet: true, breakLine: true } },
+    { text: "Beide ML-Modelle (TinyML, RF) signifikant ueber Mean, aber unter der Spitzengruppe.", options: { bullet: true, breakLine: true } },
     { text: "Implikation: 'einfach BatteryManager-Counter lesen' ist auf Aggregat-Ebene konkurrenzfaehig mit dem System-ML-Estimator.", options: { bullet: true } },
   ], {
-    x: 0.7, y: 3.97, w: 8.6, h: 0.95,
-    fontSize: 12, color: COL.text, fontFace: "Calibri", margin: 0, paraSpaceAfter: 3,
-  });
-
-  // Caveat-Zeile in muted Italic
-  s.addText("Nuance: Aggregat-Befund. Im Bucket >=30h (n=58) gewinnt Google klar (C 0.98 vs 0.64). Auf kurzen/mittleren Restzeiten (~97% der Daten) wirklich praktisch identisch.", {
-    x: 0.7, y: 4.93, w: 8.6, h: 0.25,
-    fontSize: 10, italic: true, color: COL.muted, fontFace: "Calibri", margin: 0,
+    x: 0.7, y: 4.2, w: 8.6, h: 0.95,
+    fontSize: 11, color: COL.text, fontFace: "Calibri", margin: 0, paraSpaceAfter: 2,
   });
 
   addFooter(s);
@@ -723,46 +737,77 @@ const TOTAL = 16;
 }
 
 // ============================================================
-// SLIDE 12 - Diskussion: TinyML lernt Signal aber...
+// SLIDE 12 - Diskussion: zwei Schluessel-Befunde (konsolidiert)
 // ============================================================
 {
   const s = pres.addSlide();
   s.background = { color: COL.bg };
-  slideTitle(s, "Diskussion 1: TinyML lernt Signal");
+  slideTitle(s, "Diskussion: Zwei Schluessel-Befunde");
 
-  s.addText("Anders als auf Single-Device-Setup ist TinyML hier kein Mean-Predictor mehr", {
-    x: 0.5, y: 1.05, w: 9, h: 0.35,
-    fontSize: 13, italic: true, color: COL.muted, fontFace: "Calibri",
+  // ===== LINKE SPALTE: TinyML lernt Signal =====
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 0.5, y: 1.15, w: 4.3, h: 3.8,
+    fill: { color: "F8FAFC" }, line: { color: COL.good, width: 1 },
+  });
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 0.5, y: 1.15, w: 0.08, h: 3.8, fill: { color: COL.good }, line: { type: "none" },
+  });
+  s.addText("Befund 1: TinyML lernt Signal", {
+    x: 0.75, y: 1.25, w: 4.0, h: 0.4,
+    fontSize: 14, bold: true, color: COL.good, fontFace: "Calibri", margin: 0,
+  });
+  s.addText("Multi-Device-Datensatz macht den Unterschied:", {
+    x: 0.75, y: 1.65, w: 4.0, h: 0.35,
+    fontSize: 11, italic: true, color: COL.muted, fontFace: "Calibri", margin: 0,
+  });
+  s.addText([
+    { text: "Single Device: ", options: { bold: true } },
+    { text: "TinyML C=0.50 = Mean-Predictor", options: { color: COL.bad, breakLine: true } },
+    { text: "  RF C=0.51, beide nicht ueber Floor", options: { color: COL.muted, breakLine: true } },
+    { text: "  ", options: { breakLine: true } },
+    { text: "Multi-Device (jetzt): ", options: { bold: true } },
+    { text: "TinyML C=0.67", options: { color: COL.good, bold: true, breakLine: true } },
+    { text: "  RF C=0.69, beide signifikant > Floor (p<=0.005)", options: { color: COL.good } },
+  ], {
+    x: 0.75, y: 2.0, w: 4.0, h: 2.4,
+    fontSize: 11, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top", paraSpaceAfter: 2,
+  });
+  s.addText("Aber: ML bleibt hinter analytischen Baselines + Google (C ~ 0.77).", {
+    x: 0.75, y: 4.5, w: 4.0, h: 0.4,
+    fontSize: 11, italic: true, bold: true, color: COL.primary, fontFace: "Calibri", margin: 0,
   });
 
-  // Vergleich Single vs Multi-Device
-  const rows = [
-    { title: "Single Device (frueher Stand)", col: COL.bad, text: "TinyML C-Index 0.50 = Mean-Predictor. Random Forest 0.51. Beide statistisch nicht von 'kein Modell' unterscheidbar." },
-    { title: "Multi-Device (jetzt)", col: COL.good, text: "TinyML C-Index 0.67, RF 0.69. Beide signifikant ueber Floor (p<=0.005). ML lernt erkennbares Signal." },
-  ];
-
-  rows.forEach((r, i) => {
-    const y = 1.55 + i * 1.5;
-    s.addShape(pres.shapes.RECTANGLE, {
-      x: 0.5, y: y, w: 9, h: 1.3,
-      fill: { color: "F8FAFC" }, line: { color: COL.border, width: 1 },
-    });
-    s.addShape(pres.shapes.RECTANGLE, {
-      x: 0.5, y: y, w: 0.08, h: 1.3, fill: { color: r.col }, line: { type: "none" },
-    });
-    s.addText(r.title, {
-      x: 0.75, y: y + 0.15, w: 8.6, h: 0.4,
-      fontSize: 14, bold: true, color: r.col, fontFace: "Calibri", margin: 0,
-    });
-    s.addText(r.text, {
-      x: 0.75, y: y + 0.55, w: 8.6, h: 0.7,
-      fontSize: 12, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
-    });
+  // ===== RECHTE SPALTE: Google ~ Linear =====
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 5.2, y: 1.15, w: 4.3, h: 3.8,
+    fill: { color: "F8FAFC" }, line: { color: COL.bad, width: 1 },
   });
-
-  s.addText('Aber: ML bleibt hinter analytischen Baselines + Google bei C ~ 0.77.', {
-    x: 0.5, y: 4.65, w: 9, h: 0.4,
-    fontSize: 13, italic: true, color: COL.primary, fontFace: "Calibri", align: "center", bold: true,
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 5.2, y: 1.15, w: 0.08, h: 3.8, fill: { color: COL.bad }, line: { type: "none" },
+  });
+  s.addText("Befund 2: Google = Linear-Baseline", {
+    x: 5.45, y: 1.25, w: 4.0, h: 0.4,
+    fontSize: 14, bold: true, color: COL.bad, fontFace: "Calibri", margin: 0,
+  });
+  s.addText("Statistisch ununterscheidbar (p=0.83):", {
+    x: 5.45, y: 1.65, w: 4.0, h: 0.35,
+    fontSize: 11, italic: true, color: COL.muted, fontFace: "Calibri", margin: 0,
+  });
+  s.addText([
+    { text: "Linear ", options: { bold: true, color: COL.linear } },
+    { text: "(battery / drain_rate)", options: { color: COL.muted, breakLine: true } },
+    { text: "  MAE 3.21 h, C-Index 0.776", options: { breakLine: true } },
+    { text: "  ", options: { breakLine: true } },
+    { text: "Google API ", options: { bold: true, color: COL.google } },
+    { text: "(privilegierter Systemzugang)", options: { color: COL.muted, breakLine: true } },
+    { text: "  MAE 3.24 h, C-Index 0.777", options: { breakLine: true } },
+  ], {
+    x: 5.45, y: 2.0, w: 4.0, h: 2.4,
+    fontSize: 11, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top", paraSpaceAfter: 2,
+  });
+  s.addText("Hardware-Zugang traegt nichts Messbares fuer 'Stunden bis 0%' bei.", {
+    x: 5.45, y: 4.5, w: 4.0, h: 0.4,
+    fontSize: 11, italic: true, bold: true, color: COL.primary, fontFace: "Calibri", margin: 0,
   });
 
   addFooter(s);
@@ -770,73 +815,7 @@ const TOTAL = 16;
 }
 
 // ============================================================
-// SLIDE 13 - Diskussion: Google ≈ Linear
-// ============================================================
-{
-  const s = pres.addSlide();
-  s.background = { color: COL.bg };
-  slideTitle(s, "Diskussion 2: Google = Linear-Baseline");
-
-  s.addText("Auf der gemeinsamen Schnittmenge sind die System-API und die einfache lineare Drain-Rate-Baseline statistisch ununterscheidbar.", {
-    x: 0.5, y: 1.05, w: 9, h: 0.6,
-    fontSize: 13, italic: true, color: COL.muted, fontFace: "Calibri",
-  });
-
-  // Zwei boxes nebeneinander
-  s.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 1.85, w: 4.3, h: 2.6,
-    fill: { color: "F8FAFC" }, line: { color: COL.linear, width: 1 },
-  });
-  s.addText("Linear (battery / drain_rate)", {
-    x: 0.7, y: 2.0, w: 4.0, h: 0.4,
-    fontSize: 14, bold: true, color: COL.linear, fontFace: "Calibri", margin: 0,
-  });
-  s.addText([
-    { text: "Liest BatteryManager.CHARGE_COUNTER", options: { breakLine: true } },
-    { text: "Liest BatteryManager.CURRENT_AVERAGE", options: { breakLine: true } },
-    { text: "  ", options: { breakLine: true } },
-    { text: "MAE: 3.21 h", options: { bold: true, breakLine: true } },
-    { text: "C-Index: 0.776", options: { bold: true } },
-  ], {
-    x: 0.7, y: 2.4, w: 4.0, h: 2.0,
-    fontSize: 12, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
-  });
-
-  s.addShape(pres.shapes.RECTANGLE, {
-    x: 5.2, y: 1.85, w: 4.3, h: 2.6,
-    fill: { color: "F8FAFC" }, line: { color: COL.google, width: 1 },
-  });
-  s.addText("Google API (Systemprozess)", {
-    x: 5.4, y: 2.0, w: 4.0, h: 0.4,
-    fontSize: 14, bold: true, color: COL.google, fontFace: "Calibri", margin: 0,
-  });
-  s.addText([
-    { text: "Zusaetzliche privilegierte Signale:", options: { breakLine: true } },
-    { text: "PowerStats HAL (per-App-Strom)", options: { breakLine: true, bullet: true, indentLevel: 0 } },
-    { text: "Adaptive-Battery-Integration", options: { breakLine: true, bullet: true } },
-    { text: "MAE: 3.24 h", options: { bold: true, breakLine: true } },
-    { text: "C-Index: 0.777", options: { bold: true } },
-  ], {
-    x: 5.4, y: 2.4, w: 4.0, h: 2.0,
-    fontSize: 12, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
-  });
-
-  // Conclusion
-  s.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 4.55, w: 9, h: 0.55,
-    fill: { color: "FFF6E5" }, line: { color: COL.google, width: 1 },
-  });
-  s.addText("Der zusaetzliche Hardware-Zugang von Google traegt nichts Messbares fuer 'Stunden bis 0%' bei (Permutationstest p=0.83 fuer C, p=0.55 fuer MAE).", {
-    x: 0.7, y: 4.6, w: 8.6, h: 0.45,
-    fontSize: 12, italic: true, color: COL.text, fontFace: "Calibri", margin: 0, valign: "middle",
-  });
-
-  addFooter(s);
-  addPageNumber(s, 13, TOTAL);
-}
-
-// ============================================================
-// SLIDE 14 - Limitations
+// SLIDE 13 - Limitations (3 wichtigste)
 // ============================================================
 {
   const s = pres.addSlide();
@@ -846,52 +825,43 @@ const TOTAL = 16;
   const lims = [
     {
       head: "Right-censored Daten",
-      body: "Akku wird im Alltag nie auf 0% entladen. Strukturelle Eigenschaft der Domaene, nicht der Studie - gleiche Beobachtung bei Li et al. (2018) mit 51 Nutzern.",
-      col: COL.muted,
-    },
-    {
-      head: "Common-Subset-Selection-Bias",
-      body: "Wo Google-API definiert ist, sind die Restzeiten kuerzer (mean 6.7 h vs. 7.7 h im gesamten Test). Affektiert MAE symmetrisch, Ranking unaffected.",
-      col: COL.muted,
+      body: "Akku wird im Alltag nie auf 0% entladen. Strukturelle Eigenschaft der Domaene - gleiche Beobachtung bei Li et al. (2018) mit 51 Nutzern. Deshalb C-Index als Primaer-Metrik statt MAE.",
     },
     {
       head: "Multi-Device, aber nicht Cross-Device",
-      body: "Train sieht alle 4 Geraete. Eine Leave-One-Device-Out-Studie ist offene Folgearbeit.",
-      col: COL.muted,
-    },
-    {
-      head: "n=98 fuer Pixel 8 Pro",
-      body: "Breite Konfidenzintervalle. C-Index 0.92 ist Punktwert mit wenig statistischer Sicherheit.",
-      col: COL.muted,
+      body: "Training sieht alle vier Geraete. Eine Leave-One-Device-Out-Studie - also Test auf einem komplett ungesehenen Geraet - ist offene Folgearbeit.",
     },
     {
       head: "TinyML auf Pixel 9 Pro XL anomal schlecht",
-      body: "C=0.60 waehrend RF auf demselben Geraet C=0.76 erreicht. Keine kausale Erklaerung im aktuellen Datensatz.",
-      col: COL.muted,
+      body: "TinyML C=0.60 waehrend RF auf demselben Geraet C=0.76 erreicht. Keine kausale Erklaerung im aktuellen Datensatz - offen fuer Folgearbeiten.",
     },
   ];
 
   lims.forEach((l, i) => {
-    const y = 1.15 + i * 0.78;
+    const y = 1.3 + i * 1.25;
     s.addShape(pres.shapes.RECTANGLE, {
-      x: 0.5, y: y, w: 0.08, h: 0.7, fill: { color: COL.primary }, line: { type: "none" },
+      x: 0.5, y: y, w: 9, h: 1.05,
+      fill: { color: "F8FAFC" }, line: { color: COL.border, width: 1 },
+    });
+    s.addShape(pres.shapes.RECTANGLE, {
+      x: 0.5, y: y, w: 0.08, h: 1.05, fill: { color: COL.primary }, line: { type: "none" },
     });
     s.addText(l.head, {
-      x: 0.75, y: y, w: 8.6, h: 0.3,
-      fontSize: 13, bold: true, color: COL.primary, fontFace: "Calibri", margin: 0,
+      x: 0.75, y: y + 0.12, w: 8.6, h: 0.35,
+      fontSize: 15, bold: true, color: COL.primary, fontFace: "Calibri", margin: 0,
     });
     s.addText(l.body, {
-      x: 0.75, y: y + 0.27, w: 8.6, h: 0.45,
-      fontSize: 11, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
+      x: 0.75, y: y + 0.5, w: 8.6, h: 0.55,
+      fontSize: 12, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
     });
   });
 
   addFooter(s);
-  addPageNumber(s, 14, TOTAL);
+  addPageNumber(s, 13, TOTAL);
 }
 
 // ============================================================
-// SLIDE 15 - Conclusion (drei Achsen)
+// SLIDE 14 - Conclusion (drei Achsen)
 // ============================================================
 {
   const s = pres.addSlide();
@@ -946,14 +916,14 @@ const TOTAL = 16;
     x: 0.5, y: 5.3, w: 7, h: 0.25,
     fontSize: 9, color: "9CB4DE", fontFace: "Calibri",
   });
-  s.addText("15 / " + TOTAL, {
+  s.addText("14 / " + TOTAL, {
     x: 9.0, y: 5.3, w: 0.9, h: 0.25,
     fontSize: 9, color: "9CB4DE", align: "right", fontFace: "Calibri",
   });
 }
 
 // ============================================================
-// SLIDE 16 - Q&A (schlicht)
+// SLIDE 15 - Q&A (schlicht)
 // ============================================================
 {
   const s = pres.addSlide();
@@ -990,7 +960,7 @@ const TOTAL = 16;
     x: 0.5, y: 5.3, w: 7, h: 0.25,
     fontSize: 9, color: "9CB4DE", fontFace: "Calibri",
   });
-  s.addText("16 / " + TOTAL, {
+  s.addText("15 / " + TOTAL, {
     x: 9.0, y: 5.3, w: 0.9, h: 0.25,
     fontSize: 9, color: "9CB4DE", align: "right", fontFace: "Calibri",
   });
