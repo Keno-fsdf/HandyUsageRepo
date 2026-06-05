@@ -116,10 +116,17 @@ class AccuracyFragment : Fragment() {
         resultsContainer.visibility = View.VISIBLE
 
         val basis = BatteryDataLogger.getInstance(ctx).isBasisDataLoaded
-        subtitleText.text = if (basis)
+        subtitleText.text = if (basis) {
             getString(R.string.acc_basis_caption)
-        else
-            "Basis: ${score.nPoints} Vorhersage-Punkte im letzten Discharge-Lauf"
+        } else {
+            val duration = formatDuration(score.dischargeMin)
+            val base = "Basis: ${score.nPoints} Vorhersage-Punkte über einen $duration-Discharge"
+            if (score.dischargeMin >= 60f * 6f) {
+                "$base. Vorhersage über so lange Zeiträume ist anspruchsvoll."
+            } else {
+                "$base."
+            }
+        }
 
         applyRow(rowOwn, score.maeOwnMin, score.winner == "own", ctx)
         applyRow(rowGoogle, score.maeGoogleMin, score.winner == "google", ctx)
@@ -158,12 +165,17 @@ class AccuracyFragment : Fragment() {
     private fun formatMaeMin(min: Float): String {
         return when {
             min < 60f -> "${min.toInt()} Min daneben"
-            min < 60f * 10 -> {
+            else -> {
                 val h = (min / 60f).toInt()
                 val m = (min - h * 60f).toInt()
                 "${h}h ${m}min daneben"
             }
-            else -> ">10h daneben"
         }
+    }
+
+    private fun formatDuration(min: Float): String {
+        val h = (min / 60f).toInt()
+        val m = (min - h * 60f).toInt()
+        return if (h > 0) "${h}h ${m}min" else "${m}min"
     }
 }

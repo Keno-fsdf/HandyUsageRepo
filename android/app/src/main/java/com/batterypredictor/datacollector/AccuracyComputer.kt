@@ -28,6 +28,8 @@ object AccuracyComputer {
         val maeLinearMin: Float,
         /** Welche Methode liegt vorn? "own" | "google" | "linear" */
         val winner: String,
+        /** Gesamtdauer des bewerteten Discharge-Laufs in Minuten */
+        val dischargeMin: Float,
     )
 
     /**
@@ -98,10 +100,12 @@ object AccuracyComputer {
         var nOwn = 0; var sOwn = 0f
         var nLin = 0; var sLin = 0f
         var nGoo = 0; var sGoo = 0f
+        var firstTs = Long.MAX_VALUE
         for (r in rows) {
             if (r.ts >= endTs || r.charging) continue
             val actualMin = ((endTs - r.ts) / 60_000f)
             if (actualMin < 0f) continue
+            if (r.ts < firstTs) firstTs = r.ts
             if (r.ownH >= 0f) {
                 sOwn += kotlin.math.abs(r.ownH * 60f - actualMin); nOwn++
             }
@@ -122,12 +126,16 @@ object AccuracyComputer {
             .filter { !it.second.isNaN() }
         val winner = candidates.minByOrNull { it.second }?.first ?: "own"
 
+        val dischargeMin = if (firstTs < Long.MAX_VALUE)
+            (endTs - firstTs) / 60_000f else 0f
+
         return Score(
             nPoints = nOwn,
             maeOwnMin = maeOwn,
             maeGoogleMin = maeGoo,
             maeLinearMin = maeLin,
-            winner = winner
+            winner = winner,
+            dischargeMin = dischargeMin,
         )
     }
 
