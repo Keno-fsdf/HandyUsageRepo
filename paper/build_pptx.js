@@ -166,14 +166,13 @@ const TOTAL = 15;
   });
   s.addText([
     { text: "Klassisch: Settings-App rechnet linear hoch", options: { bullet: true, breakLine: true } },
-    { text: "Ignoriert aktuelle Nutzung, App-Kontext", options: { bullet: true, breakLine: true } },
-    { text: "MIUI/OneUI: oft Legacy-Code seit Android 5", options: { bullet: true } },
+    { text: "Ignoriert aktuelle Nutzung, App-Kontext", options: { bullet: true } },
   ], {
     x: 0.5, y: 1.55, w: 4.3, h: 1.8,
     fontSize: 13, color: COL.text, fontFace: "Calibri", paraSpaceAfter: 6,
   });
 
-  s.addText("Was sich seit Android 12 (2021) aendert", {
+  s.addText("Was sich seit Android 12 (2021) ändert", {
     x: 5.2, y: 1.15, w: 4.3, h: 0.4,
     fontSize: 17, bold: true, color: COL.primary, fontFace: "Calibri",
   });
@@ -195,7 +194,7 @@ const TOTAL = 15;
     x: 0.7, y: 3.78, w: 8.6, h: 0.3,
     fontSize: 11, bold: true, color: COL.google, fontFace: "Calibri", margin: 0,
   });
-  s.addText("Kann eine Drittanbieter-App, die nur öffentliche Sensor-APIs nutzt, mit der System-API mithalten - oder überhaupt etwas Sinnvolles lernen?", {
+  s.addText("Wie gut schneidet ein TinyML-Modell auf öffentlich verfügbaren Sensoren gegenüber etablierten Vorhersage-Methoden ab?", {
     x: 0.7, y: 4.05, w: 8.6, h: 0.6,
     fontSize: 14, italic: true, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
   });
