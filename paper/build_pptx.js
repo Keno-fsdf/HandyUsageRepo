@@ -624,7 +624,7 @@ const TOTAL = 15;
     valGridLine: { color: COL.border, size: 0.5 },
     catGridLine: { style: "none" },
     chartArea: { fill: { color: "FFFFFF" } },
-    title: "C-Index nach Gerät (vs. y_extrap)",
+    title: "C-Index nach Gerät",
     showTitle: true, titleFontSize: 12, titleColor: COL.primary,
   });
 
@@ -648,11 +648,11 @@ const TOTAL = 15;
     x: 6.5, y: 3.85, w: 3, h: 1.15,
     fill: { color: "FFF6E5" }, line: { color: COL.google, width: 1 },
   });
-  s.addText("Confounder", {
+  s.addText("Aber Achtung", {
     x: 6.6, y: 3.92, w: 2.8, h: 0.28,
     fontSize: 11, bold: true, color: COL.google, fontFace: "Calibri", margin: 0,
   });
-  s.addText("Xiaomi-Daten: Akku 88.8% der Zeit über 75% (mean 94%). Wenig Discharge-Dynamik zum Lernen. Sensor-Qualität UND Datenverteilung gemischt.", {
+  s.addText("Auf dem Xiaomi war der Akku meist voll (88,8 % der Zeit über 75 %). Damit fehlt dem Modell Entlade-Verlauf zum Lernen — der schwache Xiaomi-Wert kann genauso gut an mangelnder Datenvielfalt liegen wie an der Hardware.", {
     x: 6.6, y: 4.2, w: 2.8, h: 0.8,
     fontSize: 9.5, italic: true, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
   });
