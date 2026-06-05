@@ -443,8 +443,7 @@ const TOTAL = 15;
   });
   s.addText([
     { text: "Bei zufälliger Aufteilung 'sieht' das Modell unbemerkt zukünftige Daten — das täuscht 19x bessere Performance vor (Single-Device).", options: { bullet: true, breakLine: true } },
-    { text: "Mit 4 Geräten (Multi-Device) schrumpft die Verzerrung auf 1,24x — die Datenvielfalt schwächt das Lecken ab. Vergleichbar mit Albelali & Ahmed (2025).", options: { bullet: true, breakLine: true } },
-    { text: "Lehre: Wie stark der Effekt verfälscht, hängt von der Datenvielfalt ab — Folgearbeiten sollten ihre Aufteilungs-Methode immer angeben.", options: { bullet: true } },
+    { text: "Mit 4 Geräten (Multi-Device) schrumpft die Verzerrung auf 1,24x — die Datenvielfalt schwächt das Lecken ab. Vergleichbar mit Albelali & Ahmed (2025).", options: { bullet: true } },
   ], {
     x: 0.7, y: 3.35, w: 8.6, h: 1.6,
     fontSize: 13, color: COL.text, fontFace: "Calibri", margin: 0, paraSpaceAfter: 8,
