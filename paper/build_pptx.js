@@ -823,16 +823,16 @@ const TOTAL = 15;
 
   const lims = [
     {
-      head: "Right-censored Daten",
-      body: "Akku wird im Alltag nie auf 0% entladen. Strukturelle Eigenschaft der Domäne - gleiche Beobachtung bei Li et al. (2018) mit 51 Nutzern. Deshalb C-Index als Primär-Metrik statt MAE.",
+      head: "Akku wird selten ganz leer gefahren",
+      body: "Akku wird im Alltag nie auf 0 % entladen — Grundeigenschaft der Daten, gleiche Beobachtung bei Li et al. (2018) mit 51 Nutzern. Deshalb C-Index als Hauptmaß statt MAE.",
     },
     {
       head: "Multi-Device, aber nicht Cross-Device",
-      body: "Training sieht alle vier Geräte. Eine Leave-One-Device-Out-Studie - also Test auf einem komplett ungesehenen Gerät - ist offene Folgearbeit.",
+      body: "Training sieht alle vier Geräte. Wie das Modell auf einem komplett neuen Gerät funktionieren würde, ist offene Folgearbeit.",
     },
     {
-      head: "TinyML auf Pixel 9 Pro XL anomal schlecht",
-      body: "TinyML C=0.60 während RF auf demselben Gerät C=0.76 erreicht. Keine kausale Erklärung im aktuellen Datensatz - offen für Folgearbeiten.",
+      head: "TinyML auf Pixel 9 Pro XL überraschend schlecht",
+      body: "TinyML schafft dort nur C-Index 0,60, während Random Forest auf denselben Daten 0,76 erreicht. Warum genau, ist mit den aktuellen Daten nicht erklärbar — offen für Folgearbeiten.",
     },
   ];
 
