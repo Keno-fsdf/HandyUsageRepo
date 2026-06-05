@@ -1531,58 +1531,8 @@ Nur noch für die Klausuren gelernt.
 \subsection{Schlüssel-Entscheidungen, Fehler und Trade-offs}
 \label{sec:entscheidungen}
 
-\paragraph{Vier Wendepunkte im Projektverlauf.}
-Abbildung~\ref{fig:storyline} zeigt die vier Punkte, an denen das
-Projekt inhaltlich abgeknickt ist.
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-    every node/.style={font=\footnotesize},
-    box/.style={
-        rectangle, draw, rounded corners=4pt,
-        minimum height=1.3cm, text width=2.7cm, align=center,
-        font=\footnotesize\bfseries,
-    },
-    okbox/.style={box, fill=thwsorange!15},
-    badbox/.style={box, fill=red!10},
-    arrow/.style={-{Stealth[length=3mm]}, thick, thwsgrau},
-    lbl/.style={font=\scriptsize\itshape, text=gray!70!black},
-]
-
-% Zeitachse
-\draw[arrow] (-0.5,0) -- (15.5,0);
-\foreach \x/\w in {0.5/W1, 2.5/W2, 4.5/W3, 6.5/W4, 8.5/W5, 10.5/W6, 12.5/W7, 14.5/Abgabe}
-    \node[below, lbl] at (\x,-0.2) {\w};
-
-% Wendepunkte -- alle auf gleicher Hoehe ueber der Zeitachse
-\node[okbox, anchor=south] (p1) at (2.5, 0.7)
-    {W2 -- Statistik\\aufgefrischt};
-\node[badbox, anchor=south] (p2) at (5.5, 0.7)
-    {W3 -- Leakage\\entdeckt};
-\node[okbox, anchor=south] (p3) at (9, 0.7)
-    {W3--4 -- Multi-Device\\statt nur Xiaomi};
-\node[okbox, anchor=south] (p4) at (12.5, 0.7)
-    {W7 -- UI-Refactor:\\3 Tabs + Onboarding};
-
-% Verbindungslinien -- einfache horizontale Pfeile
-\draw[arrow, dashed] (p1.east) -- (p2.west);
-\draw[arrow] (p2.east) -- (p3.west);
-\draw[arrow] (p3.east) -- (p4.west);
-
-\end{tikzpicture}
-\caption{Die vier Wendepunkte im Projektverlauf.
-Orange = bewusste Entscheidung, Rot = vermiedener Irrtum.
-Die gestrichelte Linie zeigt, dass die in W2 aufgefrischten
-Statistik-Grundlagen sich erst eine Woche später (W3) beim
-Leakage-Fund ausgezahlt haben. Details zu den verworfenen
-Alternativen siehe Tabelle~\ref{tab:entscheidungen}.}
-\label{fig:storyline}
-\end{figure}
-
-\paragraph{Die wichtigsten Entscheidungen im Detail.}
 Tabelle~\ref{tab:entscheidungen} listet die zentralen Entscheidungen
-mit der jeweils verworfenen Alternative.
+des Projekts mit der jeweils verworfenen Alternative.
 
 \begin{table}[H]
 \centering
@@ -1600,15 +1550,6 @@ Konzeption & Eigene Daten + on-device Modell &
 W1 & 10 Features pro Messpunkt &
   3--4 \glqq{}sichere\grqq{} oder 20+ &
   Kompromiss aus Vollständigkeit und Speicher-Overhead \\
-W2 & Statistik-Grundlagen parallel auffrischen &
-  Erst loslegen, Theorie später &
-  Hat den Leakage-Fund in W3 erst möglich gemacht \\
-W3 & Segment-Level-Split &
-  Random-Split (initial) &
-  Random war Data-Leakage; MAE wurde von Fake-0,53\,h zu echtem 9,96\,h \\
-W3--4 & Multi-Device-Datensammlung &
-  Nur Xiaomi (eigenes Gerät) &
-  Xiaomi-Daten zu 88\,\% über 75\,\% -- zu wenig Entlade-Dynamik \\
 W5 & INT8-Quantisierung (14,4\,KB) &
   Float32-Modell ($\sim$\,50\,KB) &
   TFLite-INT8 reicht in der Genauigkeit, ist deutlich kleiner \\
@@ -1629,22 +1570,9 @@ Durchgängig & KI-Modus zweigeteilt &
 \end{table}
 
 \paragraph{Was ich rückblickend anders gemacht hätte.}
-Drei Lerneffekte aus dem Verlauf:
-
-\begin{itemize}
-\item \emph{Früher Multi-Device.} Die Xiaomi-only-Phase in den
-  ersten drei Wochen hat methodisch wenig gebracht. Mit
-  parallelen Geräten von Anfang an wäre der Verteilungs-Befund
-  (Akku zu 88\,\% über 75\,\%) zwei Wochen früher sichtbar
-  geworden.
-\item \emph{UI-Investition früher.} Der UI-Refactor in Woche~7
-  war wichtig für die Abgabe, lief aber unter Zeitdruck. Pro
-  Woche eine kleine UI-Pflege hätte das verteilt.
-\item \emph{Statistik-Grundlagen früher.} Die in W2
-  aufgefrischten Grundlagen (Cross-Validation, Leakage) waren
-  nützlich. Vor Projektstart parat zu haben hätte den Leakage-
-  Fund in W3 schneller möglich gemacht.
-\end{itemize}
+Der UI-Refactor in Woche~7 war wichtig für die Abgabe, lief aber
+unter Zeitdruck. Pro Woche eine kleine UI-Pflege hätte das
+verteilt und entspannter gemacht.
 
 \subsection{KI-Nutzung}
 
