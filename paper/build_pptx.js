@@ -461,7 +461,7 @@ const TOTAL = 15;
   s.background = { color: COL.bg };
   slideTitle(s, "Ergebnis 1: Common Subset (n=2.827)");
 
-  s.addText("vs. y_extrap, 95% Bootstrap-CI, leakage-freier Multi-Device-Split", {
+  s.addText("Vergleich gegen extrapolierte echte Restzeit · Klammerwerte = 95%-Konfidenzintervall", {
     x: 0.5, y: 1.05, w: 9, h: 0.3,
     fontSize: 12, italic: true, color: COL.muted, fontFace: "Calibri",
   });
