@@ -883,8 +883,8 @@ const TOTAL = 15;
       col: COL.exp,
     },
     {
-      head: "Hardware & Daten-Coverage",
-      body: "TinyML 0.79 auf Pixel 7 Pro, 0.59 auf Xiaomi. Engpass: Sensor-Qualität UND Discharge-Dynamik-Coverage (Xiaomi-Akku 88.8% der Zeit voll). Nicht die Modellarchitektur.",
+      head: "Hardware & Datenvielfalt",
+      body: "TinyML 0,79 auf Pixel 7 Pro, 0,59 auf Xiaomi. Engpass nicht am Modell, sondern an Sensor-Qualität und fehlendem Entlade-Verlauf (Xiaomi-Akku 88,8 % der Zeit voll).",
       col: COL.google,
     },
   ];
@@ -905,7 +905,7 @@ const TOTAL = 15;
     });
   });
 
-  s.addText("Methodischer Beitrag: Segment-Level-Split als Standard für Sliding-Window-Time-Series in Mobile-Sensing.", {
+  s.addText("Methodischer Beitrag: Segment-Level-Split als Standard für Zeitreihen-Auswertung auf Mobilgeräten.", {
     x: 0.5, y: 4.55, w: 9, h: 0.5,
     fontSize: 14, italic: true, color: "CADCFC", fontFace: "Calibri", align: "center",
   });
