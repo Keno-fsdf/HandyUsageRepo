@@ -120,25 +120,20 @@ class AccuracyFragment : Fragment() {
             getString(R.string.acc_basis_caption)
         } else {
             val duration = formatDuration(score.dischargeMin)
-            val base = "Basis: ${score.nPoints} Vorhersage-Punkte über einen $duration-Discharge"
-            if (score.dischargeMin >= 60f * 6f) {
-                "$base. Vorhersage über so lange Zeiträume ist anspruchsvoll."
-            } else {
-                "$base."
-            }
+            "Basis: ${score.nPoints} Vorhersage-Punkte über einen $duration-Discharge."
         }
 
-        applyRow(rowOwn, score.maeOwnMin, score.winner == "own", ctx)
-        applyRow(rowGoogle, score.maeGoogleMin, score.winner == "google", ctx)
-        applyRow(rowLinear, score.maeLinearMin, score.winner == "linear", ctx)
+        applyRow(rowOwn, score.hitRateOwn, score.maeOwnMin, score.winner == "own", ctx)
+        applyRow(rowGoogle, score.hitRateGoogle, score.maeGoogleMin, score.winner == "google", ctx)
+        applyRow(rowLinear, score.hitRateLinear, score.maeLinearMin, score.winner == "linear", ctx)
 
-        // Ranking-Emojis nach MAE sortiert
+        // Ranking-Emojis nach Trefferquote sortiert (hoeher = besser).
         val sortedRows = listOf(
-            Triple(rowOwn, score.maeOwnMin, "own"),
-            Triple(rowGoogle, score.maeGoogleMin, "google"),
-            Triple(rowLinear, score.maeLinearMin, "linear"),
+            Triple(rowOwn, score.hitRateOwn, "own"),
+            Triple(rowGoogle, score.hitRateGoogle, "google"),
+            Triple(rowLinear, score.hitRateLinear, "linear"),
         ).filter { !it.second.isNaN() }
-            .sortedBy { it.second }
+            .sortedByDescending { it.second }
 
         val medals = listOf("🥇", "🥈", "🥉")
         sortedRows.forEachIndexed { i, (row, _, _) ->
@@ -153,13 +148,15 @@ class AccuracyFragment : Fragment() {
     }
 
     private fun applyRow(
-        row: ScoreRow, maeMin: Float, isWinner: Boolean, ctx: android.content.Context
+        row: ScoreRow, hitRate: Float, maeMin: Float, isWinner: Boolean,
+        ctx: android.content.Context,
     ) {
         row.container.background = ContextCompat.getDrawable(
             ctx,
             if (isWinner) R.drawable.bg_winner else R.drawable.bg_runner
         )
-        row.value.text = if (maeMin.isNaN()) "n/v" else formatMaeMin(maeMin)
+        row.value.text = if (hitRate.isNaN()) "n/v"
+        else "${(hitRate * 100f).toInt()} % Treffer"
     }
 
     private fun formatMaeMin(min: Float): String {

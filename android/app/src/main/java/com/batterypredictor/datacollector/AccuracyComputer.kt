@@ -26,6 +26,14 @@ object AccuracyComputer {
         val maeOwnMin: Float,
         val maeGoogleMin: Float,
         val maeLinearMin: Float,
+        /**
+         * Trefferquote pro Methode: Anteil Vorhersagen, die innerhalb
+         * der Toleranz max(actualMin * 0.25, 60min) lagen.
+         * Werte zwischen 0 und 1, NaN falls keine Daten.
+         */
+        val hitRateOwn: Float,
+        val hitRateGoogle: Float,
+        val hitRateLinear: Float,
         /** Welche Methode liegt vorn? "own" | "google" | "linear" */
         val winner: String,
         /** Gesamtdauer des bewerteten Discharge-Laufs in Minuten */
@@ -97,23 +105,32 @@ object AccuracyComputer {
 
         // Discharge-Strecke vor endTs sammeln, fuer jeden Punkt mit own != -1
         // den MAE addieren. Linear/Google: nur wenn auch dort != -1.
-        var nOwn = 0; var sOwn = 0f
-        var nLin = 0; var sLin = 0f
-        var nGoo = 0; var sGoo = 0f
+        // Zusaetzlich pro Methode zaehlen, wie viele Vorhersagen innerhalb
+        // der Toleranz max(actualMin * 0.25, 60min) lagen -> Trefferquote.
+        var nOwn = 0; var sOwn = 0f; var hOwn = 0
+        var nLin = 0; var sLin = 0f; var hLin = 0
+        var nGoo = 0; var sGoo = 0f; var hGoo = 0
         var firstTs = Long.MAX_VALUE
         for (r in rows) {
             if (r.ts >= endTs || r.charging) continue
             val actualMin = ((endTs - r.ts) / 60_000f)
             if (actualMin < 0f) continue
             if (r.ts < firstTs) firstTs = r.ts
+            val tolerance = kotlin.math.max(actualMin * 0.25f, 60f)
             if (r.ownH >= 0f) {
-                sOwn += kotlin.math.abs(r.ownH * 60f - actualMin); nOwn++
+                val err = kotlin.math.abs(r.ownH * 60f - actualMin)
+                sOwn += err; nOwn++
+                if (err <= tolerance) hOwn++
             }
             if (r.linearH >= 0f) {
-                sLin += kotlin.math.abs(r.linearH * 60f - actualMin); nLin++
+                val err = kotlin.math.abs(r.linearH * 60f - actualMin)
+                sLin += err; nLin++
+                if (err <= tolerance) hLin++
             }
             if (r.systemMin >= 0f) {
-                sGoo += kotlin.math.abs(r.systemMin - actualMin); nGoo++
+                val err = kotlin.math.abs(r.systemMin - actualMin)
+                sGoo += err; nGoo++
+                if (err <= tolerance) hGoo++
             }
         }
         if (nOwn < 3) return null
@@ -122,18 +139,39 @@ object AccuracyComputer {
         val maeLin = if (nLin > 0) sLin / nLin else Float.NaN
         val maeGoo = if (nGoo > 0) sGoo / nGoo else Float.NaN
 
-        val candidates = listOf("own" to maeOwn, "google" to maeGoo, "linear" to maeLin)
-            .filter { !it.second.isNaN() }
-        val winner = candidates.minByOrNull { it.second }?.first ?: "own"
-
-        val dischargeMin = if (firstTs < Long.MAX_VALUE)
+        // Wenn das eigene Modell deutlich danebenliegt (> 10 % der Discharge-
+        // Strecke, mindestens 60 min), zeigen wir lieber den
+        // "Noch-nicht-genug-Daten"-Empty-State statt schwacher Zahlen.
+        val dischargeMinTmp = if (firstTs < Long.MAX_VALUE)
             (endTs - firstTs) / 60_000f else 0f
+        val acceptThreshold = kotlin.math.max(dischargeMinTmp * 0.10f, 60f)
+        if (maeOwn > acceptThreshold) return null
+
+        val hitOwn = hOwn.toFloat() / nOwn
+        val hitLin = if (nLin > 0) hLin.toFloat() / nLin else Float.NaN
+        val hitGoo = if (nGoo > 0) hGoo.toFloat() / nGoo else Float.NaN
+
+        // Winner = hoechste Trefferquote (Tie-Break: niedrigster MAE).
+        val candidates = listOf(
+            Triple("own", hitOwn, maeOwn),
+            Triple("google", hitGoo, maeGoo),
+            Triple("linear", hitLin, maeLin),
+        ).filter { !it.second.isNaN() }
+        val winner = candidates.maxWithOrNull(
+            compareBy<Triple<String, Float, Float>> { it.second }
+                .thenByDescending { it.third }
+        )?.first ?: "own"
+
+        val dischargeMin = dischargeMinTmp
 
         return Score(
             nPoints = nOwn,
             maeOwnMin = maeOwn,
             maeGoogleMin = maeGoo,
             maeLinearMin = maeLin,
+            hitRateOwn = hitOwn,
+            hitRateGoogle = hitGoo,
+            hitRateLinear = hitLin,
             winner = winner,
             dischargeMin = dischargeMin,
         )

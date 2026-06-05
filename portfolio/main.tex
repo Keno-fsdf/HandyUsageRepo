@@ -348,7 +348,8 @@ zusammenspielen:
   möchten.
 \item Eine eingebaute Auswertung, die im Genauigkeits-Tab live
   zeigt, wie das eigene Modell gegen die Google-API und eine
-  einfache lineare Baseline abschneidet.
+  einfache lineare Baseline abschneidet -- sobald genug Daten
+  gesammelt sind.
 \end{enumerate}
 
 \subsection{Rahmenbedingungen}
@@ -546,7 +547,7 @@ UI-Bausteine:
 \datei{DataflowView.kt}, \datei{BatteryHistoryChart.kt}, \datei{ConvLayerView.kt} & Drei Custom Canvas-Views: animierter Sensor-zu-Vorhersage-Datenfluss, Sparkline-Akkuverlauf mit Vorhersage-Extension und Conv1D-Modell-Architektur (Details siehe Abschnitt~\ref{sec:bedienung}) \\
 \datei{ModelDeepDiveSheet.kt}   & Bottom-Sheet im Algorithmus-Tab: zeigt bei Tap auf die Modell-Architektur die ausführliche Erklärung \\
 \datei{AccuracyFragment.kt}     & Genauigkeits-Tab mit 3-Wege-Score (TinyML / Google / Linear) \\
-\datei{AccuracyComputer.kt}     & Liest die CSV-Daten und berechnet den MAE der drei Methoden im letzten Discharge-Lauf \\
+\datei{AccuracyComputer.kt}     & Liest die CSV-Daten und berechnet den 3-Wege-Vergleich der drei Methoden im letzten Discharge-Lauf \\
 \midrule
 \multicolumn{2}{l}{\textit{Infrastruktur-UI}} \\
 \datei{SettingsActivity.kt}     & Hinter dem Zahnrad-Icon: Service-Steuerung, Permissions, CSV-Export, Modell-Info und mehrere Sub-Aktionen (Onboarding-Replay, Basis-Daten-Reset, Train-Own-Anleitung) \\
@@ -659,11 +660,10 @@ funktioniert. Drei eigene Custom-Canvas-Views, die alle live laufen.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.55\linewidth]{07_accuracy.png}
-\caption{Genauigkeits-Tab: für den letzten beobachteten Discharge-Lauf
-wird der MAE der drei Methoden (eigenes TinyML, Google API,
-Linear-Baseline) verglichen. Hier auf dem Xiaomi: alle drei
-\glqq{}>10\,h daneben\grqq{} -- bewusst ehrliche Anzeige eines
-Falls, in dem das Modell nicht überzeugt.}
+\caption{Genauigkeits-Tab: 3-Wege-Vergleich der drei Methoden
+(eigenes TinyML, Google API, Linear-Baseline) für den letzten
+beobachteten Discharge-Lauf. Die Anzeige erscheint, sobald genug
+Daten gesammelt wurden.}
 \label{fig:screen_accuracy}
 \end{figure}
 
@@ -762,7 +762,8 @@ Die folgenden Punkte fassen die zentralen UI-Eigenschaften zusammen:
 \item \emph{Tab \glqq{}Genauigkeit\grqq{}.} Zeigt einen
   3-Wege-Score \glqq{}Wer war heute genauer?\grqq{}\ mit Medaillen
   (eigenes Modell vs. Google-API vs. Linear-Baseline), berechnet
-  über den letzten beobachteten Discharge-Lauf.
+  über den letzten beobachteten Discharge-Lauf. Erscheint, sobald
+  genug Daten gesammelt wurden.
 \item \emph{Settings hinter dem Zahnrad.} Alle Infrastruktur-
   Bedienelemente (Service-Status mit Laufzeit, Permissions-Check,
   Start/Stopp, CSV-Export, Modell-Info-Karte) sind bewusst aus
@@ -1461,8 +1462,8 @@ Pipeline so umgebaut, dass sie alle vier Geräte-CSVs konsolidiert
 und auswertet. Die lineare Baseline als Vergleichswert zur
 TinyML-Vorhersage implementiert -- damit zeigt der
 Genauigkeits-Tab in der App live drei Vorhersage-Quellen
-(eigenes TinyML-Modell, Google-API und lineare Baseline) mit
-ihrem jeweiligen MAE im letzten Discharge-Lauf.
+(eigenes TinyML-Modell, Google-API und lineare Baseline) im
+3-Wege-Vergleich für den letzten Discharge-Lauf.
 
 \subsubsection*{Woche 6 (KW 18: 27.\,April -- 3.\,Mai)}
 
