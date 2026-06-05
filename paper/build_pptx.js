@@ -905,11 +905,6 @@ const TOTAL = 15;
     });
   });
 
-  s.addText("Methodischer Beitrag: Segment-Level-Split als Standard für Zeitreihen-Auswertung auf Mobilgeräten.", {
-    x: 0.5, y: 4.55, w: 9, h: 0.5,
-    fontSize: 14, italic: true, color: "CADCFC", fontFace: "Calibri", align: "center",
-  });
-
   // Footer + Seitenzahl in hellem Schriftton (dunkler Hintergrund)
   s.addText("K. Schürger - TinyML für Akkulaufzeit-Vorhersage", {
     x: 0.5, y: 5.3, w: 7, h: 0.25,
