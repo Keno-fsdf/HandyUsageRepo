@@ -11,6 +11,12 @@ Norah~N. Alajlan and Dina~M. Ibrahim.
 \newblock {PowerManager.getBatteryDischargePrediction()}, 2021.
 \newblock Android API level 31 (Android 12).
 
+\bibitem{bai2018tcn}
+Shaojie Bai, J.~Zico Kolter, and Vladlen Koltun.
+\newblock An empirical evaluation of generic convolutional and recurrent
+  networks for sequence modeling.
+\newblock {\em arXiv preprint arXiv:1803.01271}, 2018.
+
 \bibitem{banbury2021mlperf}
 Colby Banbury, Vijay~Janapa Reddi, Peter Torelli, Jeremy Holleman, Nat
   Jeffries, Csaba Kiraly, Pietro Montino, David Kanter, Sebastian Ahmed, Danilo
@@ -18,5 +24,41 @@ Colby Banbury, Vijay~Janapa Reddi, Peter Torelli, Jeremy Holleman, Nat
 \newblock {MLPerf} {Tiny} benchmark.
 \newblock In {\em Proceedings of the Neural Information Processing Systems
   Track on Datasets and Benchmarks}, 2021.
+
+\bibitem{bergmeir2012cv}
+Christoph Bergmeir and Jos{\'e}~M. Ben{\'i}tez.
+\newblock On the use of cross-validation for time series predictor evaluation.
+\newblock {\em Information Sciences}, 191:192--213, 2012.
+
+\bibitem{david2021tflitemicro}
+Robert David, Jared Duke, Advait Jain, Vijay Janapa~Reddi, Nat Jeffries, Jian
+  Li, Nick Kreeger, Ian Nappier, Meghna Natraj, Tiezhen Wang, Pete Warden, and
+  Rocky Rhodes.
+\newblock {TensorFlow} {Lite} {Micro}: Embedded machine learning for {TinyML}
+  systems.
+\newblock In {\em Proceedings of Machine Learning and Systems ({MLSys})},
+  volume~3, pages 800--811, 2021.
+
+\bibitem{jacob2018quantization}
+Benoit Jacob, Skirmantas Kligys, Bo~Chen, Menglong Zhu, Matthew Tang, Andrew
+  Howard, Hartwig Adam, and Dmitry Kalenichenko.
+\newblock Quantization and training of neural networks for efficient
+  integer-arithmetic-only inference.
+\newblock In {\em Proceedings of the {IEEE} Conference on Computer Vision and
+  Pattern Recognition ({CVPR})}, pages 2704--2713, 2018.
+
+\bibitem{kingma2015adam}
+Diederik~P. Kingma and Jimmy Ba.
+\newblock {Adam}: A method for stochastic optimization.
+\newblock In {\em 3rd International Conference on Learning Representations
+  ({ICLR})}, 2015.
+
+\bibitem{pedregosa2011scikit}
+Fabian Pedregosa, Ga{\"e}l Varoquaux, Alexandre Gramfort, Vincent Michel,
+  Bertrand Thirion, Olivier Grisel, Mathieu Blondel, Peter Prettenhofer, Ron
+  Weiss, Vincent Dubourg, Jake Vanderplas, Alexandre Passos, David Cournapeau,
+  Matthieu Brucher, Matthieu Perrot, and {\'E}douard Duchesnay.
+\newblock Scikit-learn: Machine learning in {Python}.
+\newblock {\em Journal of Machine Learning Research}, 12:2825--2830, 2011.
 
 \end{thebibliography}
