@@ -606,10 +606,9 @@ animierte Karten -- die Hauptbühne der App.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.55\linewidth]{01_live.png}
-\caption{Live-Tab im Zustand \glqq{}Lädt\grqq{}: das Label
-oben (\glqq{}STATUS\grqq{}) wechselt dynamisch, damit nicht
-\glqq{}AKKU NOCH Lädt\grqq{} entsteht. Confidence-Pille ist
-in diesem Zustand bewusst ausgeblendet (Vorhersage pausiert).}
+\caption{Live-Tab im Normalbetrieb: Restlaufzeit prominent oben,
+Confidence-Pille zeigt die aktuelle Vorhersage-Sicherheit, darunter
+die zehn Live-Sensoren als animierte Karten.}
 \label{fig:screen_live}
 \end{figure}
 
@@ -642,8 +641,8 @@ funktioniert. Drei eigene Custom-Canvas-Views, die alle live laufen.
     \centering
     \includegraphics[width=\linewidth]{04_algorithm_history.png}
     \caption{Live-Sparkline der letzten drei Stunden Akkuverlauf
-    plus gestrichelte Vorhersage-Extension. Hier (Akku zu 100\,\%)
-    nur als Linie sichtbar, weil keine Discharge-Dynamik vorhanden.}
+    plus gestrichelte Vorhersage-Extension. Hier ein echter Discharge
+    von 100\,\% auf $\sim$\,73\,\% über die letzten drei Stunden.}
 \end{subfigure}\hfill
 \begin{subfigure}{0.46\textwidth}
     \centering
