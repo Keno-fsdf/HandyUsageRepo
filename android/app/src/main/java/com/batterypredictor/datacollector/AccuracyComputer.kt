@@ -96,9 +96,9 @@ object AccuracyComputer {
                 break
             }
         }
-        // Fallback: letzter Punkt mit Akku < 8% gilt als "Akku praktisch leer".
+        // Fallback: letzter Punkt mit Akku < 20% gilt als "Akku weitgehend leer".
         if (endTs < 0) {
-            val lowBatt = rows.lastOrNull { it.battery < 8f && !it.charging }
+            val lowBatt = rows.lastOrNull { it.battery < 20f && !it.charging }
             if (lowBatt != null) endTs = lowBatt.ts
         }
         if (endTs < 0) return null
@@ -139,12 +139,12 @@ object AccuracyComputer {
         val maeLin = if (nLin > 0) sLin / nLin else Float.NaN
         val maeGoo = if (nGoo > 0) sGoo / nGoo else Float.NaN
 
-        // Wenn das eigene Modell deutlich danebenliegt (> 10 % der Discharge-
+        // Wenn das eigene Modell deutlich danebenliegt (> 25 % der Discharge-
         // Strecke, mindestens 60 min), zeigen wir lieber den
         // "Noch-nicht-genug-Daten"-Empty-State statt schwacher Zahlen.
         val dischargeMinTmp = if (firstTs < Long.MAX_VALUE)
             (endTs - firstTs) / 60_000f else 0f
-        val acceptThreshold = kotlin.math.max(dischargeMinTmp * 0.10f, 60f)
+        val acceptThreshold = kotlin.math.max(dischargeMinTmp * 0.25f, 60f)
         if (maeOwn > acceptThreshold) return null
 
         val hitOwn = hOwn.toFloat() / nOwn
