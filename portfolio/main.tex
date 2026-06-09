@@ -1638,12 +1638,47 @@ verwendet.
 \end{itemize}
 
 \textbf{Setup und Sicherheits-Rahmen.}
-Die KI lief in zwei Modi, je nach Risiko der Aufgabe: einem mit
-manueller Bestätigung jeder Datei- und Shell-Aktion (für die
-meisten Aufgaben am Haupt-Code) und einem Sandbox-Container mit
-Auto-Approve und eingeschränktem Datei- und Netzwerk-Zugriff
-(für riskantere oder experimentelle Aufgaben). Genutzt wurde
-\textbf{Claude Pro} (Subscription), nicht der API-Zugang.
+Die KI lief in zwei Modi, je nach Risiko der Aufgabe:
+
+\textit{Desktop-App-Modus mit manueller Bestätigung.}
+Jede Datei-Änderung und jeder Shell-Befehl musste einzeln
+freigegeben werden, bevor die KI sie ausgeführt hat. Eingesetzt
+für den Haupt-Code (App, Pipeline, Auswertungs-Skripte) und für
+die Dokumentation, weil dort jede Änderung gegen das laufende
+System gegengeprüft werden sollte. Verhindert, dass die KI
+versehentlich falsche Dateien überschreibt, Pakete am Host
+installiert oder Git-Operationen auf falsche Branches ausführt.
+
+\textit{Sandbox-Container.}
+Eigenständige KI-Sitzung in einem Docker-Container mit folgenden
+Einstellungen:
+
+\begin{itemize}
+\item \textbf{Auto-Approve} für Datei- und Shell-Aktionen --
+  die KI kann Aktions-Sequenzen direkt ausführen, ohne dass jeder
+  einzelne Schritt manuell freigegeben wird.
+\item \textbf{Eingeschränkter Datei-Zugriff} -- nur auf das ins
+  Container gemountete Projektverzeichnis.
+\item \textbf{Whitelist-Firewall} -- Netzwerk-Zugriff nur zu
+  erlaubten Hosts (Anthropic-API, GitHub, npm\,/\,PyPI), alles
+  andere geblockt.
+\item \textbf{Versionierte Container-Konfiguration} unter
+  \code{.devcontainer/} im Repo -- der Aufbau ist reproduzierbar
+  und für Dritte nachvollziehbar.
+\end{itemize}
+
+Eingesetzt für längere Routine-Aufgaben (massive Auto-Refactors,
+Auswertungs-Pipelines, experimentelle Skripte), bei denen das
+Host-System nicht betroffen sein darf. Wenn etwas schiefgeht --
+falsche Befehle, unerwartete Netzwerkzugriffe, instabile Pakete
+-- bleibt der Schaden im Container; das Host-System ist unverändert.
+
+Genutzt wurde \textbf{Claude Pro} (Subscription), nicht der
+API-Zugang.
+
+Die Trennung erlaubt, riskante Aufgaben in einer isolierten
+Umgebung effizient ablaufen zu lassen, während sicherheits-kritischer
+Code unter direkter Kontrolle bleibt.
 
 \textbf{Bilanz.}
 KI-Unterstützung hat das Projekt in dieser Tiefe ermöglicht, den
