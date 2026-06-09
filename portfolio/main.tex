@@ -1664,6 +1664,41 @@ verwendet.
   und alle Anpassungen am Android-Manifest sowie Permissions.
 \end{itemize}
 
+\textbf{Wie die Dokumentation konkret entstanden ist.}
+Die Portfolio-Dokumentation wurde nicht in einem Schritt verfasst,
+sondern in vielen iterativen Überarbeitungsrunden. Claude hatte
+während des gesamten Schreibprozesses direkten Lese- und
+Schreib-Zugriff auf alle Doku-Dateien -- die LaTeX-Hauptquelle
+(\code{main.tex}), die BibTeX-Bibliographie
+(\code{references.bib}), die eingebundenen Grafiken und die
+Build-Konfigurationen. Dadurch waren mehrere Workflows möglich,
+die mit reinem Copy-Paste-Einsatz einer Chat-Oberfläche so nicht
+funktioniert hätten:
+
+\begin{itemize}
+\item \emph{Cross-File-Konsistenz-Checks.} Wenn im Fließtext eine
+  Zahl genannt wurde (z.\,B. \glqq{}5.697 Modell-Parameter\grqq{}),
+  konnte Claude unmittelbar in der Pipeline-Code-Datei nachprüfen,
+  ob die Zahl noch stimmt -- ohne dass die Datei kopiert werden
+  musste.
+\item \emph{Bibliographie-Verwaltung.} Bei neuen Zitaten konnte
+  Claude direkt \code{references.bib} erweitern und das
+  Zitierungs-Kommando im Fließtext einbauen; die Konsistenz
+  zwischen beiden Stellen wurde automatisch geprüft.
+\item \emph{Iteratives Überarbeiten ganzer Abschnitte.} Mehrere
+  Sektionen sind in vier oder fünf Runden umgeschrieben worden
+  (z.\,B. die KI-Nutzung selbst), weil das ursprüngliche
+  Framing zu plakativ oder inhaltlich ungenau war. Diese
+  Überarbeitungen sind im Git-Verlauf einzeln nachvollziehbar.
+\item \emph{Integrierter Build-Zyklus.} Änderungen am LaTeX-Text
+  wurden direkt mit anschließendem \code{pdflatex}-Lauf,
+  PDF-Sichtprüfung und Git-Commit in einem Schritt orchestriert.
+  Wenn eine Doku-Anpassung eine Code-Anpassung mit sich brachte
+  (z.\,B. die Lockerung einer Schwellwert-Berechnung für die
+  Genauigkeits-Anzeige), konnten App-Code und beschreibender
+  Doku-Text in derselben Session konsistent gehalten werden.
+\end{itemize}
+
 \textbf{Setup und Sicherheits-Rahmen.}
 Die KI lief in zwei Modi, je nach Risiko der Aufgabe:
 
