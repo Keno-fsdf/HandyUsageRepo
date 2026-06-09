@@ -605,10 +605,22 @@ animierte Karten -- die Hauptbühne der App.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.55\linewidth]{01_live.png}
-\caption{Live-Tab im Normalbetrieb: Restlaufzeit prominent oben,
-Confidence-Pille zeigt die aktuelle Vorhersage-Sicherheit, darunter
-die zehn Live-Sensoren als animierte Karten.}
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{01_live_initial.png}
+    \caption{Initial-State direkt nach dem Service-Start:
+    \glqq{}Sammle Daten\ldots\ 7/10\grqq{} -- der Predictor wartet
+    darauf, dass sein Ringpuffer mit zehn Messpunkten voll ist.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{01_live.png}
+    \caption{Normalbetrieb nach $\sim$\,5\,Minuten: Restlaufzeit
+    prominent oben, Confidence-Pille zeigt die aktuelle Vorhersage-
+    Sicherheit, darunter die zehn Live-Sensoren als animierte Karten.}
+\end{subfigure}
+\caption{Live-Tab in zwei Zuständen: Initial-State während die ersten
+Messpunkte gesammelt werden, und Normalbetrieb mit aktiver Vorhersage.}
 \label{fig:screen_live}
 \end{figure}
 
@@ -671,9 +683,9 @@ Kurzform.}
 \includegraphics[width=0.55\linewidth]{07_accuracy.png}
 \caption{Genauigkeits-Tab: 3-Wege-Vergleich der drei Methoden
 (eigenes TinyML, Google API, Linear-Baseline) für den letzten
-beobachteten Discharge-Lauf. Hier im Empty-State, weil noch kein
-vollständiger Discharge-Zyklus stattgefunden hat -- die Anzeige
-erscheint, sobald genug Daten gesammelt wurden.}
+beobachteten Discharge-Lauf. Trefferquote = Anteil Vorhersagen
+innerhalb der zulässigen Toleranz (\,$\pm$\,25\,\% der wahren
+Restzeit, mindestens $\pm$\,60\,min).}
 \label{fig:screen_accuracy}
 \end{figure}
 
