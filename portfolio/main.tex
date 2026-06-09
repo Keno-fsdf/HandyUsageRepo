@@ -1703,27 +1703,32 @@ funktioniert hätten:
 \centering
 \begin{tikzpicture}[
   every node/.style={font=\sffamily\small},
-  box/.style={draw, rounded corners, minimum width=3cm, minimum height=1.1cm, align=center, thick},
+  box/.style={draw, rounded corners, minimum width=2.9cm, minimum height=1.1cm, align=center, thick},
   user/.style={box, fill=blue!10},
   claude/.style={box, fill=orange!15},
   file/.style={box, fill=green!10, minimum height=1.5cm},
   biarr/.style={<->, thick, >=Stealth},
-  arr/.style={->, thick, >=Stealth}
+  arr/.style={->, thick, >=Stealth},
+  edge/.style={thick}
 ]
 % Top row: Nutzer <-> Claude
-\node[user] (user) at (0, 0) {Nutzer\\\footnotesize lokale CLI};
-\node[claude] (claude) at (6.5, 0) {Claude Code\\\footnotesize Opus 4.7};
+\node[user]   (user)   at (2, 0) {Nutzer\\\footnotesize lokale CLI};
+\node[claude] (claude) at (8, 0) {Claude Code\\\footnotesize Opus 4.7};
 \draw[biarr] (user) -- (claude) node[midway, above] {Prompts};
 
-% Bottom row: three target areas
-\node[file] (latex) at (-1.5, -3.5) {\textbf{LaTeX-Quelle}\\\footnotesize \code{main.tex}\\\footnotesize \code{references.bib}};
-\node[file] (code) at (3.25, -3.5) {\textbf{App-Code}\\\footnotesize Android, Python\\\footnotesize App, Pipeline};
-\node[file] (git) at (8, -3.5) {\textbf{Git / GitHub}\\\footnotesize Repo\\\footnotesize Co-Authored-By};
+% Hub-Punkt zwischen Claude und den Ziel-Boxen
+\coordinate (hub) at (8, -1.8);
 
-% Claude -> three files
-\draw[biarr] (claude.south) to[out=-130, in=90] node[midway, sloped, above, font=\footnotesize] {Read/Write} (latex.north);
-\draw[biarr] (claude.south) -- node[midway, right=2pt, font=\footnotesize] {Read/Write} (code.north);
-\draw[arr] (claude.south) to[out=-30, in=90] node[midway, sloped, above, font=\footnotesize] {Commits/Pushes} (git.north);
+% Bottom row: drei Ziel-Boxen, gleichmaessig verteilt
+\node[file] (latex) at (2,  -4) {\textbf{LaTeX-Quelle}\\\footnotesize \code{main.tex}\\\footnotesize \code{references.bib}};
+\node[file] (code)  at (8,  -4) {\textbf{App-Code}\\\footnotesize Android, Python\\\footnotesize App, Pipeline};
+\node[file] (git)   at (14, -4) {\textbf{Git / GitHub}\\\footnotesize Repo\\\footnotesize Co-Authored-By};
+
+% Tree-Struktur: Claude -> Hub -> drei Boxen
+\draw[edge] (claude.south) -- (hub);
+\draw[biarr] (hub) -| node[pos=0.25, above, font=\footnotesize] {Read/Write} (latex.north);
+\draw[biarr] (hub) -- node[midway, right=2pt, font=\footnotesize] {Read/Write} (code.north);
+\draw[arr]   (hub) -| node[pos=0.25, above, font=\footnotesize] {Commits/Pushes} (git.north);
 \end{tikzpicture}
 \caption{KI-Nutzungs-Workflow: Claude Code mit direktem Zugriff auf
 LaTeX-Quelle, App-Code und Git-Repository. Jede Datei-Aktion läuft
