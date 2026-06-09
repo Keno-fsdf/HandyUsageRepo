@@ -558,9 +558,39 @@ UI-Bausteine:
 \end{longtable}
 }
 
+\subsection{Python-Pipeline im Detail}
+
+Der Orchestrator \datei{run\_pipeline.py} bringt die
+TinyML-Trainings-Pipeline in vier Schritten durch:
+
+\begin{enumerate}
+\item \datei{methods/tinyml/merge\_devices.py} -- alle Geräte-CSVs
+  zu einer kombinierten CSV zusammenführen.
+\item \datei{methods/tinyml/data\_prep.py} -- Discharge-Segmente
+  finden, Sliding-Windows bilden, Segment-Level-Split.
+\item \datei{methods/tinyml/train.py} -- Conv1D-Modell trainieren.
+\item \datei{methods/tinyml/tflite\_convert.py} -- Konvertierung in
+  INT8-quantisiertes TFLite (zwei weitere Varianten -- dynamic
+  range und float16 -- werden parallel erzeugt und gegeneinander
+  verglichen).
+\end{enumerate}
+
+Methodisch zentral sind dabei der \textbf{Segment-Level-Split} in
+Schritt~2 (verhindert Data-Leakage, weil aufeinanderfolgende
+Messpunkte stark korreliert sind) und die
+\textbf{INT8-Quantisierung} in Schritt~4 (ermöglicht die
+14{,}4\,KB-Modellgröße).
+
+Die eigentliche Genauigkeits-Auswertung gegen die Google-API und
+eine lineare Baseline läuft direkt in der App im Genauigkeits-Tab
+(siehe Abschnitt~\ref{sec:bedienung}).
+
 \newpage
 
-\subsection{Die App in Aktion -- Bedienungsanleitung mit Screenshots}
+% ████████████████████████████████████████████████████████████
+%  2  DIE APP IN AKTION -- BEDIENUNGSANLEITUNG
+% ████████████████████████████████████████████████████████████
+\section{Die App in Aktion -- Bedienungsanleitung mit Screenshots}
 \label{sec:bedienung}
 
 Diese Sektion gibt eine vollständige Bedienungsanleitung der App und
@@ -799,37 +829,10 @@ Die folgenden Punkte fassen die zentralen UI-Eigenschaften zusammen:
   Verlässlichkeits-Aussage immer mit dabei.
 \end{itemize}
 
-\subsection{Python-Pipeline im Detail}
-
-Der Orchestrator \datei{run\_pipeline.py} bringt die
-TinyML-Trainings-Pipeline in vier Schritten durch:
-
-\begin{enumerate}
-\item \datei{methods/tinyml/merge\_devices.py} -- alle Geräte-CSVs
-  zu einer kombinierten CSV zusammenführen.
-\item \datei{methods/tinyml/data\_prep.py} -- Discharge-Segmente
-  finden, Sliding-Windows bilden, Segment-Level-Split.
-\item \datei{methods/tinyml/train.py} -- Conv1D-Modell trainieren.
-\item \datei{methods/tinyml/tflite\_convert.py} -- Konvertierung in
-  INT8-quantisiertes TFLite (zwei weitere Varianten -- dynamic
-  range und float16 -- werden parallel erzeugt und gegeneinander
-  verglichen).
-\end{enumerate}
-
-Methodisch zentral sind dabei der \textbf{Segment-Level-Split} in
-Schritt~2 (verhindert Data-Leakage, weil aufeinanderfolgende
-Messpunkte stark korreliert sind) und die
-\textbf{INT8-Quantisierung} in Schritt~4 (ermöglicht die
-14{,}4\,KB-Modellgröße).
-
-Die eigentliche Genauigkeits-Auswertung gegen die Google-API und
-eine lineare Baseline läuft direkt in der App im Genauigkeits-Tab
-(siehe Abschnitt~\ref{sec:bedienung}).
-
 \newpage
 
 % ████████████████████████████████████████████████████████████
-%  2  DATENMODELL
+%  3  DATENMODELL
 % ████████████████████████████████████████████████████████████
 \section{Datenmodell}
 \label{sec:datenmodell}
@@ -1023,7 +1026,7 @@ Schritte kann die App aus Sicherheitsgründen nicht selbst
 \newpage
 
 % ████████████████████████████████████████████████████████████
-%  3  PROGRAMMIERUNG
+%  4  PROGRAMMIERUNG
 % ████████████████████████████████████████████████████████████
 \section{Programmierung}
 \label{sec:programmierung}
@@ -1406,7 +1409,7 @@ Modell garantiert übereinstimmt.
 \newpage
 
 % ████████████████████████████████████████████████████████████
-%  4  KURZREFERAT
+%  5  KURZREFERAT
 % ████████████████████████████████████████████████████████████
 \section{Kurzreferat}
 
@@ -1417,7 +1420,7 @@ Vortragsform.
 \includepdf[pages=-,pagecommand={},fitpaper=true]{kurzreferat.pdf}
 
 % ████████████████████████████████████████████████████████████
-%  5  ABSCHLIESSENDER ERFAHRUNGSBERICHT
+%  6  ABSCHLIESSENDER ERFAHRUNGSBERICHT
 % ████████████████████████████████████████████████████████████
 \section{Abschließender Erfahrungsbericht}
 \label{sec:wochenbericht}
