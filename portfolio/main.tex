@@ -209,7 +209,7 @@ Auf älteren Geräten ist die App \emph{überhaupt} die einzige
 verfügbare ML-Vorhersage: erst mit Android~12 (Oktober~2021) hat
 Google eine ML-basierte Akku-Schätzung ins System eingebaut -- alle
 Android-Versionen davor (also über zehn Jahre Android-Geräte) bieten
-nur die einfache lineare Stundenanzeige. Auf einem
+nur die einfache statische Stundenanzeige. Auf einem
 Smartphone, das nie ein Android~12-Update bekommen hat, ist diese App
 damit die einzige Möglichkeit, eine neuronale Restlaufzeit-Vorhersage
 zu bekommen.
@@ -253,8 +253,8 @@ nicht in fünf Minuten erreichbar.
 \item \textbf{Beim Wandern oder auf Mehrtagestouren.} Eine
   verlässliche Restlaufzeit entscheidet, ob man unterwegs noch
   die Karte öffnen kann oder lieber den Flugmodus aktiviert.
-  Genau das, was ein gelerntes Modell besser hinbekommt als ein
-  linearer Durchschnitt.
+  Genau das, was ein gelerntes Modell besser hinbekommt als eine
+  statische Durchschnitts-Hochrechnung.
 \item \textbf{Auf Reisen ohne sichere Ladequelle.} Im Zug, im
   Flugzeug, im Hotelzimmer ohne freie Steckdose. Statt nervös
   alle zehn Minuten zu prüfen, gibt eine verlässliche Schätzung
@@ -1380,9 +1380,9 @@ Konfiguration und Orchestrator                       & $\approx$\;300 \\
 \item \emph{\code{/proc/stat} gesperrt:} Frequenz-Proxy statt echter
   Auslastung.
 \item \emph{CSV-Schema-Migration:} Header-Check beim Service-Start.
-\item \emph{TinyML auf Single-Device zeigt MAE 0.5\,h Artefakt:}
+\item \emph{TinyML auf Single-Device zeigt MAE 0,53\,h Artefakt:}
   Segment-Level-Split eingeführt, korrigiert den scheinbaren Wert
-  auf 9.96\,h.
+  auf 9,96\,h.
 \end{itemize}
 
 \subsection{Reproduzierbarkeit der Pipeline}
