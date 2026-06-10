@@ -89,7 +89,7 @@ Dann auf die drei Kacheln zeigen:
 
 → Auf die Tabelle zeigen:
 
-> *"Auf Single-Device-Daten täuscht das einen MAE von 0,53 Stunden vor — 19-fach besser als die saubere Variante mit 9,96 Stunden."*
+> *"Auf den Single-Device-Daten wirkt der Test-MAE dadurch um den Faktor ~1,7 zu gut — 6,5 statt ehrlicher 11,1 Stunden."*
 
 → Zweite Zeile:
 
@@ -105,7 +105,7 @@ Dann auf die drei Kacheln zeigen:
 
 → Tabelle Zeile für Zeile:
 
-> *"Mean-Predictor als Floor bei 0,500. TinyML erreicht 0,666, Random Forest 0,686 — beide klar über dem Floor. Die analytischen Baselines und Google liegen alle drei bei C-Index 0,77 — also deutlich besser als die ML-Modelle."*
+> *"Mean-Predictor als Floor bei 0,500. TinyML erreicht 0,656, Random Forest 0,685 — beide klar über dem Floor. Die analytischen Baselines und Google liegen alle drei bei C-Index 0,77 — also deutlich besser als die ML-Modelle."*
 
 → Auf die grüne Take-away-Box:
 
@@ -121,11 +121,11 @@ Dann auf die drei Kacheln zeigen:
 
 → Tabelle:
 
-> *"TinyML und Random Forest schlagen Mean signifikant. Aber jetzt der überraschende Befund: Linear gegen Google ergibt einen p-Wert von 0,83 — statistisch nicht unterscheidbar."*
+> *"TinyML und Random Forest schlagen Mean signifikant. Aber jetzt der überraschende Befund: Linear gegen Google ergibt einen BH-korrigierten p-Wert von 0,11 — statistisch nicht unterscheidbar, Linear liegt numerisch sogar minimal vorn."*
 
 → Auf die rote Box:
 
-> *"Die simple Linear-Berechnung aus dem BatteryManager ist auf Aggregat-Ebene praktisch identisch zu Googles System-ML. Der zusätzliche Hardware-Zugang bringt für 'Stunden bis 0 %' keinen messbaren Vorteil."*
+> *"Die simple Linear-Berechnung aus dem BatteryManager ist auf Aggregat-Ebene praktisch identisch zu Googles System-ML. Der zusätzliche Hardware-Zugang zahlt sich erst bei sehr langen Restzeiten aus — ab etwa 30 Stunden zieht Google klar davon."*
 
 ---
 
@@ -135,7 +135,7 @@ Dann auf die drei Kacheln zeigen:
 
 → Auf das Chart:
 
-> *"TinyML erreicht auf Pixel 7 Pro einen C-Index von 0,79 — auf dem Xiaomi nur 0,59. Eine Differenz von 0,2 in einer Metrik, die zwischen 0,5 und 0,85 läuft."*
+> *"TinyML erreicht auf Pixel 7 Pro einen C-Index von 0,75 — auf dem Xiaomi nur 0,59. Eine Differenz von 0,16 in einer Metrik, die zwischen 0,5 und 0,85 läuft."*
 
 → Auf die Beobachtungs-Bullets:
 
@@ -151,7 +151,7 @@ Dann auf die drei Kacheln zeigen:
 
 *Schnell durch — die Zahlen sprechen für sich.*
 
-> *"Auf der Effizienz-Achse hat TinyML klare Vorteile. 14,4 KB INT8-Modell, 4,5 Mikrosekunden Inferenz-Latenz — 7,6-fach kleiner und 10.000-fach schneller als das ursprüngliche Keras-Float32-Modell."*
+> *"Auf der Effizienz-Achse hat TinyML klare Vorteile. 14,4 KB INT8-Modell, 3,3 Mikrosekunden Inferenz-Latenz — 7,6-fach kleiner und rund 12.000-fach schneller als das ursprüngliche Keras-Float32-Modell."*
 
 → Auf die grüne Take-away-Box:
 
@@ -165,11 +165,11 @@ Dann auf die drei Kacheln zeigen:
 
 → Linke Spalte:
 
-> *"Erstens: Multi-Device macht den Unterschied. Auf Single-Device-Daten war TinyML faktisch identisch mit dem Mean-Predictor — kein Lerneffekt. Mit dem Multi-Device-Datensatz lernt TinyML erkennbares Signal, signifikant über dem Floor. Aber: ML bleibt hinter den analytischen Baselines und Google."*
+> *"Erstens: ML lernt Signal — aber target-abhängig. Gegen das Trainings-Target erreicht TinyML C-Index 0,66 und Random Forest 0,68, beide signifikant über dem Floor. Gegen die tatsächlich gemessene Restzeit verschwindet dieser Vorsprung — dort ist TinyML nicht mehr vom Mean-Predictor unterscheidbar. Und in beiden Fällen bleiben die analytischen Baselines und Google vorn."*
 
 → Rechte Spalte:
 
-> *"Zweitens: Google ist statistisch identisch zu Linear-Baseline. Beide liegen bei C-Index 0,77, p-Wert 0,83. Der zusätzliche Hardware-Zugang von Google trägt nichts Messbares für die 'Stunden bis 0 %'-Frage bei."*
+> *"Zweitens: Google ist statistisch nicht von der Linear-Baseline unterscheidbar. Linear 0,770, Google 0,762, BH-korrigierter p-Wert 0,11. Der zusätzliche Hardware-Zugang zahlt sich erst bei sehr langen Restzeiten aus."*
 
 ---
 
@@ -183,7 +183,7 @@ Dann auf die drei Kacheln zeigen:
 
 > *Zweitens: Training hat alle vier Geräte gesehen — wie das Modell auf einem komplett neuen Gerät funktionieren würde, ist offene Folgearbeit.*
 
-> *Drittens: Auf Pixel 9 Pro XL ist TinyML überraschend schlecht, während Random Forest auf denselben Daten 0,76 erreicht. Dafür habe ich im aktuellen Datensatz keine kausale Erklärung — offen für Folgearbeiten."*
+> *Drittens: Auf Pixel 9 Pro XL fällt TinyML auf 0,57, während Random Forest auf denselben Daten 0,77 erreicht. Dafür habe ich im aktuellen Datensatz keine kausale Erklärung — offen für Folgearbeiten."*
 
 ---
 
@@ -197,11 +197,11 @@ Dann auf die drei Kacheln zeigen:
 
 → Effizienz-Box:
 
-> *"Effizienz: TFLite-Quantisierung funktioniert wie beworben — 14,4 KB, 4,5 Mikrosekunden. Auf dieser Achse hat TinyML uneingeschränkt seinen Wert.*"
+> *"Effizienz: TFLite-Quantisierung funktioniert wie beworben — 14,4 KB, 3,3 Mikrosekunden. Auf dieser Achse hat TinyML uneingeschränkt seinen Wert.*"
 
 → Hardware-&-Datenvielfalt-Box:
 
-> *"Hardware und Datenvielfalt: TinyML schwankt von 0,79 auf Pixel 7 Pro bis 0,59 auf Xiaomi. Engpass nicht am Modell, sondern an Sensor-Qualität und fehlendem Entlade-Verlauf."*
+> *"Hardware und Datenvielfalt: TinyML schwankt von 0,75 auf Pixel 7 Pro bis 0,59 auf Xiaomi. Engpass nicht am Modell, sondern an Sensor-Qualität und fehlendem Entlade-Verlauf."*
 
 → Abschluss:
 
@@ -223,15 +223,15 @@ Dann auf die drei Kacheln zeigen:
 
 ## "Warum ist Google nicht besser als Linear?"
 
-> *"Auf der gemeinsamen Schnittmenge von 2.827 Test-Punkten ist der Permutationstest-p-Wert bei 0,83 — die zwei sind statistisch ununterscheidbar. Beide nutzen intern die aktuelle Drain-Rate — Googles ML-Anteil bringt für genau diese Frage offenbar keinen Mehrwert. Auf Pixel 9 Pro XL ist Linear sogar deutlich besser als Google."*
+> *"Auf der gemeinsamen Schnittmenge von 2.883 Test-Punkten ist der BH-korrigierte p-Wert (paired Bootstrap auf Delta-C) bei 0,11 — die zwei sind statistisch ununterscheidbar, Linear liegt numerisch sogar minimal vorn. Beide nutzen intern die aktuelle Drain-Rate — Googles ML-Anteil bringt für genau diese Frage auf typischen Horizonten keinen Mehrwert. Auf Pixel 9 Pro XL ist Linear sogar deutlich besser als Google."*
 
 ## "Warum war TinyML auf Pixel 9 Pro XL so schlecht?"
 
-> *"Offene Beobachtung. TinyML erreicht dort 0,60, Random Forest auf denselben Daten 0,76. Drei Hypothesen: erstens unterschiedlicher Sensor-Stack der neuesten Pixel-Generation, zweitens schlechter passender StandardScaler, drittens ein generelles Distribution-Shift-Phänomen. Ich kann keine davon mit den aktuellen Daten beweisen — bewusst offen gelassen statt eine erfundene Erklärung."*
+> *"Offene Beobachtung. TinyML erreicht dort 0,57, Random Forest auf denselben Daten 0,77. Drei Hypothesen: erstens unterschiedlicher Sensor-Stack der neuesten Pixel-Generation, zweitens schlechter passender StandardScaler, drittens ein generelles Distribution-Shift-Phänomen. Ich kann keine davon mit den aktuellen Daten beweisen — bewusst offen gelassen statt eine erfundene Erklärung."*
 
 ## "Was hätten Sie anders gemacht?"
 
-> *"Drei Sachen: Erstens von Anfang an Segment-Level-Split statt Random-Shuffle — die initiale Variante zeigte MAE 0,53 Stunden, das war ein Leakage-Artefakt. Zweitens hätte ich pro Geräteklasse trainiert statt ein gemeinsames Modell — der Hardware-Effekt ist groß genug, dass das Sinn ergeben würde. Drittens kontrollierte Vollentlade-Zyklen mit einem Zweitgerät zur Ground-Truth-Validierung."*
+> *"Drei Sachen: Erstens von Anfang an Segment-Level-Split statt Random-Shuffle — die Random-Shuffle-Variante wies den Test-MAE um Faktor ~1,7 zu optimistisch aus (6,5 statt 11,1 Stunden), ein Leakage-Artefakt. Zweitens hätte ich pro Geräteklasse trainiert statt ein gemeinsames Modell — der Hardware-Effekt ist groß genug, dass das Sinn ergeben würde. Drittens kontrollierte Vollentlade-Zyklen mit einem Zweitgerät zur Ground-Truth-Validierung."*
 
 ## "Generalisiert das auf neue Geräte?"
 

@@ -422,7 +422,7 @@ const TOTAL = 15;
       { text: "MAE Segment-Level (clean)", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
       { text: "Inflation", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
     ],
-    ["Single Device (Xiaomi)", "9.024", "0.53 h", { text: "9.96 h", options: { bold: true, color: COL.bad } }, { text: "~19x", options: { bold: true, color: COL.bad } }],
+    ["Single Device (Xiaomi)", "9.024", "6.53 h", { text: "11.06 h", options: { bold: true, color: COL.bad } }, { text: "~1.69x", options: { bold: true, color: COL.bad } }],
     ["Multi-Device (4 Geräte)", "20.842", "4.00 h", { text: "4.97 h", options: { bold: true, color: COL.exp } }, { text: "~1.24x", options: { bold: true, color: COL.exp } }],
   ];
   s.addTable(tableData, {
@@ -442,7 +442,7 @@ const TOTAL = 15;
     fontSize: 14, bold: true, color: COL.primary, fontFace: "Calibri", margin: 0,
   });
   s.addText([
-    { text: "Bei zufälliger Aufteilung 'sieht' das Modell unbemerkt zukünftige Daten — das täuscht 19x bessere Performance vor (Single-Device).", options: { bullet: true, breakLine: true } },
+    { text: "Bei zufälliger Aufteilung 'sieht' das Modell unbemerkt zukünftige Daten — der Test-MAE wirkt dadurch um Faktor ~1,7 besser (Single-Device: 6,5 statt 11,1 h).", options: { bullet: true, breakLine: true } },
     { text: "Mit 4 Geräten (Multi-Device) schrumpft die Verzerrung auf 1,24x — die Datenvielfalt schwächt das Lecken ab. Vergleichbar mit Albelali & Ahmed (2025).", options: { bullet: true } },
   ], {
     x: 0.7, y: 3.35, w: 8.6, h: 1.6,
@@ -459,7 +459,7 @@ const TOTAL = 15;
 {
   const s = pres.addSlide();
   s.background = { color: COL.bg };
-  slideTitle(s, "Ergebnis 1: Common Subset (n=2.827)");
+  slideTitle(s, "Ergebnis 1: Common Subset (n=2.883)");
 
   s.addText("Vergleich gegen extrapolierte echte Restzeit · Klammerwerte = 95%-Konfidenzintervall", {
     x: 0.5, y: 1.05, w: 9, h: 0.3,
@@ -484,12 +484,12 @@ const TOTAL = 15;
       { text: "C-Index 95%-CI", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
       { text: "Acc +/- 2h", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
     ],
-    [{ text: "Mean Predictor (floor)", options: { color: COL.mean } }, "6.51", "9.28", { text: "0.500 [0.500, 0.500]", options: { color: COL.mean } }, "21.7%"],
-    [{ text: "TinyML Conv1D", options: { color: COL.tinyml, bold: true } }, "4.28", "8.38", { text: "0.666 [0.656, 0.675]", options: { bold: true } }, "51.1%"],
-    [{ text: "Random Forest", options: { color: COL.rf, bold: true } }, "4.01", "7.54", { text: "0.686 [0.673, 0.696]", options: { bold: true } }, "45.2%"],
-    [{ text: "Linear (drain rate)", options: { color: COL.linear } }, { text: "3.21", options: { bold: true } }, "8.55", "0.776 [0.767, 0.784]", "58.3%"],
-    [{ text: "Exponential fit", options: { color: COL.exp } }, "3.49", "8.88", "0.773 [0.764, 0.781]", "59.8%"],
-    [{ text: "Google API", options: { color: COL.google, bold: true } }, "3.24", "8.55", { text: "0.777 [0.767, 0.785]", options: { bold: true, color: COL.good } }, "60.1%"],
+    [{ text: "Mean Predictor (floor)", options: { color: COL.mean } }, "6.52", "9.25", { text: "0.500 [0.500, 0.500]", options: { color: COL.mean } }, "21.5%"],
+    [{ text: "TinyML Conv1D", options: { color: COL.tinyml, bold: true } }, "4.60", "8.47", { text: "0.656 [0.647, 0.664]", options: { bold: true } }, "43.7%"],
+    [{ text: "Random Forest", options: { color: COL.rf, bold: true } }, "4.06", "7.56", { text: "0.685 [0.673, 0.695]", options: { bold: true } }, "46.4%"],
+    [{ text: "Linear (drain rate)", options: { color: COL.linear } }, { text: "3.30", options: { bold: true } }, "8.57", { text: "0.770 [0.761, 0.780]", options: { bold: true, color: COL.good } }, "57.3%"],
+    [{ text: "Exponential fit", options: { color: COL.exp } }, "3.63", "9.04", "0.767 [0.758, 0.776]", "59.0%"],
+    [{ text: "Google API", options: { color: COL.google, bold: true } }, "3.37", "8.65", { text: "0.762 [0.751, 0.772]", options: { bold: true } }, "59.0%"],
   ];
   s.addTable(tableData, {
     x: 0.5, y: 1.85, w: 9,
@@ -519,7 +519,7 @@ const TOTAL = 15;
   s.background = { color: COL.bg };
   slideTitle(s, "Ergebnis 2: Statistische Signifikanz");
 
-  s.addText("Paarweise Permutationstests auf C-Index (Common Subset n=2.827)", {
+  s.addText("Paarweise Tests auf C-Index (paired Bootstrap, BH-korrigiert; Common Subset n=2.883)", {
     x: 0.5, y: 1.05, w: 9, h: 0.3,
     fontSize: 12, italic: true, color: COL.muted, fontFace: "Calibri",
   });
@@ -543,11 +543,11 @@ const TOTAL = 15;
       { text: "p", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
       { text: "Befund", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
     ],
-    ["TinyML vs. Mean", "0.666", "0.500", "+0.166", "0.005", { text: "** signifikant über Floor", options: { color: COL.good } }],
-    ["RF vs. Mean", "0.686", "0.500", "+0.186", "0.005", { text: "** signifikant über Floor", options: { color: COL.good } }],
-    ["Linear vs. Exponential", "0.776", "0.773", "+0.003", "0.30", { text: "n.s.", options: { color: COL.muted } }],
-    ["Linear vs. Google", "0.776", "0.777", "-0.001", { text: "0.83", options: { bold: true, color: COL.bad } }, { text: "n.s. - überraschend!", options: { color: COL.bad, italic: true } }],
-    ["TinyML vs. Google", "0.666", "0.777", "-0.111", "0.005", { text: "** Google klar besser", options: { color: COL.good } }],
+    ["TinyML vs. Mean", "0.656", "0.500", "+0.156", "<0.001", { text: "** signifikant über Floor", options: { color: COL.good } }],
+    ["RF vs. Mean", "0.685", "0.500", "+0.184", "<0.001", { text: "** signifikant über Floor", options: { color: COL.good } }],
+    ["Linear vs. Exponential", "0.770", "0.767", "+0.004", "0.27", { text: "n.s.", options: { color: COL.muted } }],
+    ["Linear vs. Google", "0.770", "0.762", "+0.009", { text: "0.11", options: { bold: true, color: COL.bad } }, { text: "n.s. - überraschend!", options: { color: COL.bad, italic: true } }],
+    ["TinyML vs. Google", "0.656", "0.762", "-0.105", "<0.001", { text: "** Google klar besser", options: { color: COL.good } }],
   ];
   s.addTable(tableData, {
     x: 0.5, y: 1.8, w: 9,
@@ -565,7 +565,7 @@ const TOTAL = 15;
     fontSize: 13, bold: true, color: COL.bad, fontFace: "Calibri", margin: 0,
   });
   s.addText([
-    { text: "Linear-Drain-Rate-Baseline ist statistisch nicht von Google-API unterscheidbar (p=0.83 für C, p=0.55 für MAE).", options: { bullet: true, breakLine: true } },
+    { text: "Linear-Drain-Rate-Baseline ist statistisch nicht von Google-API unterscheidbar (p=0.11 für C, p=0.16 für MAE) — Linear liegt numerisch sogar minimal vorn.", options: { bullet: true, breakLine: true } },
     { text: "Beide ML-Modelle (TinyML, RF) signifikant über Mean, aber unter der Spitzengruppe.", options: { bullet: true, breakLine: true } },
     { text: "Implikation: 'einfach BatteryManager-Counter lesen' ist auf Aggregat-Ebene konkurrenzfähig mit dem System-ML-Estimator.", options: { bullet: true } },
   ], {
@@ -595,12 +595,12 @@ const TOTAL = 15;
     {
       name: "TinyML",
       labels: ["Pixel 7 Pro", "Pixel 8 Pro", "Pixel 9 Pro XL", "Xiaomi"],
-      values: [0.786, 0.714, 0.599, 0.593],
+      values: [0.754, 0.742, 0.571, 0.593],
     },
     {
       name: "Random Forest",
       labels: ["Pixel 7 Pro", "Pixel 8 Pro", "Pixel 9 Pro XL", "Xiaomi"],
-      values: [0.804, 0.801, 0.759, 0.631],
+      values: [0.807, 0.815, 0.767, 0.628],
     },
     {
       name: "Linear",
@@ -610,7 +610,7 @@ const TOTAL = 15;
     {
       name: "Google API",
       labels: ["Pixel 7 Pro", "Pixel 8 Pro", "Pixel 9 Pro XL", "Xiaomi"],
-      values: [0.853, 0.921, 0.677, 0.664],
+      values: [0.853, 0.921, 0.677, 0.473],
     },
   ], {
     x: 0.5, y: 1.5, w: 5.8, h: 3.5,
@@ -619,7 +619,7 @@ const TOTAL = 15;
     catAxisLabelFontSize: 10,
     valAxisLabelFontSize: 10,
     showLegend: true, legendPos: "b", legendFontSize: 10,
-    valAxisMinVal: 0.5, valAxisMaxVal: 1.0,
+    valAxisMinVal: 0.4, valAxisMaxVal: 1.0,
     showValue: false,
     valGridLine: { color: COL.border, size: 0.5 },
     catGridLine: { style: "none" },
@@ -634,7 +634,7 @@ const TOTAL = 15;
     fontSize: 14, bold: true, color: COL.primary, fontFace: "Calibri",
   });
   s.addText([
-    { text: "TinyML: 0.79 (Pixel 7 Pro) bis 0.59 (Xiaomi)", options: { bullet: true, breakLine: true } },
+    { text: "TinyML: 0.75 (Pixel 7 Pro) bis 0.59 (Xiaomi)", options: { bullet: true, breakLine: true } },
     { text: "Analytische Baselines stabiler über Geräte", options: { bullet: true, breakLine: true } },
     { text: "Pixel 9 Pro XL: Linear (0.73) > Google (0.68)", options: { bullet: true, breakLine: true, bold: true } },
     { text: "Pixel 8 Pro: nur n=98 (breite CIs)", options: { bullet: true } },
@@ -672,9 +672,9 @@ const TOTAL = 15;
   // Stat callouts
   const stats = [
     { val: "14.4", unit: "KB", lbl: "INT8 Modell", col: COL.tinyml },
-    { val: "4.5", unit: "us", lbl: "Inferenz-Latenz", col: COL.exp },
+    { val: "3.3", unit: "us", lbl: "Inferenz-Latenz", col: COL.exp },
     { val: "7.6x", unit: "", lbl: "kleiner als Keras", col: COL.google },
-    { val: "10.000x", unit: "", lbl: "schneller als Keras Float32", col: COL.rf },
+    { val: "~12.000x", unit: "", lbl: "schneller als Keras Float32", col: COL.rf },
   ];
   stats.forEach((st, i) => {
     const x = 0.5 + i * 2.3;
@@ -705,10 +705,10 @@ const TOTAL = 15;
       { text: "Größe (KB)", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
       { text: "Avg Latenz", options: { bold: true, color: "FFFFFF", fill: { color: COL.primary } } },
     ],
-    ["Keras Float32", "109.18", "47.1 ms"],
-    ["TFLite dynamic-range", "15.99", "3.9 us"],
-    ["TFLite float16", "17.80", "3.7 us"],
-    [{ text: "TFLite INT8 (Deploy)", options: { bold: true, color: COL.tinyml } }, { text: "14.35", options: { bold: true } }, { text: "4.5 us", options: { bold: true } }],
+    ["Keras Float32", "109.19", "39.0 ms"],
+    ["TFLite dynamic-range", "15.99", "3.1 us"],
+    ["TFLite float16", "17.80", "2.9 us"],
+    [{ text: "TFLite INT8 (Deploy)", options: { bold: true, color: COL.tinyml } }, { text: "14.35", options: { bold: true } }, { text: "3.3 us", options: { bold: true } }],
   ];
   s.addTable(tableData, {
     x: 0.5, y: 2.85, w: 5.5,
@@ -755,18 +755,18 @@ const TOTAL = 15;
     x: 0.75, y: 1.25, w: 4.0, h: 0.4,
     fontSize: 14, bold: true, color: COL.good, fontFace: "Calibri", margin: 0,
   });
-  s.addText("Multi-Device-Datensatz macht den Unterschied:", {
+  s.addText("Signal vorhanden — aber target-abhängig:", {
     x: 0.75, y: 1.65, w: 4.0, h: 0.35,
     fontSize: 11, italic: true, color: COL.muted, fontFace: "Calibri", margin: 0,
   });
   s.addText([
-    { text: "Single Device: ", options: { bold: true } },
-    { text: "TinyML C=0.50 = Mean-Predictor", options: { color: COL.bad, breakLine: true } },
-    { text: "  RF C=0.51, beide nicht über Floor", options: { color: COL.muted, breakLine: true } },
+    { text: "vs. Trainings-Target (y_extrap): ", options: { bold: true } },
+    { text: "TinyML C=0.66, RF C=0.69", options: { color: COL.good, bold: true, breakLine: true } },
+    { text: "  beide signifikant über Floor (p < 0.001)", options: { color: COL.good, breakLine: true } },
     { text: "  ", options: { breakLine: true } },
-    { text: "Multi-Device (jetzt): ", options: { bold: true } },
-    { text: "TinyML C=0.67", options: { color: COL.good, bold: true, breakLine: true } },
-    { text: "  RF C=0.69, beide signifikant > Floor (p<=0.005)", options: { color: COL.good } },
+    { text: "vs. gemessene Restzeit (y_real): ", options: { bold: true } },
+    { text: "kein signifikanter Vorsprung mehr", options: { color: COL.bad, bold: true, breakLine: true } },
+    { text: "  TinyML p=0.82; RF sogar unter Floor", options: { color: COL.muted } },
   ], {
     x: 0.75, y: 2.0, w: 4.0, h: 2.4,
     fontSize: 11, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top", paraSpaceAfter: 2,
@@ -788,23 +788,23 @@ const TOTAL = 15;
     x: 5.45, y: 1.25, w: 4.0, h: 0.4,
     fontSize: 14, bold: true, color: COL.bad, fontFace: "Calibri", margin: 0,
   });
-  s.addText("Statistisch ununterscheidbar (p=0.83):", {
+  s.addText("Statistisch ununterscheidbar (p=0.11):", {
     x: 5.45, y: 1.65, w: 4.0, h: 0.35,
     fontSize: 11, italic: true, color: COL.muted, fontFace: "Calibri", margin: 0,
   });
   s.addText([
     { text: "Linear ", options: { bold: true, color: COL.linear } },
     { text: "(battery / drain_rate)", options: { color: COL.muted, breakLine: true } },
-    { text: "  MAE 3.21 h, C-Index 0.776", options: { breakLine: true } },
+    { text: "  MAE 3.30 h, C-Index 0.770", options: { breakLine: true } },
     { text: "  ", options: { breakLine: true } },
     { text: "Google API ", options: { bold: true, color: COL.google } },
     { text: "(privilegierter Systemzugang)", options: { color: COL.muted, breakLine: true } },
-    { text: "  MAE 3.24 h, C-Index 0.777", options: { breakLine: true } },
+    { text: "  MAE 3.37 h, C-Index 0.762", options: { breakLine: true } },
   ], {
     x: 5.45, y: 2.0, w: 4.0, h: 2.4,
     fontSize: 11, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top", paraSpaceAfter: 2,
   });
-  s.addText("Hardware-Zugang trägt nichts Messbares für 'Stunden bis 0%' bei.", {
+  s.addText("Hardware-Vorteil zahlt sich erst bei sehr langen Restzeiten aus (>=30 h: C 0.98 vs. 0.64).", {
     x: 5.45, y: 4.5, w: 4.0, h: 0.4,
     fontSize: 11, italic: true, bold: true, color: COL.primary, fontFace: "Calibri", margin: 0,
   });
@@ -832,7 +832,7 @@ const TOTAL = 15;
     },
     {
       head: "TinyML auf Pixel 9 Pro XL überraschend schlecht",
-      body: "TinyML schafft dort nur C-Index 0,60, während Random Forest auf denselben Daten 0,76 erreicht. Warum genau, ist mit den aktuellen Daten nicht erklärbar — offen für Folgearbeiten.",
+      body: "TinyML schafft dort nur C-Index 0,57, während Random Forest auf denselben Daten 0,77 erreicht. Warum genau, ist mit den aktuellen Daten nicht erklärbar — offen für Folgearbeiten.",
     },
   ];
 
@@ -874,17 +874,17 @@ const TOTAL = 15;
   const concl = [
     {
       head: "Genauigkeit",
-      body: "TinyML schlägt Mean (C 0.67), bleibt aber hinter Linear/Exp/Google (C ~ 0.77). Google nicht signifikant besser als Linear.",
+      body: "TinyML schlägt Mean (C 0.66), bleibt aber hinter Linear/Exp/Google (C ~ 0.77). Google nicht signifikant besser als Linear.",
       col: COL.tinyml,
     },
     {
       head: "Effizienz",
-      body: "TFLite-Quantisierung funktioniert. 14.4 KB, 4.5 us. Auf dieser Achse hat TinyML uneingeschränkt seinen Wert.",
+      body: "TFLite-Quantisierung funktioniert. 14.4 KB, 3.3 us. Auf dieser Achse hat TinyML uneingeschränkt seinen Wert.",
       col: COL.exp,
     },
     {
       head: "Hardware & Datenvielfalt",
-      body: "TinyML 0,79 auf Pixel 7 Pro, 0,59 auf Xiaomi. Engpass nicht am Modell, sondern an Sensor-Qualität und fehlendem Entlade-Verlauf (Xiaomi-Akku 88,8 % der Zeit voll).",
+      body: "TinyML 0,75 auf Pixel 7 Pro, 0,59 auf Xiaomi. Engpass nicht am Modell, sondern an Sensor-Qualität und fehlendem Entlade-Verlauf (Xiaomi-Akku 88,8 % der Zeit voll).",
       col: COL.google,
     },
   ];

@@ -8,7 +8,7 @@
 
 ## 1. Der Drei-Sätze-Pitch (auswendig)
 
-> *„Ich habe sechs konkurrierende Methoden zur Akkulaufzeit-Vorhersage auf Android verglichen — TinyML Conv1D, Random Forest, Mean-Predictor als Floor, lineare Drain-Rate, exponentielles Fitting und die native Google-API — auf einem Multi-Device-Datensatz von vier Geräten (Xiaomi und drei Pixel) mit insgesamt 66.000 Messungen über 45 Tage (je Gerät 21–34 Tage aktiv). Mit einem leakage-freien Segment-Level-Split: beide ML-Modelle schlagen den Mean-Predictor signifikant (TinyML C-Index 0.67, RF 0.69, p≤0.005), aber die analytischen Baselines und die Google-API sind in einer gemeinsamen Spitzengruppe bei C≈0.77 — und die Google-API ist statistisch nicht von der einfachen linearen Drain-Rate-Baseline zu unterscheiden. Mein Hauptbefund ist die starke Hardware-Abhängigkeit: dasselbe TinyML-Modell erreicht auf Pixel 7 Pro C=0.79, auf Xiaomi nur C=0.59."*
+> *„Ich habe sechs konkurrierende Methoden zur Akkulaufzeit-Vorhersage auf Android verglichen — TinyML Conv1D, Random Forest, Mean-Predictor als Floor, lineare Drain-Rate, exponentielles Fitting und die native Google-API — auf einem Multi-Device-Datensatz von vier Geräten (Xiaomi und drei Pixel) mit insgesamt 66.000 Messungen über 45 Tage (je Gerät 21–34 Tage aktiv). Mit einem leakage-freien Segment-Level-Split: beide ML-Modelle schlagen den Mean-Predictor signifikant (TinyML C-Index 0.66, RF 0.69, p_BH<0.001), aber die analytischen Baselines und die Google-API sind in einer gemeinsamen Spitzengruppe bei C≈0.77 — und die Google-API ist statistisch nicht von der einfachen linearen Drain-Rate-Baseline zu unterscheiden. Mein Hauptbefund ist die starke Hardware-Abhängigkeit: dasselbe TinyML-Modell erreicht auf Pixel 7 Pro C=0.75, auf Xiaomi nur C=0.59."*
 
 Diesen Absatz solltest du **flüssig sprechen können**.
 
@@ -20,17 +20,17 @@ Diesen Absatz solltest du **flüssig sprechen können**.
 |---|---|
 | Datenmenge | **66.001** Messungen, **553** Discharge-Segmente, **180** Sessions |
 | Geräte | **4** (Xiaomi 2107113SG, Pixel 7/8/9 Pro) |
-| TinyML Modell | **5.697 Parameter**, **14.7 KB** INT8 TFLite |
-| Inferenzlatenz | **~5 µs** TFLite vs. ~43 ms Keras Float32 |
-| Common Subset | **n=2.827** für 6-Wege-Vergleich |
-| TinyML C-Index | **0.666** [0.656, 0.675] |
-| Random Forest C-Index | **0.686** [0.673, 0.696] |
+| TinyML Modell | **5.697 Parameter**, **14.35 KB** INT8 TFLite |
+| Inferenzlatenz | **3.3 µs** TFLite vs. 39.0 ms Keras Float32 |
+| Common Subset | **n=2.883** für 6-Wege-Vergleich |
+| TinyML C-Index | **0.656** [0.647, 0.664] |
+| Random Forest C-Index | **0.685** [0.673, 0.695] |
 | Mean Predictor (Floor) | 0.500 |
-| Linear C-Index | **0.776** |
-| Google C-Index | **0.777** |
-| Linear vs. Google C | $\Delta$=−0.001, p=**0.83** (n.s.) |
-| TinyML vs. Mean p | **0.005** (signifikant über Floor) |
-| TinyML auf Pixel 7 Pro | C=**0.79** |
+| Linear C-Index | **0.770** |
+| Google C-Index | **0.762** |
+| Linear vs. Google C | $\Delta$=+0.009, p_BH=**0.11** (n.s., Linear numerisch vorn) |
+| TinyML vs. Mean p | **<0.001** (signifikant über Floor; gegen y_real aber n.s.!) |
+| TinyML auf Pixel 7 Pro | C=**0.75** |
 | TinyML auf Xiaomi | C=**0.59** |
 
 ---
@@ -47,7 +47,7 @@ Diesen Absatz solltest du **flüssig sprechen können**.
 
 **Das ist die spannendste Beobachtung deiner Arbeit.** Antwort:
 
-> *„Das überrascht mich auch, ist aber genau der Befund: auf der gemeinsamen Schnittmenge von 2.827 Test-Punkten ist der Permutationstest-p-Wert für den C-Index-Unterschied zwischen Linear und Google bei 0.83 — sie sind statistisch ununterscheidbar. Auf MAE genauso (p=0.55). Google hat als Systemprozess Zugriff auf zusätzliche Signale — etwa per-App-Stromverbrauch über PowerStats HAL und Integration ins Adaptive-Battery-System — die für Drittanbieter-Apps nicht verfügbar sind. Aber für die spezifische Frage 'wie viele Stunden bis 0%' liefert die einfache `charge_counter / current_average`-Berechnung im Wesentlichen dasselbe Signal. Für die Praxis heißt das: ein App-Entwickler kann mit der `BatteryManager`-API allein eine prinzipiell konkurrenzfähige Schätzung implementieren — er braucht nur den C-Index nicht."*
+> *„Das überrascht mich auch, ist aber genau der Befund: auf der gemeinsamen Schnittmenge von 2.883 Test-Punkten ist der BH-korrigierte p-Wert (paired Bootstrap auf ΔC) für den C-Index-Unterschied zwischen Linear und Google bei 0.11 — sie sind statistisch ununterscheidbar, Linear liegt numerisch sogar minimal vorn. Auf MAE genauso (p_BH=0.16). Google hat als Systemprozess Zugriff auf zusätzliche Signale — etwa per-App-Stromverbrauch über PowerStats HAL und Integration ins Adaptive-Battery-System — die für Drittanbieter-Apps nicht verfügbar sind. Aber für die spezifische Frage 'wie viele Stunden bis 0%' liefert die einfache `charge_counter / current_average`-Berechnung im Wesentlichen dasselbe Signal. Für die Praxis heißt das: ein App-Entwickler kann mit der `BatteryManager`-API allein eine prinzipiell konkurrenzfähige Schätzung implementieren — er braucht nur den C-Index nicht."*
 
 Auf Pixel 9 Pro XL ist Linear sogar **besser** als Google (C=0.73 vs 0.68) — falls jemand danach fragt.
 
@@ -57,7 +57,7 @@ Auf Pixel 9 Pro XL ist Linear sogar **besser** als Google (C=0.73 vs 0.68) — f
 
 **Das ist genau der Punkt — als Erkenntnis verkaufen, nicht als Schwäche:**
 
-> *„Ja, das ist der praktisch relevanteste Befund. Auf Pixel 7 Pro erreicht TinyML C=0.79, auf Xiaomi nur C=0.59 — eine Differenz von 0.20 in einer Metrik, die zwischen 0.5 (Zufall) und 0.85 (bestes Ergebnis im Datensatz) liegt. Das heißt: für einen real deployten App-Level-Battery-Predictor müsste man pro Geräteklasse eine eigene Konfidenz-Schätzung mitliefern. Eine globale Modell-Konfidenz ist irreführend. Diese Beobachtung ist aus meiner Sicht der eigentliche praktische Beitrag der Arbeit, weil sie für jeden Entwickler relevant ist, der ähnliche Modelle deployen will."*
+> *„Ja, das ist der praktisch relevanteste Befund. Auf Pixel 7 Pro erreicht TinyML C=0.75, auf Xiaomi nur C=0.59 — eine Differenz von 0.16 in einer Metrik, die zwischen 0.5 (Zufall) und 0.85 (bestes Ergebnis im Datensatz) liegt. Das heißt: für einen real deployten App-Level-Battery-Predictor müsste man pro Geräteklasse eine eigene Konfidenz-Schätzung mitliefern. Eine globale Modell-Konfidenz ist irreführend. Diese Beobachtung ist aus meiner Sicht der eigentliche praktische Beitrag der Arbeit, weil sie für jeden Entwickler relevant ist, der ähnliche Modelle deployen will."*
 
 ---
 
@@ -73,7 +73,7 @@ Auf Pixel 9 Pro XL ist Linear sogar **besser** als Google (C=0.73 vs 0.68) — f
 
 **Antwort:**
 
-> *„Drei Sachen. Erstens würde ich von Anfang an mit Segment-Level-Split arbeiten — die initiale Random-Shuffle-Variante hat MAE 0.53h gezeigt, was sich als Leakage-Artefakt entpuppte (echter Wert: 9.96h). Zweitens würde ich gezielt eine Pixel- und Xiaomi-Variante separat trainieren, statt ein gemeinsames Modell — der Hardware-Effekt ist groß genug, dass per-Geräteklasse-Modelle vermutlich besser performen. Drittens würde ich ein paar kontrollierte Vollentlade-Zyklen mit einem Zweitgerät durchführen, um Ground-Truth-Validierung zu haben."*
+> *„Drei Sachen. Erstens würde ich von Anfang an mit Segment-Level-Split arbeiten — die Random-Shuffle-Variante hat den Test-MAE um Faktor ~1.7 zu optimistisch ausgewiesen (6.5h statt 11.1h auf dem Xiaomi-Subset), ein Leakage-Artefakt. Zweitens würde ich gezielt eine Pixel- und Xiaomi-Variante separat trainieren, statt ein gemeinsames Modell — der Hardware-Effekt ist groß genug, dass per-Geräteklasse-Modelle vermutlich besser performen. Drittens würde ich ein paar kontrollierte Vollentlade-Zyklen mit einem Zweitgerät durchführen, um Ground-Truth-Validierung zu haben."*
 
 ---
 
@@ -87,7 +87,7 @@ Auf Pixel 9 Pro XL ist Linear sogar **besser** als Google (C=0.73 vs 0.68) — f
 
 **Ehrliche Antwort:**
 
-> *„Das ist eine offene Beobachtung. TinyML erreicht dort C=0.60, der Random Forest auf den gleichen Daten C=0.76 — also dreimal die Distanz zum Mean-Predictor-Floor. Ich habe keine kausale Erklärung. Drei Hypothesen: erstens unterscheidet sich der Pixel-9-Pro-XL-Sensor-Stack möglicherweise von den älteren Pixels in einer Weise, die meine zehn Features nicht abbilden. Zweitens könnte der StandardScaler, den ich auf den Trainingsdaten fit, schlechter zur gerätespezifischen Feature-Verteilung passen. Drittens ist Pixel 9 Pro XL der jüngste der vier Geräte — vielleicht ein generelles Distribution-Shift-Phänomen. Ohne kontrollierte Tests kann ich keine davon beweisen."*
+> *„Das ist eine offene Beobachtung. TinyML erreicht dort C=0.57, der Random Forest auf den gleichen Daten C=0.77 — also fast die vierfache Distanz zum Mean-Predictor-Floor. Ich habe keine kausale Erklärung. Drei Hypothesen: erstens unterscheidet sich der Pixel-9-Pro-XL-Sensor-Stack möglicherweise von den älteren Pixels in einer Weise, die meine zehn Features nicht abbilden. Zweitens könnte der StandardScaler, den ich auf den Trainingsdaten fit, schlechter zur gerätespezifischen Feature-Verteilung passen. Drittens ist Pixel 9 Pro XL der jüngste der vier Geräte — vielleicht ein generelles Distribution-Shift-Phänomen. Ohne kontrollierte Tests kann ich keine davon beweisen."*
 
 Das offen zuzugeben ist STÄRKER als eine erfundene Erklärung.
 
@@ -95,7 +95,7 @@ Das offen zuzugeben ist STÄRKER als eine erfundene Erklärung.
 
 **Standard-Antwort:**
 
-> *„Das hat mich auch überrascht, ist aber statistisch belastbar. Auf der gemeinsamen Schnittmenge von 2.827 Test-Punkten ist der Permutationstest-p-Wert für den C-Index-Unterschied zwischen Linear und Google bei 0.83 — sie sind ununterscheidbar. Auf Pixel 9 Pro XL führt Linear sogar (C=0.73 vs Google 0.68). Die Erklärung ist plausibel: für die spezifische Frage 'wie viele Stunden bis 0%' ist die aktuelle Drain-Rate das dominante Signal. Google's zusätzlicher Hardware-Zugang bringt für diese Frage offenbar keinen Mehrwert über `charge/current_avg`. Praktisch heißt das: ein App-Entwickler kann mit der `BatteryManager`-API allein eine konkurrenzfähige Schätzung implementieren."*
+> *„Das hat mich auch überrascht, ist aber statistisch belastbar. Auf der gemeinsamen Schnittmenge von 2.883 Test-Punkten ist der BH-korrigierte p-Wert für den C-Index-Unterschied zwischen Linear und Google bei 0.11 — sie sind ununterscheidbar, Linear liegt numerisch sogar vorn. Auf Pixel 9 Pro XL führt Linear sogar (C=0.73 vs Google 0.68). Die Erklärung ist plausibel: für die spezifische Frage 'wie viele Stunden bis 0%' ist die aktuelle Drain-Rate das dominante Signal. Google's zusätzlicher Hardware-Zugang bringt für diese Frage offenbar keinen Mehrwert über `charge/current_avg`. Praktisch heißt das: ein App-Entwickler kann mit der `BatteryManager`-API allein eine konkurrenzfähige Schätzung implementieren."*
 
 ---
 
@@ -115,8 +115,8 @@ Das offen zuzugeben ist STÄRKER als eine erfundene Erklärung.
 
 | ❌ Nicht sagen | ✓ Stattdessen |
 |---|---|
-| „TinyML schlägt nichts" | „TinyML schlägt den Mean-Predictor signifikant (p≤0.005), bleibt aber hinter den analytischen Baselines" |
-| „Mein Modell ist schlecht" | „Mein Modell ist hardware-abhängig: 0.79 auf Pixel 7 Pro, 0.59 auf Xiaomi" |
+| „TinyML schlägt nichts" | „TinyML schlägt den Mean-Predictor signifikant (p_BH<0.001 auf dem Trainings-Target), bleibt aber hinter den analytischen Baselines" |
+| „Mein Modell ist schlecht" | „Mein Modell ist hardware-abhängig: 0.75 auf Pixel 7 Pro, 0.59 auf Xiaomi" |
 | „Google ist besser als alles" | „Google ist im Spitzenfeld, aber statistisch nicht besser als die lineare Baseline" |
 | „Tut mir leid, dass kein klares Bild rauskommt" | „Das gemischte Bild ist ein wissenschaftlich gehaltvolles Ergebnis: zwei klare Gruppen statistisch trennbar, plus Hardware-Effekt" |
 
@@ -134,7 +134,7 @@ Das offen zuzugeben ist STÄRKER als eine erfundene Erklärung.
 > *„Die linearen Baseline-Berechnung `b / dot b` aus den letzten N Punkten greift exakt das Signal ab, das auch die Google-API primär nutzt — die aktuelle Drain-Rate. Googles ML-Modell hat zwar zusätzlichen Zugriff auf hardware-interne Metriken, aber die zusätzliche Information scheint für den Zeithorizont 'Stunden bis 0%' kaum Mehrwert zu bringen. Für längere Horizonte (Tage) oder Vorhersagen unter Lastwechseln würde das Bild vermutlich anders aussehen — aber das ist mit unserem censored Test-Set nicht messbar."*
 
 **„Was sagt Mutual Information aus?"**
-> *„Pearson misst nur lineare Zusammenhänge. Mutual Information misst beliebige Abhängigkeit, auch nicht-monotone. In meinen Daten zeigt sich z.B. bei `temperature` Pearson r ≈ 0.02, aber MI ≈ 1.24 nat — Temperatur trägt Information, aber nicht als linearer Trend, sondern komplexer."*
+> *„Pearson misst nur lineare Zusammenhänge. Mutual Information misst beliebige Abhängigkeit, auch nicht-monotone. In meinen Daten zeigt sich z.B. bei `brightness` Pearson r ≈ −0.02, aber MI ≈ 1.14 nat — Helligkeit trägt Information, aber nicht als linearer Trend, sondern komplexer. Bei `temperature` ähnlich: r ≈ −0.24, aber MI ≈ 2.07 nat, der höchste MI-Wert aller Features."*
 
 ---
 
