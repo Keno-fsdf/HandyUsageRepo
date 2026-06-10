@@ -105,7 +105,59 @@ const TOTAL = 15;
 }
 
 // ============================================================
-// SLIDE 2 - Forschungsfrage (der Dreisatz)
+// SLIDE 2 - Motivation (vor der Forschungsfrage, Wunsch Prof. John)
+// ============================================================
+{
+  const s = pres.addSlide();
+  s.background = { color: COL.bg };
+  slideTitle(s, "Motivation: Akkuvorhersage auf Android");
+
+  // Zwei-Spalten-Layout
+  s.addText("Problem", {
+    x: 0.5, y: 1.15, w: 4.3, h: 0.4,
+    fontSize: 17, bold: true, color: COL.primary, fontFace: "Calibri",
+  });
+  s.addText([
+    { text: "Klassisch: Settings-App rechnet linear hoch", options: { bullet: true, breakLine: true } },
+    { text: "Ignoriert aktuelle Nutzung, App-Kontext", options: { bullet: true } },
+  ], {
+    x: 0.5, y: 1.55, w: 4.3, h: 1.8,
+    fontSize: 13, color: COL.text, fontFace: "Calibri", paraSpaceAfter: 6,
+  });
+
+  s.addText("Was sich seit Android 12 (2021) ändert", {
+    x: 5.2, y: 1.15, w: 4.3, h: 0.4,
+    fontSize: 17, bold: true, color: COL.primary, fontFace: "Calibri",
+  });
+  s.addText([
+    { text: "PowerManager.getBatteryDischargePrediction()", options: { bullet: true, breakLine: true } },
+    { text: "Erstes ML-Modell direkt im Android-System", options: { bullet: true, breakLine: true } },
+    { text: "Läuft im Systemprozess - privilegierter Zugriff", options: { bullet: true } },
+  ], {
+    x: 5.2, y: 1.55, w: 4.3, h: 1.8,
+    fontSize: 13, color: COL.text, fontFace: "Calibri", paraSpaceAfter: 6,
+  });
+
+  // Highlight: plain-language framing (leitet zur Forschungsfrage über)
+  s.addShape(pres.shapes.RECTANGLE, {
+    x: 0.5, y: 3.7, w: 9, h: 1.0,
+    fill: { color: "FFF6E5" }, line: { color: COL.google, width: 1 },
+  });
+  s.addText("Worum es im Kern geht", {
+    x: 0.7, y: 3.78, w: 8.6, h: 0.3,
+    fontSize: 11, bold: true, color: COL.google, fontFace: "Calibri", margin: 0,
+  });
+  s.addText("Wie gut schneidet ein TinyML-Modell auf öffentlich verfügbaren Sensoren gegenüber etablierten Vorhersage-Methoden ab?", {
+    x: 0.7, y: 4.05, w: 8.6, h: 0.6,
+    fontSize: 14, italic: true, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
+  });
+
+  addFooter(s);
+  addPageNumber(s, 2, TOTAL);
+}
+
+// ============================================================
+// SLIDE 3 - Forschungsfrage (der Dreisatz)
 // ============================================================
 {
   const s = pres.addSlide();
@@ -146,58 +198,6 @@ const TOTAL = 15;
       x: xs[i] + 0.1, y: 4.15, w: 2.4, h: 0.8,
       fontSize: 14, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
     });
-  });
-
-  addFooter(s);
-  addPageNumber(s, 2, TOTAL);
-}
-
-// ============================================================
-// SLIDE 3 - Motivation
-// ============================================================
-{
-  const s = pres.addSlide();
-  s.background = { color: COL.bg };
-  slideTitle(s, "Motivation: Akkuvorhersage auf Android");
-
-  // Zwei-Spalten-Layout
-  s.addText("Problem", {
-    x: 0.5, y: 1.15, w: 4.3, h: 0.4,
-    fontSize: 17, bold: true, color: COL.primary, fontFace: "Calibri",
-  });
-  s.addText([
-    { text: "Klassisch: Settings-App rechnet linear hoch", options: { bullet: true, breakLine: true } },
-    { text: "Ignoriert aktuelle Nutzung, App-Kontext", options: { bullet: true } },
-  ], {
-    x: 0.5, y: 1.55, w: 4.3, h: 1.8,
-    fontSize: 13, color: COL.text, fontFace: "Calibri", paraSpaceAfter: 6,
-  });
-
-  s.addText("Was sich seit Android 12 (2021) ändert", {
-    x: 5.2, y: 1.15, w: 4.3, h: 0.4,
-    fontSize: 17, bold: true, color: COL.primary, fontFace: "Calibri",
-  });
-  s.addText([
-    { text: "PowerManager.getBatteryDischargePrediction()", options: { bullet: true, breakLine: true } },
-    { text: "Erstes ML-Modell direkt im Android-System", options: { bullet: true, breakLine: true } },
-    { text: "Läuft im Systemprozess - privilegierter Zugriff", options: { bullet: true } },
-  ], {
-    x: 5.2, y: 1.55, w: 4.3, h: 1.8,
-    fontSize: 13, color: COL.text, fontFace: "Calibri", paraSpaceAfter: 6,
-  });
-
-  // Highlight: plain-language framing (Erläuterung der Forschungsfrage)
-  s.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 3.7, w: 9, h: 1.0,
-    fill: { color: "FFF6E5" }, line: { color: COL.google, width: 1 },
-  });
-  s.addText("Worum es im Kern geht", {
-    x: 0.7, y: 3.78, w: 8.6, h: 0.3,
-    fontSize: 11, bold: true, color: COL.google, fontFace: "Calibri", margin: 0,
-  });
-  s.addText("Wie gut schneidet ein TinyML-Modell auf öffentlich verfügbaren Sensoren gegenüber etablierten Vorhersage-Methoden ab?", {
-    x: 0.7, y: 4.05, w: 8.6, h: 0.6,
-    fontSize: 14, italic: true, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
   });
 
   addFooter(s);

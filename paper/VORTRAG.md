@@ -17,19 +17,9 @@ Das hier ist ein Sprech-Gerüst, nicht ein Skript zum Vorlesen. Üben → frei r
 
 ---
 
-## Folie 2 — Forschungsfrage (30 Sek)
+## Folie 2 — Motivation (60 Sek)
 
-*Quote-Box laut vorlesen, langsam.*
-
-> *"Die Forschungsfrage lautet: Wie gut kann TinyML die Akkulaufzeit auf Android vorhersagen im Vergleich zu exponentiellem Fitting und der nativen Google-API — bezogen auf Genauigkeit sowie Effizienz?"*
-
-Dann auf die drei Kacheln zeigen:
-
-> *"Wir vergleichen also TinyML gegen fünf andere Methoden auf zwei Achsen — Genauigkeit, gemessen mit C-Index und MAE, und Effizienz, gemessen über Latenz und Modellgröße."*
-
----
-
-## Folie 3 — Motivation (60 Sek)
+*Reihenfolge auf Wunsch von Prof. John: erst motivieren, dann die Forschungsfrage.*
 
 > *"Smartphone-Akkuanzeigen rechnen klassisch einen statischen Durchschnitt linear hoch — sie ignorieren, welche App gerade läuft, ob das Display hell ist, ob Mobilfunk schwach ist. Daher: 30 % Akku und 'noch 4 Stunden' steht plötzlich nach einem YouTube-Video bei '1 Stunde'.*"
 
@@ -39,7 +29,23 @@ Dann auf die drei Kacheln zeigen:
 
 → Auf die orange Highlight-Box:
 
-> *"Im Kern fragen wir: Wie gut schneidet ein TinyML-Modell auf öffentlich verfügbaren Sensoren gegenüber etablierten Vorhersage-Methoden ab?"*
+> *"Im Kern fragen wir also: Wie gut schneidet ein TinyML-Modell auf öffentlich verfügbaren Sensoren gegenüber etablierten Vorhersage-Methoden ab?"*
+
+---
+
+## Folie 3 — Forschungsfrage (40 Sek)
+
+*Quote-Box laut vorlesen, langsam.*
+
+> *"Daraus ergibt sich die Forschungsfrage: Wie gut kann TinyML die Akkulaufzeit auf Android vorhersagen im Vergleich zu exponentiellem Fitting und der nativen Google-API — bezogen auf Genauigkeit sowie Effizienz?"*
+
+**Tonspur: warum das eine gute Forschungsfrage ist** (von Prof. John gewünscht):
+
+> *"Die Frage ist deshalb lohnend, weil die System-API zwar seit 2021 ausgeliefert wird, ihre Genauigkeit aber nie unabhängig gegen App-Level-Alternativen auf echten Nutzungsdaten vermessen wurde — und die TinyML-Literatur das Smartphone als Zielplattform weitgehend auslässt. Diese doppelte Lücke schließt die Arbeit."*
+
+Dann auf die drei Kacheln zeigen:
+
+> *"Wir vergleichen also TinyML gegen fünf andere Methoden auf zwei Achsen — Genauigkeit, gemessen mit C-Index und MAE, und Effizienz, gemessen über Latenz und Modellgröße."*
 
 ---
 
@@ -250,7 +256,7 @@ Dann auf die drei Kacheln zeigen:
 # Tipps fürs Üben
 
 1. **Zeitmanagement**: Stoppuhr nutzen. Folien 8 und 10 sind die längsten, hier nicht hetzen.
-2. **Forschungsfrage** auf Folie 2 langsam vorlesen — der ganze Vortrag baut darauf auf.
+2. **Forschungsfrage** auf Folie 3 langsam vorlesen — der ganze Vortrag baut darauf auf. Davor (Folie 2) die Motivation, danach kurz begründen, warum die Frage lohnend ist.
 3. **Frei sprechen, nicht ablesen.** Dieses Skript ist Anker, nicht Manuskript.
 4. **Auf die Folie zeigen** wenn du Zahlen erwähnst — hilft dem Publikum, mitzukommen.
 5. **Bei "überraschender Befund" (Folie 9 + 12 Google ≈ Linear) eine Pause machen** — das ist der spannendste Moment des Vortrags.
