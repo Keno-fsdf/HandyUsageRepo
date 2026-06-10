@@ -11,6 +11,7 @@
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{siunitx}
+\DeclareSIUnit{\nat}{nat}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
@@ -200,7 +201,7 @@ native Google API and against analytical baselines on identical data, and
 \paragraph{TinyML.}
 Banbury \emph{et al.}\cite{banbury2021mlperf} introduced MLPerf~Tiny,
 which they describe as ``the first industry-standard benchmark
-suite for ultra-low-power tiny [machine learning] systems'' that
+suite for ultra-low-power tiny machine learning systems'' that
 measures \emph{accuracy, latency, and energy}. We follow the first
 two and report energy-relevant proxies (model size and inference
 latency on a CPU reference); on-device energy measurement on
