@@ -1,7 +1,7 @@
 # Vortragsskript — Paper-Präsentation
 
 > **Vortragstermin:** 24.6. oder 1.7. — Slot: 15 Min (10 Min Vortrag + 2–3 Min Fragen)
-> **15 Folien** — Ziel-Tempo ~40 Sek pro Folie
+> **15 Folien** — die Zeitbudgets unten summieren auf exakt **10:00 Minuten**. Die Kernfolien 8 (90 Sek) und 10 (75 Sek) behalten ihre Zeit, alles andere ist gestrafft.
 
 Das hier ist ein Sprech-Gerüst, nicht ein Skript zum Vorlesen. Üben → frei reden, das hier nur als Anker.
 
@@ -17,7 +17,7 @@ Das hier ist ein Sprech-Gerüst, nicht ein Skript zum Vorlesen. Üben → frei r
 
 ---
 
-## Folie 2 — Motivation (60 Sek)
+## Folie 2 — Motivation (45 Sek)
 
 *Reihenfolge auf Wunsch von Prof. John: erst motivieren, dann die Forschungsfrage.*
 
@@ -33,7 +33,7 @@ Das hier ist ein Sprech-Gerüst, nicht ein Skript zum Vorlesen. Üben → frei r
 
 ---
 
-## Folie 3 — Forschungsfrage (40 Sek)
+## Folie 3 — Forschungsfrage (35 Sek)
 
 *Quote-Box laut vorlesen, langsam.*
 
@@ -49,19 +49,15 @@ Dann auf die drei Kacheln zeigen:
 
 ---
 
-## Folie 4 — Verwandte Arbeiten (45 Sek)
+## Folie 4 — Verwandte Arbeiten (25 Sek)
 
-*Nicht jedes Werk einzeln durchgehen — nur die Highlights.*
+*Nur zwei Werke aktiv ansprechen — der Rest steht sichtbar auf der Folie.*
 
-> *"Vier relevante Vorarbeiten. Li et al. 2018 — die Smartphone-Battery-Standardreferenz mit 51 Nutzern über 21 Monate — hat den Concordance-Index als Standard-Metrik für diese Domäne eingeführt, weil Akku-Daten ein 'severe data missing problem' haben: Nutzer entladen selten auf 0 %.*"
-
-→ Kurz auf die anderen:
-
-> *"Flores-Martin 2024 ist der direkteste Methodik-Verwandter mit LSTM. MLPerf Tiny ist der Industriestandard-Benchmark für TinyML — wobei Smartphone-Anwendungen in der Literatur weitgehend fehlen. Und Albelali & Ahmed 2025 haben gezeigt, dass Random-Shuffle bei Zeitreihen-Splits Future-Information leckt — das ist methodisch relevant für meinen Ansatz."*
+> *"Zwei Vorarbeiten sind zentral: Li et al. 2018 — 51 Nutzer über 21 Monate — haben gezeigt, dass Nutzer ihr Handy fast nie auf 0 % entladen, und deshalb den Concordance-Index als Metrik etabliert. Und Albelali & Ahmed 2025 haben gezeigt, dass zufälliges Mischen bei Zeitreihen-Aufteilungen Zukunfts-Information ins Training leckt. Beides übernehme ich. Die TinyML-Literatur selbst behandelt Smartphones kaum — diese Lücke füllt die Arbeit."*
 
 ---
 
-## Folie 5 — Datensammlung (45 Sek)
+## Folie 5 — Datensammlung (35 Sek)
 
 > *"Die Datenbasis: 66.001 Messungen über 45 Tage auf vier Geräten — eigener Xiaomi plus drei Pixel-Geräte bei Familienmitgliedern."*
 
@@ -75,7 +71,9 @@ Dann auf die drei Kacheln zeigen:
 
 ---
 
-## Folie 6 — Sechs Methoden (60 Sek)
+## Folie 6 — Sechs Methoden (40 Sek)
+
+*In Gruppen sprechen, nicht Karte für Karte.*
 
 > *"Sechs Methoden im Vergleich, in drei Gruppen:*
 
@@ -89,7 +87,7 @@ Dann auf die drei Kacheln zeigen:
 
 ---
 
-## Folie 7 — Segment-Level-Split (60 Sek)
+## Folie 7 — Segment-Level-Split (45 Sek)
 
 > *"Methodisch zentraler Punkt: Wie teilt man Train und Test? Bei zufälliger Aufteilung sieht das Modell unbemerkt zukünftige Daten — Data Leakage."*
 
@@ -119,7 +117,7 @@ Dann auf die drei Kacheln zeigen:
 
 ---
 
-## Folie 9 — Statistische Signifikanz (60 Sek)
+## Folie 9 — Statistische Signifikanz (50 Sek)
 
 → Auf die Erklär-Box oben:
 
@@ -153,7 +151,7 @@ Dann auf die drei Kacheln zeigen:
 
 ---
 
-## Folie 11 — Effizienz (30 Sek)
+## Folie 11 — Effizienz (25 Sek)
 
 *Schnell durch — die Zahlen sprechen für sich.*
 
@@ -165,7 +163,9 @@ Dann auf die drei Kacheln zeigen:
 
 ---
 
-## Folie 12 — Diskussion (60 Sek)
+## Folie 12 — Diskussion (45 Sek)
+
+*Pro Spalte ein Satz — die Boxen nicht nacherzählen.*
 
 > *"Zwei Schlüssel-Befunde zusammen:"*
 
@@ -179,7 +179,7 @@ Dann auf die drei Kacheln zeigen:
 
 ---
 
-## Folie 13 — Limitations (45 Sek)
+## Folie 13 — Limitations (35 Sek)
 
 *Schnell durchgehen, nur Headlines.*
 
@@ -193,7 +193,9 @@ Dann auf die drei Kacheln zeigen:
 
 ---
 
-## Folie 14 — Conclusion (60 Sek)
+## Folie 14 — Conclusion (40 Sek)
+
+*Die drei Boxen nur anreißen — der Inhalt steht sichtbar da.*
 
 > *"Antwort auf die Forschungsfrage in drei Achsen:*
 
