@@ -212,58 +212,67 @@ const TOTAL = 15;
   s.background = { color: COL.bg };
   slideTitle(s, "Verwandte Arbeiten");
 
-  const works = [
+  // Zwei zentrale Arbeiten, die im Vortrag aktiv besprochen werden -> prominent
+  const main = [
     {
+      x: 0.5,
       head: "Li et al. (2018)",
       sub: "Smartphone Battery Prediction at Scale",
-      body: "51 Nutzer, 21 Monate. Führt den Concordance-Index als Standard-Metrik ein, weil das 'severe data missing problem' (User entladen selten auf 0%) MAE unzuverlässig macht.",
+      body: "51 Nutzer, 21 Monate. Führt den Concordance-Index als Standard-Metrik ein, weil das 'severe data missing problem' (Nutzer entladen fast nie auf 0%) MAE unzuverlässig macht. Der C-Index stammt urspruenglich aus der Medizin.",
       col: COL.primary,
     },
     {
-      head: "Flores-Martin et al. (2024)",
-      sub: "Deep Learning auf Android, DNN vs. LSTM",
-      body: "Direkter Methodik-Verwandter. LSTM auf user-spezifischen App-, Sensor-, Screen-Time-Features.",
-      col: COL.exp,
-    },
-    {
-      head: "Banbury et al. (2021) - MLPerf Tiny",
-      sub: "Industriestandard-Benchmark für TinyML",
-      body: "Misst Accuracy, Latency, Energy gemeinsam. Smartphone-Anwendungen fehlen in der Literatur (siehe Heydari & Mahmoud 2025, Alajlan & Ibrahim 2022).",
-      col: COL.google,
-    },
-    {
+      x: 5.1,
       head: "Albelali & Ahmed (2025)",
       sub: "Hidden Leaks in Time Series Forecasting",
-      body: "Random-Shuffle-Splits über Sliding-Window-Sequenzen lecken Future-Information. RMSE Gain bis 20.5% bei 10-fold CV (LSTM).",
+      body: "Zufaelliges Mischen von Sliding-Window-Sequenzen leckt Zukunfts-Information ins Training und schoent die Ergebnisse. RMSE Gain bis 20.5% bei 10-fold CV (LSTM).",
       col: COL.bad,
     },
   ];
-
-  const colW = 4.4;
-  works.forEach((w, i) => {
-    const col = i % 2;
-    const row = Math.floor(i / 2);
-    const x = 0.5 + col * (colW + 0.2);
-    const y = 1.15 + row * 2.05;
-
+  main.forEach((w) => {
     s.addShape(pres.shapes.RECTANGLE, {
-      x: x, y: y, w: colW, h: 1.85,
+      x: w.x, y: 1.2, w: 4.4, h: 2.5,
       fill: { color: "F8FAFC" }, line: { color: COL.border, width: 1 },
+      shadow: { type: "outer", color: "000000", blur: 6, offset: 1, angle: 135, opacity: 0.07 },
     });
     s.addShape(pres.shapes.RECTANGLE, {
-      x: x, y: y, w: 0.08, h: 1.85, fill: { color: w.col }, line: { type: "none" },
+      x: w.x, y: 1.2, w: 0.1, h: 2.5, fill: { color: w.col }, line: { type: "none" },
     });
     s.addText(w.head, {
-      x: x + 0.2, y: y + 0.10, w: colW - 0.3, h: 0.35,
-      fontSize: 14, bold: true, color: w.col, fontFace: "Calibri", margin: 0,
+      x: w.x + 0.25, y: 1.33, w: 4.0, h: 0.4,
+      fontSize: 16, bold: true, color: w.col, fontFace: "Calibri", margin: 0,
     });
     s.addText(w.sub, {
-      x: x + 0.2, y: y + 0.42, w: colW - 0.3, h: 0.3,
-      fontSize: 11, italic: true, color: COL.muted, fontFace: "Calibri", margin: 0,
+      x: w.x + 0.25, y: 1.75, w: 4.0, h: 0.3,
+      fontSize: 11.5, italic: true, color: COL.muted, fontFace: "Calibri", margin: 0,
     });
     s.addText(w.body, {
-      x: x + 0.2, y: y + 0.75, w: colW - 0.3, h: 1.0,
-      fontSize: 11, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
+      x: w.x + 0.25, y: 2.12, w: 4.0, h: 1.45,
+      fontSize: 12, color: COL.text, fontFace: "Calibri", margin: 0, valign: "top",
+    });
+  });
+
+  // Weitere Arbeiten nur als Referenz (im Vortrag nur gestreift)
+  s.addText("Weitere relevante Arbeiten", {
+    x: 0.5, y: 3.95, w: 9, h: 0.3,
+    fontSize: 12, bold: true, color: COL.primary, fontFace: "Calibri", margin: 0,
+  });
+  const minor = [
+    { y: 4.34, col: COL.exp, name: "Flores-Martin et al. (2024):  ",
+      desc: "Deep Learning auf Android, DNN vs. LSTM auf App- und Sensor-Features. Direkter Methodik-Verwandter." },
+    { y: 4.78, col: COL.google, name: "Banbury et al. (2021), MLPerf Tiny:  ",
+      desc: "Industriestandard-Benchmark fuer TinyML (Accuracy, Latency, Energy). Smartphones kaum abgedeckt." },
+  ];
+  minor.forEach((m) => {
+    s.addShape(pres.shapes.RECTANGLE, {
+      x: 0.5, y: m.y + 0.06, w: 0.16, h: 0.16, fill: { color: m.col }, line: { type: "none" },
+    });
+    s.addText([
+      { text: m.name, options: { bold: true, color: COL.text } },
+      { text: m.desc, options: { color: COL.muted } },
+    ], {
+      x: 0.8, y: m.y - 0.04, w: 8.7, h: 0.4,
+      fontSize: 11, fontFace: "Calibri", margin: 0, valign: "top",
     });
   });
 
