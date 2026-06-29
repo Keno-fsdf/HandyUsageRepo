@@ -7,17 +7,29 @@ Das hier ist ein Sprech-Gerüst, nicht ein Skript zum Vorlesen. Üben → frei r
 
 ---
 
-## Folie 1 — Titel (10 Sek)
+## Folie 1 — Einstieg mit Haken (25 Sek)
 
-*Folie zeigen, kurz stehen lassen.*
+*Titelfolie steht im Hintergrund. NICHT mit dem Namen anfangen, sondern mit einer Frage ans Publikum. Per Handzeichen, kurz warten.*
 
-> *"Guten Tag. Mein Name ist Keno Schürger. Ich präsentiere heute meine Arbeit App-Level TinyML für Akkulaufzeit-Vorhersage auf Android — ein Multi-Device-Vergleich von sechs Methoden."*
+> *"Bevor ich anfange, kurz zwei Fragen in den Raum, gern per Handzeichen. Wer von euch hat heute schon mal auf den Akkustand vom Handy geschaut?"*
 
-→ Schnell weiter zur nächsten Folie.
+*(kurz warten, gehen meistens viele Hände hoch)*
+
+> *"Und wer von euch hat der Restzeit die da steht, also dem 'noch 3 Stunden', wirklich vertraut?"*
+
+*(jetzt gehen meistens kaum Hände hoch, das ist der Punkt)*
+
+> *"Genau da setzt meine Arbeit an. Ich bin Keno, und ich hab mir angeschaut wie gut diese Restzeit-Vorhersage eigentlich ist und ob man sie mit einem kleinen KI Modell besser hinbekommt."*
+
+**Fallback** falls die Gruppe müde wirkt und das Handzeichen zu riskant ist: das Szenario direkt erzählen statt zu fragen. *"Stellt euch vor ihr seid unterwegs, 30 Prozent Akku, das Handy sagt noch 4 Stunden, und nach einem YouTube Video sind es plötzlich nur noch eine. Genau diese Anzeige hab ich mir vorgenommen. Ich bin Keno."*
+
+→ Dann weiter zu Folie 2.
 
 ---
 
-## Folie 2 — Motivation (45 Sek)
+## Folie 2 — Motivation (30 Sek)
+
+*Der Haken von Folie 1 hat das Problem schon angerissen, hier also zügig.*
 
 *Reihenfolge auf Wunsch von Prof. John: erst motivieren, dann die Forschungsfrage.*
 
