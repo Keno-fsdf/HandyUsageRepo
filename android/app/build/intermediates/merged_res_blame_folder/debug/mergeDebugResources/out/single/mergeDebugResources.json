@@ -1,14 +1,102 @@
 [
     {
-        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-38:\\xml_file_paths.xml.flat",
-        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-40:\\xml\\file_paths.xml"
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_fragment_live.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\fragment_live.xml"
     },
     {
-        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-38:\\layout_activity_main.xml.flat",
-        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-40:\\layout\\activity_main.xml"
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\drawable_bg_confidence_high.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\drawable\\bg_confidence_high.xml"
     },
     {
-        "merged": "com.batterypredictor.datacollector.app-debug-38:/layout_activity_main.xml.flat",
-        "source": "com.batterypredictor.datacollector.app-main-40:/layout/activity_main.xml"
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_activity_onboarding.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\activity_onboarding.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_activity_train_own_model.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\activity_train_own_model.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_activity_main.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\xml_file_paths.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\xml\\file_paths.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_item_onboarding_slide0.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\item_onboarding_slide0.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_fragment_accuracy.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\fragment_accuracy.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\drawable_bg_winner.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\drawable\\bg_winner.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_item_onboarding_slide1.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\item_onboarding_slide1.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_item_onboarding_slide3.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\item_onboarding_slide3.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_fragment_algorithm.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\fragment_algorithm.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\drawable_bg_card.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\drawable\\bg_card.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\menu_main_bottom_nav.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\menu\\main_bottom_nav.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_activity_settings.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\activity_settings.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\drawable_bg_confidence_med.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\drawable\\bg_confidence_med.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_item_sensor_row.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\item_sensor_row.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_sheet_model_deepdive.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\sheet_model_deepdive.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\drawable_bg_runner.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\drawable\\bg_runner.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_item_onboarding_slide2.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\item_onboarding_slide2.xml"
+    },
+    {
+        "merged": "com.batterypredictor.datacollector.app-debug-45:/layout_activity_settings.xml.flat",
+        "source": "com.batterypredictor.datacollector.app-main-47:/layout/activity_settings.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\drawable_bg_prediction.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\drawable\\bg_prediction.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\drawable_bg_confidence_low.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\drawable\\bg_confidence_low.xml"
+    },
+    {
+        "merged": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-debug-45:\\layout_view_confidence_badge.xml.flat",
+        "source": "C:\\Users\\Keno\\.gradle\\daemon\\8.5\\com.batterypredictor.datacollector.app-main-47:\\layout\\view_confidence_badge.xml"
+    },
+    {
+        "merged": "com.batterypredictor.datacollector.app-debug-45:/layout_fragment_live.xml.flat",
+        "source": "com.batterypredictor.datacollector.app-main-47:/layout/fragment_live.xml"
     }
 ]

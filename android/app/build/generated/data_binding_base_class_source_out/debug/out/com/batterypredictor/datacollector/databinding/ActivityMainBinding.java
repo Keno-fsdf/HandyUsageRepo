@@ -4,77 +4,49 @@ package com.batterypredictor.datacollector.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ScrollView;
-import android.widget.TextView;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.batterypredictor.datacollector.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.lang.NullPointerException;
 import java.lang.Override;
 import java.lang.String;
 
 public final class ActivityMainBinding implements ViewBinding {
   @NonNull
-  private final ScrollView rootView;
+  private final ConstraintLayout rootView;
 
   @NonNull
-  public final Button btnBatteryOptimize;
+  public final BottomNavigationView mainBottomNav;
 
   @NonNull
-  public final Button btnExport;
+  public final FrameLayout mainFragmentContainer;
 
   @NonNull
-  public final Button btnRefresh;
+  public final ImageButton mainSettingsButton;
 
   @NonNull
-  public final Button btnStart;
+  public final LinearLayout mainTopBar;
 
-  @NonNull
-  public final Button btnStop;
-
-  @NonNull
-  public final Button btnUsageStats;
-
-  @NonNull
-  public final TextView countText;
-
-  @NonNull
-  public final TextView dataPreview;
-
-  @NonNull
-  public final TextView predictionDetail;
-
-  @NonNull
-  public final TextView predictionText;
-
-  @NonNull
-  public final TextView statusText;
-
-  private ActivityMainBinding(@NonNull ScrollView rootView, @NonNull Button btnBatteryOptimize,
-      @NonNull Button btnExport, @NonNull Button btnRefresh, @NonNull Button btnStart,
-      @NonNull Button btnStop, @NonNull Button btnUsageStats, @NonNull TextView countText,
-      @NonNull TextView dataPreview, @NonNull TextView predictionDetail,
-      @NonNull TextView predictionText, @NonNull TextView statusText) {
+  private ActivityMainBinding(@NonNull ConstraintLayout rootView,
+      @NonNull BottomNavigationView mainBottomNav, @NonNull FrameLayout mainFragmentContainer,
+      @NonNull ImageButton mainSettingsButton, @NonNull LinearLayout mainTopBar) {
     this.rootView = rootView;
-    this.btnBatteryOptimize = btnBatteryOptimize;
-    this.btnExport = btnExport;
-    this.btnRefresh = btnRefresh;
-    this.btnStart = btnStart;
-    this.btnStop = btnStop;
-    this.btnUsageStats = btnUsageStats;
-    this.countText = countText;
-    this.dataPreview = dataPreview;
-    this.predictionDetail = predictionDetail;
-    this.predictionText = predictionText;
-    this.statusText = statusText;
+    this.mainBottomNav = mainBottomNav;
+    this.mainFragmentContainer = mainFragmentContainer;
+    this.mainSettingsButton = mainSettingsButton;
+    this.mainTopBar = mainTopBar;
   }
 
   @Override
   @NonNull
-  public ScrollView getRoot() {
+  public ConstraintLayout getRoot() {
     return rootView;
   }
 
@@ -99,75 +71,32 @@ public final class ActivityMainBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
-      id = R.id.btnBatteryOptimize;
-      Button btnBatteryOptimize = ViewBindings.findChildViewById(rootView, id);
-      if (btnBatteryOptimize == null) {
+      id = R.id.mainBottomNav;
+      BottomNavigationView mainBottomNav = ViewBindings.findChildViewById(rootView, id);
+      if (mainBottomNav == null) {
         break missingId;
       }
 
-      id = R.id.btnExport;
-      Button btnExport = ViewBindings.findChildViewById(rootView, id);
-      if (btnExport == null) {
+      id = R.id.mainFragmentContainer;
+      FrameLayout mainFragmentContainer = ViewBindings.findChildViewById(rootView, id);
+      if (mainFragmentContainer == null) {
         break missingId;
       }
 
-      id = R.id.btnRefresh;
-      Button btnRefresh = ViewBindings.findChildViewById(rootView, id);
-      if (btnRefresh == null) {
+      id = R.id.mainSettingsButton;
+      ImageButton mainSettingsButton = ViewBindings.findChildViewById(rootView, id);
+      if (mainSettingsButton == null) {
         break missingId;
       }
 
-      id = R.id.btnStart;
-      Button btnStart = ViewBindings.findChildViewById(rootView, id);
-      if (btnStart == null) {
+      id = R.id.mainTopBar;
+      LinearLayout mainTopBar = ViewBindings.findChildViewById(rootView, id);
+      if (mainTopBar == null) {
         break missingId;
       }
 
-      id = R.id.btnStop;
-      Button btnStop = ViewBindings.findChildViewById(rootView, id);
-      if (btnStop == null) {
-        break missingId;
-      }
-
-      id = R.id.btnUsageStats;
-      Button btnUsageStats = ViewBindings.findChildViewById(rootView, id);
-      if (btnUsageStats == null) {
-        break missingId;
-      }
-
-      id = R.id.countText;
-      TextView countText = ViewBindings.findChildViewById(rootView, id);
-      if (countText == null) {
-        break missingId;
-      }
-
-      id = R.id.dataPreview;
-      TextView dataPreview = ViewBindings.findChildViewById(rootView, id);
-      if (dataPreview == null) {
-        break missingId;
-      }
-
-      id = R.id.predictionDetail;
-      TextView predictionDetail = ViewBindings.findChildViewById(rootView, id);
-      if (predictionDetail == null) {
-        break missingId;
-      }
-
-      id = R.id.predictionText;
-      TextView predictionText = ViewBindings.findChildViewById(rootView, id);
-      if (predictionText == null) {
-        break missingId;
-      }
-
-      id = R.id.statusText;
-      TextView statusText = ViewBindings.findChildViewById(rootView, id);
-      if (statusText == null) {
-        break missingId;
-      }
-
-      return new ActivityMainBinding((ScrollView) rootView, btnBatteryOptimize, btnExport,
-          btnRefresh, btnStart, btnStop, btnUsageStats, countText, dataPreview, predictionDetail,
-          predictionText, statusText);
+      return new ActivityMainBinding((ConstraintLayout) rootView, mainBottomNav,
+          mainFragmentContainer, mainSettingsButton, mainTopBar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

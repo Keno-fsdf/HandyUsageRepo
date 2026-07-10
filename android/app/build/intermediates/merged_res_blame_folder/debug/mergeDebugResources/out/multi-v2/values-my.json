@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.batterypredictor.datacollector.app-mergeDebugResources-36:/values-my/values-my.xml",
+            "outputFile": "com.batterypredictor.datacollector.app-mergeDebugResources-43:/values-my/values-my.xml",
             "map": [
                 {
                     "source": "C:\\Users\\Keno\\.gradle\\caches\\transforms-3\\daa653183a82ef426e4a35d1612318a8\\transformed\\appcompat-1.6.1\\res\\values-my\\values-my.xml",

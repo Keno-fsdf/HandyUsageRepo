@@ -151,7 +151,7 @@
     die Architektur des mitgelieferten Modells.
 
     Falls das Onboarding versehentlich weggeklickt wurde, lässt
-    es sich jederzeit über das Zahnrad-Icon $\to$
+    es sich jederzeit über das Settings-Icon $\to$
     \glqq{}Onboarding noch einmal ansehen\grqq{} erneut aufrufen.
 \end{minipage}
 \end{titlepage}
@@ -163,8 +163,10 @@
 \tableofcontents
 \newpage
 \listoffigures
+\newpage
 \listoftables
 \newpage
+\addcontentsline{toc}{section}{Quellcode-Verzeichnis}
 \lstlistoflistings
 \newpage
 \pagenumbering{arabic}
@@ -192,8 +194,8 @@ Entscheidungen -- von der Sensorauswahl über die Modell-Architektur
 bis zur Bedienoberfläche -- ordnen sich ihm unter.
 
 Das mitgelieferte TinyML-Modell ist mit 14{,}4\,KB kleiner als eine
-WhatsApp-Sprachnachricht. Es läuft INT8-quantisiert auf jeder
-Android-Version ohne spürbaren Energie- oder Speicher-Overhead, und
+WhatsApp-Sprachnachricht. Es läuft INT8-quantisiert ab Android~8
+ohne spürbaren Energie- oder Speicher-Overhead, und
 alle Sensordaten bleiben dabei lokal auf dem Gerät. Es gibt keinen
 Server-Roundtrip.
 
@@ -205,19 +207,10 @@ Nutzungsverhalten zuschneiden. Die App ist damit nicht nur Konsument
 eines vortrainierten Modells, sondern Teil einer schließbaren
 Trainings-Schleife.
 
-Auf älteren Geräten ist die App \emph{überhaupt} die einzige
-verfügbare ML-Vorhersage: erst mit Android~12 (Oktober~2021) hat
-Google eine ML-basierte Akku-Schätzung ins System eingebaut -- alle
-Android-Versionen davor (also über zehn Jahre Android-Geräte) bieten
-nur die einfache statische Stundenanzeige. Auf einem
-Smartphone, das nie ein Android~12-Update bekommen hat, ist diese App
-damit die einzige Möglichkeit, eine neuronale Restlaufzeit-Vorhersage
-zu bekommen.
-
 \subsection{Problemstellung}
 
 Smartphone-Akkuanzeigen funktionieren auf den meisten Geräten
-nach einem einfachen Prinzip: man rechnet den durchschnittlichen
+nach einem einfachen Prinzip: Man rechnet den durchschnittlichen
 Verbrauch der letzten Stunden linear in die Zukunft. Wer schon einmal mit 30\,\% Akku
 \glqq{}noch 4 Stunden\grqq{} im Display hatte und dann nach einem
 YouTube-Video plötzlich bei 15\,\% mit \glqq{}noch 1 Stunde\grqq{}
@@ -227,7 +220,7 @@ Akku-Verbrauch ist in Wahrheit nichtlinear und vom Kontext getrieben:
 Streaming verbraucht ein Vielfaches von Lesen, Navigation in der
 Kälte mehr als bei Wärme, eine schwache Mobilfunk-Verbindung mehr
 als WLAN, ein heißes Spiel mehr als der Sperrbildschirm. Eine statische
-Durchschnitts-Hochrechnung der letzten Minuten kann diese Dynamik
+Durchschnitts-Hochrechnung des jüngsten Verbrauchs kann diese Dynamik
 prinzipbedingt nicht abbilden -- dafür braucht es ein Modell, das die
 Beziehung zwischen Sensoren und Verbrauch tatsächlich \emph{gelernt} hat.
 
@@ -239,20 +232,27 @@ Für alle Android-Versionen davor -- und damit für einen großen Teil
 der weltweit aktiven Geräte -- gibt es weiterhin nur die einfache
 statische Schätzung im System. Eine echte, an das eigene
 Nutzungsverhalten angepasste KI-Vorhersage existiert dort schlicht
-nicht.
+nicht. Und selbst dort, wo es die System-Vorhersage gibt
+(Android~12+), bleibt sie eine generische Black-Box: Der Nutzer kann
+sie weder einsehen noch auf seinen eigenen Daten nachtrainieren --
+und ob sie in der Oberfläche überhaupt angezeigt wird, entscheidet
+der Hersteller: Auf vielen Geräten (etwa von Xiaomi oder Samsung)
+taucht sie gar nicht auf. Beide Lücken -- kein ML auf älteren
+Geräten, keine Sichtbarkeit und Anpassbarkeit auf neuen -- sind der
+Ansatzpunkt dieser App.
 
 \subsection{Konkrete Anwendungsszenarien}
 \label{sec:szenarien}
 
 Damit klar wird, für wen das überhaupt relevant ist -- vier
 Alltagssituationen, in denen eine verlässliche Restlaufzeit
-messbar hilft. Allen gemeinsam: die nächste Steckdose ist eben
+messbar hilft. Allen gemeinsam: Die nächste Steckdose ist eben
 nicht in fünf Minuten erreichbar.
 
 \begin{itemize}
 \item \textbf{Beim Wandern oder auf Mehrtagestouren.} Eine
   verlässliche Restlaufzeit entscheidet, ob man unterwegs noch
-  die Karte öffnen kann oder lieber den Flugmodus aktiviert.
+  die Karten-App öffnen kann oder lieber den Flugmodus aktiviert.
   Genau das, was ein gelerntes Modell besser hinbekommt als eine
   statische Durchschnitts-Hochrechnung.
 \item \textbf{Auf Reisen ohne sichere Ladequelle.} Im Zug, im
@@ -312,7 +312,8 @@ Aus Nutzer- und Marktsicht steht die App auf fünf Punkten:
 
 \item \textbf{Niedrige Einstiegshürde.}
   Kein Account, kein Abo, keine Cloud-Anmeldung. Onboarding in
-  unter 90~Sekunden, direkt danach die erste Vorhersage.
+  unter 90~Sekunden; die erste eigene Vorhersage steht rund fünf
+  Minuten später (sobald zehn Messpunkte gesammelt sind).
 \end{itemize}
 
 \subsection{Zielsetzung}
@@ -379,13 +380,13 @@ TinyML-Modell.
 \toprule
 \textbf{Kennzahl} & \textbf{Wert} \\
 \midrule
-Code-Umfang gesamt        & $\approx$\;5.600 Zeilen (Kotlin + Python + XML) \\
+Code-Umfang gesamt        & $\approx$\;8.300 Zeilen (Kotlin + Python + XML) \\
 Android-App               & 20 Kotlin-Module (Service, Inferenz, UI, Onboarding, Settings) \\
 Python-Pipeline           & 25 Module in zwei Schichten (\code{methods/}, \code{evaluation/}) \\
-Test-Geräte               & 4 (Xiaomi 2107113SG + Pixel 7 / 8 / 9 Pro, davon 3 bei Familienmitgliedern) \\
+Test-Geräte               & 4 (Xiaomi 2107113SG + Pixel 7 Pro / 8 Pro / 9 Pro XL, davon 3 bei Familienmitgliedern) \\
 Feld-Sammlung             & 48 Tage Dauerbetrieb, 180 Service-Sessions \\
 Gesammelte Messpunkte     & 66.001 $\times$ 10 Features \\
-TinyML-Modell             & 14{,}4\,KB INT8-quantisiert, $\sim$\,5\,$\mu$s pro Inferenz \\
+TinyML-Modell             & 14{,}4\,KB INT8-quantisiert, 3{,}3\,$\mu$s pro Inferenz \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -409,11 +410,11 @@ Die App arbeitet in drei aufeinander aufbauenden Schritten:
   Bildschirm-Helligkeit, aktive App-Kategorie (z.\,B. Video,
   Browser, Spiel), Geräte-Temperatur, CPU-Last,
   Netzwerk-Zustand und so weiter.
-\item \textbf{Modell trainieren am PC.} Die Tabelle wird auf den
+\item \textbf{Modell trainieren am PC.} Die CSV wird auf den
   PC übertragen und dort von einem neuronalen Netz (Conv1D +
   Dense) durchgearbeitet. In jeder Trainings-Iteration vergleicht
   das Modell seine vorhergesagte Restlaufzeit mit dem
-  tatsächlichen Akku-Verlauf in der Tabelle und justiert seine
+  tatsächlichen Akku-Verlauf in der CSV und justiert seine
   internen Gewichte so, dass die Differenz schrumpft. Nach
   wenigen Minuten hat es Zusammenhänge gelernt wie:
   \emph{Helligkeit hoch, Video-App aktiv, Temperatur
@@ -543,15 +544,15 @@ UI-Bausteine:
 \datei{OnboardingPagerAdapter.kt} & ViewPager2-Adapter für die Onboarding-Slides \\
 \midrule
 \multicolumn{2}{l}{\textit{UI-Tabs}} \\
-\datei{LiveFragment.kt}         & Prominente Vorhersage-Anzeige, Confidence-Pille und Live-Anzeige der 10 Sensor-Werte als animierte Karten \\
+\datei{LiveFragment.kt}         & Prominente Vorhersage-Anzeige, Confidence-Pille und Live-Anzeige der 10 Sensor-Werte als Karten \\
 \datei{AlgorithmFragment.kt}    & Erklärt in vier Schritten, wie aus Sensoren die Vorhersage wird, und bindet die drei Custom Canvas-Views ein \\
-\datei{DataflowView.kt}, \datei{BatteryHistoryChart.kt}, \datei{ConvLayerView.kt} & Drei Custom Canvas-Views: animierter Sensor-zu-Vorhersage-Datenfluss, Sparkline-Akkuverlauf mit Vorhersage-Extension und Conv1D-Modell-Architektur (Details siehe Abschnitt~\ref{sec:bedienung}) \\
+\datei{DataflowView.kt}, \datei{BatteryHistoryChart.kt}, \datei{ConvLayerView.kt} & Drei Custom Canvas-Views: animierter Sensor-zu-Vorhersage-Datenfluss, Sparkline-Akkuverlauf und Conv1D-Modell-Architektur (Details siehe Abschnitt~\ref{sec:bedienung}) \\
 \datei{ModelDeepDiveSheet.kt}   & Bottom-Sheet im Algorithmus-Tab: zeigt bei Tap auf die Modell-Architektur die ausführliche Erklärung \\
 \datei{AccuracyFragment.kt}     & Genauigkeits-Tab mit 3-Wege-Score (TinyML / Google / Linear) \\
 \datei{AccuracyComputer.kt}     & Liest die CSV-Daten und berechnet den 3-Wege-Vergleich der drei Methoden im letzten Discharge-Lauf \\
 \midrule
 \multicolumn{2}{l}{\textit{Infrastruktur-UI}} \\
-\datei{SettingsActivity.kt}     & Hinter dem Zahnrad-Icon: Service-Steuerung, Permissions, CSV-Export, Modell-Info und mehrere Sub-Aktionen (Onboarding-Replay, Basis-Daten-Reset, Train-Own-Anleitung) \\
+\datei{SettingsActivity.kt}     & Hinter dem Settings-Icon: Service-Steuerung, Permissions, CSV-Export, Modell-Info und mehrere Sub-Aktionen (Onboarding-Replay, Basis-Daten-Reset, Train-Own-Anleitung) \\
 \datei{TrainOwnModelActivity.kt} & Schritt-für-Schritt-Anleitung, wie der Nutzer ein eigenes Modell auf seinen Daten trainieren und in die App deployen kann \\
 \datei{ConfidenceBadge.kt}      & Wiederverwendbarer Confidence-Chip mit Farbkodierung (grün / gelb / rot) \\
 \datei{ConfidenceLevel.kt}      & Enum + Heuristik (Buffer-Größe + Akkustand) \\
@@ -560,8 +561,8 @@ UI-Bausteine:
 
 \subsection{Python-Pipeline im Detail}
 
-Der Orchestrator \datei{run\_pipeline.py} bringt die
-TinyML-Trainings-Pipeline in vier Schritten durch:
+Der Orchestrator \datei{run\_pipeline.py} führt die
+TinyML-Trainings-Pipeline in vier Schritten aus:
 
 \begin{enumerate}
 \item \datei{methods/tinyml/merge\_devices.py} -- alle Geräte-CSVs
@@ -600,11 +601,11 @@ Bildschirme.
 
 \paragraph{Welcome-Bildschirm: Onboarding (vier Slides).}
 Beim allerersten Öffnen wird automatisch das vierteilige Onboarding
-gezeigt. Slide~1 verortet den Nutzen anhand vier Alltagssituationen,
-Slide~2--3 erklären das \glqq{}Sammeln $\to$ Lernen $\to$
+gezeigt. Slide~1 verortet den Nutzen anhand von vier Alltagssituationen,
+Slides~2--3 erklären das \glqq{}Sammeln $\to$ Lernen $\to$
 Vorhersagen\grqq{}-Prinzip in einfachen Worten, Slide~4 zeigt den
 Modell-Größen-Vergleich. Das Onboarding ist später jederzeit über
-das Zahnrad-Icon $\to$ \glqq{}Onboarding noch einmal ansehen\grqq{}
+das Settings-Icon $\to$ \glqq{}Onboarding noch einmal ansehen\grqq{}
 wieder aufrufbar.
 
 \begin{figure}[H]
@@ -627,12 +628,14 @@ erklären Sensoren und PC-Training.}
 \label{fig:screens_onboarding}
 \end{figure}
 
+\newpage
+
 \paragraph{Tab \glqq{}Live\grqq{}: das Hauptfeature.}
 Direkt nach dem Onboarding (oder bei jedem späteren Öffnen) landet
 der Nutzer im Live-Tab. Oben groß die Restlaufzeit (oder ein
 expliziter Status \glqq{}Lädt\grqq{} / \glqq{}Voll\grqq{} mit
 passender Sub-Erklärung), darunter alle zehn Live-Sensoren als
-animierte Karten -- die Hauptbühne der App.
+Karten -- die Hauptbühne der App.
 
 \begin{figure}[H]
 \centering
@@ -647,8 +650,8 @@ animierte Karten -- die Hauptbühne der App.
     \centering
     \includegraphics[width=\linewidth]{01_live.png}
     \caption{Normalbetrieb nach $\sim$\,5\,Minuten: Restlaufzeit
-    prominent oben, Confidence-Pille zeigt die aktuelle Vorhersage-
-    Sicherheit, darunter die zehn Live-Sensoren als animierte Karten.}
+    prominent oben, Confidence-Pille zeigt die aktuelle
+    Vorhersage-Sicherheit, darunter die zehn Live-Sensoren als Karten.}
 \end{subfigure}
 \caption{Live-Tab in zwei Zuständen: Initial-State während die ersten
 Messpunkte gesammelt werden, und Normalbetrieb mit aktiver Vorhersage.}
@@ -670,8 +673,9 @@ funktioniert. Drei eigene Custom-Canvas-Views, die alle live laufen.
 \begin{subfigure}{0.46\textwidth}
     \centering
     \includegraphics[width=\linewidth]{03_algorithm_arch.png}
-    \caption{Eine Etage tiefer: die echte Conv1D-Architektur
-    mit Input-Matrix, Feature-Maps, Pooling und Dense-Output.
+    \caption{Eine Etage tiefer: die Conv1D-Architektur mit
+    Input-Matrix, Feature-Maps, Pooling und Dense-Output --
+    zur Lesbarkeit vereinfacht mit 16 der 32 Filter gezeichnet.
     Eine Forward-Pass-Welle leuchtet von oben nach unten.}
 \end{subfigure}
 \caption{Algorithmus-Tab, obere zwei Visualisierungen.}
@@ -683,9 +687,9 @@ funktioniert. Drei eigene Custom-Canvas-Views, die alle live laufen.
 \begin{subfigure}{0.46\textwidth}
     \centering
     \includegraphics[width=\linewidth]{04_algorithm_history.png}
-    \caption{Live-Sparkline der letzten drei Stunden Akkuverlauf
-    plus gestrichelte Vorhersage-Extension. Hier ein echter Discharge
-    von 100\,\% auf $\sim$\,73\,\% über die letzten drei Stunden.}
+    \caption{Live-Sparkline der letzten drei Stunden Akkuverlauf.
+    Hier ein echter Discharge von 100\,\% auf $\sim$\,73\,\% über
+    die letzten drei Stunden.}
 \end{subfigure}\hfill
 \begin{subfigure}{0.46\textwidth}
     \centering
@@ -710,21 +714,27 @@ Kurzform.}
 \newpage
 
 \paragraph{Tab \glqq{}Genauigkeit\grqq{}: der Vergleich.}
+Der dritte Tab beantwortet die Frage, wie gut die Vorhersagen
+rückblickend wirklich waren: Für den letzten beobachteten
+Discharge-Lauf vergleicht er die eigene TinyML-Vorhersage mit der
+Google-API und der linearen Baseline und kürt per Medaillen-Ranking,
+wer am häufigsten innerhalb der Toleranz lag. Die Wertung erscheint,
+sobald ein vollständiger Entlade-Lauf beobachtet wurde.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.55\linewidth]{07_accuracy.png}
+\includegraphics[width=0.48\linewidth]{07_accuracy.png}
 \caption{Genauigkeits-Tab: 3-Wege-Vergleich der drei Methoden
-(eigenes TinyML, Google API, Linear-Baseline) für den letzten
-beobachteten Discharge-Lauf. Trefferquote = Anteil Vorhersagen
+(eigenes TinyML, Google API, Linear-Baseline) über die zuletzt
+beobachteten Entlade-Daten. Trefferquote = Anteil Vorhersagen
 innerhalb der zulässigen Toleranz (\,$\pm$\,25\,\% der wahren
 Restzeit, mindestens $\pm$\,60\,min).}
 \label{fig:screen_accuracy}
 \end{figure}
 
-\paragraph{Settings (Zahnrad-Icon oben rechts).}
-Hier liegt alles, was nicht zur Hauptbühne gehört: Service-
-Steuerung, Permissions, Modell-Info, CSV-Export -- und genau dort
+\paragraph{Settings (Icon oben rechts).}
+Hier liegt alles, was nicht zur Hauptbühne gehört:
+Service-Steuerung, Permissions, Modell-Info, CSV-Export -- und genau dort
 findet der Nutzer auch den Button, um das Onboarding noch einmal
 anzusehen oder ein eigenes Modell zu trainieren.
 
@@ -747,7 +757,7 @@ anzusehen oder ein eigenes Modell zu trainieren.
 \end{subfigure}
 \caption{Settings-Activity. Hinweis: der Button
 \glqq{}Onboarding noch einmal ansehen\grqq{} ist exakt für
-den Fall gedacht, dass der Prüfer das Onboarding versehentlich
+den Fall gedacht, dass der Nutzer das Onboarding versehentlich
 weggeklickt hat.}
 \label{fig:screens_settings}
 \end{figure}
@@ -769,12 +779,14 @@ Anleitung in fünf Schritten inklusive Repo-Link.
     \centering
     \includegraphics[width=\linewidth]{17_train_bottom.png}
     \caption{Anleitung, unten: GitHub klonen, Pipeline laufen
-    lassen, \code{.tflite} zurück in \code{android/app/assets/}
+    lassen, \code{.tflite} zurück in \code{android/app/src/main/assets/}
     deployen. Großer \glqq{}Auf GitHub ansehen\grqq{}-Button.}
 \end{subfigure}\caption{Train-Own-Model-Activity, aufgerufen über den
 Settings-Button \glqq{}Modell selbst trainieren\grqq{}.}
 \label{fig:screens_train}
 \end{figure}
+
+\newpage
 
 \paragraph{Die UI im Überblick.}
 Die folgenden Punkte fassen die zentralen UI-Eigenschaften zusammen:
@@ -788,47 +800,40 @@ Die folgenden Punkte fassen die zentralen UI-Eigenschaften zusammen:
 \item \emph{Tab \glqq{}Live\grqq{}.} Der Haupt-Tab der App.
   Vorhersage prominent oben, direkt darunter eine
   \emph{Confidence-Pille} (grün / gelb / rot) und ein Live-Block
-  mit allen zehn Sensoren als animierte Karten.
+  mit allen zehn Sensoren als Karten.
 \item \emph{Tab \glqq{}Algorithmus\grqq{}.} Eigener Tab für die
-  Erklärung des USP-Features. Ganz oben -- gleich beim Öffnen
-  sichtbar -- drei Pillen mit den Alleinstellungs-Argumenten
-  (\textbf{offline}, \textbf{14,4\,KB}, \textbf{jedes Android}),
-  darunter drei aufeinander aufbauende Visualisierungen:
+  Erklärung des USP-Features -- drei aufeinander aufbauende
+  Visualisierungen:
   \begin{itemize}
   \item \emph{Datenfluss} -- zehn pulsierende Sensoren links,
     leuchtende TinyML-Box in der Mitte, fließende Partikel
     hinüber zur Vorhersage rechts (high-level Überblick).
   \item \emph{Modell-Architektur} -- direkt darunter die
-    eigentlichen Conv1D-Schichten als Detail-Ansicht: Input-Matrix
-    10\,$\times$\,10, 16~Feature-Maps, 16 gemittelte Pool-Werte,
-    ein Dense-Output. Eine sequentielle Forward-Pass-Animation
+    Conv1D-Schichten als Detail-Ansicht: Input-Matrix
+    10\,$\times$\,10, Feature-Maps, gemittelte Pool-Werte,
+    ein Dense-Output (zur besseren Lesbarkeit mit 16 statt der
+    echten 32 Filter gezeichnet). Eine sequentielle Forward-Pass-Animation
     lässt eine \glqq{}Welle\grqq{} von oben nach unten durch die
     Schichten laufen, damit nachvollziehbar wird, wie das Modell
     intern rechnet.
-  \item \emph{Live-Sparkline} der letzten drei Stunden Akkuverlauf
-    mit gestrichelter Vorhersage-Extension für die nächste
-    Stunde (praktische Anwendung des Modells in Echtzeit).
+  \item \emph{Live-Sparkline} der letzten drei Stunden Akkuverlauf.
   \end{itemize}
   Danach die textuellen vier nummerierten Schritte
   (Sensoren $\to$ Sliding-Window $\to$ TinyML $\to$ Vorhersage)
-  und ein USP-Block am Ende (komplett offline, 14,4\,KB, jedes
-  Android). Macht den Algorithmus selbst zu einem sichtbaren,
-  animierten App-Element statt nur Black-Box-Output.
+  und ein USP-Block am Ende (\textbf{offline}, \textbf{14,4\,KB},
+  \textbf{jedes Android}).
 \item \emph{Tab \glqq{}Genauigkeit\grqq{}.} Zeigt einen
   3-Wege-Score \glqq{}Wer war heute genauer?\grqq{}\ mit Medaillen
   (eigenes Modell vs. Google-API vs. Linear-Baseline), berechnet
   über den letzten beobachteten Discharge-Lauf. Erscheint, sobald
   genug Daten gesammelt wurden.
-\item \emph{Settings hinter dem Zahnrad.} Alle Infrastruktur-
-  Bedienelemente (Service-Status mit Laufzeit, Permissions-Check,
+\item \emph{Settings.} Alle
+  Infrastruktur-Bedienelemente (Service-Status mit Laufzeit, Permissions-Check,
   Start/Stopp, CSV-Export, Modell-Info-Karte) sind bewusst aus
   den Haupt-Tabs ausgelagert, damit der Nutzer beim Öffnen der
-  App genau \emph{ein} Feature sieht und nicht eine
-  überladene Funktionsliste.
-\item \emph{Erweiterte Notification.} Statt nur \glqq{}Akku noch
-  X\,h Y\,min\grqq{} steht in der Sperrbildschirm-Anzeige jetzt
-  zusätzlich die Confidence-Pille -- die Vorhersage hat eine
-  Verlässlichkeits-Aussage immer mit dabei.
+  App genau \emph{ein} Feature sieht.
+\item \emph{Notification.} Zeigt auf dem Sperrbildschirm die
+  aktuelle Restlaufzeit samt Confidence-Pille.
 \end{itemize}
 
 \newpage
@@ -881,8 +886,9 @@ die Spalten im Detail.
 
 \subsection{Warum genau diese zehn Features?}
 
-Bei der Auswahl gab es eine harte Regel: \emph{ich darf nur lesen,
-was eine normale App ohne Spezial-Berechtigung lesen kann.} Damit
+Bei der Auswahl gab es eine harte Regel: \emph{Ich darf nur lesen,
+was eine normale App ohne privilegierte System-Berechtigung lesen
+kann.} Damit
 fielen einige naheliegende Kandidaten weg:
 
 \begin{itemize}
@@ -929,7 +935,7 @@ Spalten oben). Es gibt \emph{keinen} Zugriff auf:
 
 Das einzige potenziell sensible Feld ist
 \code{active\_app\_category}, und auch das nur als \emph{Kategorie}
-(0--5), nicht als konkreter Paketname.
+(0--5), nicht als Name der konkreten App.
 
 \subsubsection*{Wo gespeichert wird}
 
@@ -966,11 +972,10 @@ Upload, keinen Server und keine Telemetrie.
 \end{table}
 
 \paragraph{Was der Nutzer aktiv freischalten muss.}
-Drei dieser Permissions kann der Nutzer Android nicht einfach
-durchwinken -- sie brauchen ein explizites Antippen, weil sie weit
-mehr können als die App tatsächlich braucht. Die App führt den
-Nutzer per Button-Klick direkt in die jeweils richtige
-Systemeinstellung:
+Drei dieser Berechtigungen werden nicht automatisch bei der
+Installation erteilt -- der Nutzer muss sie zur Laufzeit aktiv
+bestätigen: zwei per Systemdialog, den Nutzungsdatenzugriff manuell
+in den Systemeinstellungen.
 
 \begin{table}[H]
 \centering
@@ -986,7 +991,7 @@ Systemeinstellung:
   Foreground-Service braucht Notification, über die er sichtbar
   ist; ohne POST\_NOTIFICATIONS startet der Service gar nicht. \\
 \textbf{Nutzungsdatenzugriff} & Manuell in den Systemeinstellungen via Button \glqq{}Nutzungsdaten\-zugriff aktivieren\grqq{} &
-  Damit die App weiss, welche App-Kategorie gerade aktiv ist
+  Damit die App weiß, welche App-Kategorie gerade aktiv ist
   (Social, Video, Spiel, ...) -- eines der zehn Features.
   Ohne Aktivierung fällt das Feature einfach auf \glqq{}Leerlauf\grqq{}
   zurück und die App läuft trotzdem. \\
@@ -1001,7 +1006,7 @@ Systemeinstellung:
 \begin{samepage}
 \textbf{Wo der Nutzer das findet.}
 Beide Permissions-Buttons (Nutzungsdatenzugriff und
-Akku-Optimierung) sind im \emph{Settings}-Screen (Zahnrad-Icon
+Akku-Optimierung) sind im \emph{Settings}-Screen (Icon
 oben rechts) gebündelt -- in der Sektion
 \glqq{}Berechtigungen\grqq{} mit den Beschriftungen
 \glqq{}Nutzungsdatenzugriff aktivieren\grqq{} und
@@ -1161,7 +1166,7 @@ private fun isHotspotOn(): Boolean {
 
 Der \code{BatteryPredictor} hält das TinyML-Modell und einen
 Ringpuffer mit den letzten 10 Datenpunkten. Erst wenn der Puffer
-voll ist, wird vorhergesagt. Wichtig: die Features müssen mit
+voll ist, wird vorhergesagt. Wichtig: Die Features müssen mit
 denselben StandardScaler-Werten normalisiert werden, mit denen das
 Modell trainiert wurde -- die Werte sind hardcoded in der App und
 werden bei jedem Re-Training neu hineingeschrieben.
@@ -1216,7 +1221,7 @@ Mechanismen sorgen dafür, dass die Datensammlung nicht abreißt:
 \begin{enumerate}
 \item \textbf{Foreground-Service} mit dauerhafter Notification.
 \item \textbf{Auto-Restart nach Wegwischen} der App-Karte. Wenn der
-  Nutzer die App in der Übersicht wegwischt, registriert sich der
+  Nutzer die App in der Übersicht wegwischt, registriert der
   Service über
   \code{AlarmManager.\allowbreak setExact\allowbreak AndAllowWhileIdle()}
   einen Restart in 1 Sekunde.
@@ -1298,21 +1303,26 @@ def find_discharge_segments(df, min_length, max_gap_ms):
 Abbildung~\ref{fig:training_curves} zeigt den Verlauf von Trainings-
 und Validation-MAE (durchschnittliche Abweichung der Vorhersage in
 Stunden) des TinyML-Modells während der 21~Epochen, nach denen
-EarlyStopping greift. Trainings- und Validation-Kurve liegen über den gesamten
-Verlauf nah beieinander und sinken gemeinsam ab -- das ist das
-gewünschte Signal dafür, dass das Modell nicht überanpasst
-(Overfitting), sondern die gelernten Muster auf bisher ungesehene
-Daten überträgt.
+EarlyStopping greift. Der Trainings-MAE sinkt kontinuierlich auf
+ca.\ 4{,}6\,h, während der Validation-MAE nicht mitfällt, sondern
+zwischen ca.\ 8 und 10\,h bleibt. Das Modell lernt die
+Trainingsdaten also besser, als es auf ungesehene
+Discharge-Segmente generalisiert -- bei nur zehn schwach
+korrelierten Features und einem bewusst kleinen Modell ein
+erwartbarer Effekt. Genau dafür ist EarlyStopping mit
+\code{restore\_best\_weights=True} konfiguriert: Es stoppt, sobald
+die Validation-Kurve nicht mehr besser wird, und gibt die Gewichte
+der besten Validation-Epoche zurück.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\linewidth]{training_curves.png}
 \caption{Trainings- und Validation-MAE (durchschnittliche
-Abweichung in Stunden) des TinyML-Modells. Auf dem
-Multi-Device-Datensatz erreicht das Modell nach 21~Epochen ein
-Validation-MAE von ca.\ 5\,h. Da
-EarlyStopping mit \code{restore\_best\_weights=True}
-konfiguriert ist, wird das beste Modell zurückgegeben.}
+Abweichung in Stunden) des TinyML-Modells. Der Trainings-MAE
+fällt über die 21~Epochen auf ca.\ 4{,}6\,h, der Validation-MAE
+bleibt bei ca.\ 8--10\,h. Da EarlyStopping mit
+\code{restore\_best\_weights=True} konfiguriert ist, werden die
+Gewichte der besten Validation-Epoche zurückgegeben.}
 \label{fig:training_curves}
 \end{figure}
 
@@ -1332,13 +1342,13 @@ Auswertungs-Schicht.
 \toprule
 \textbf{Bereich} & \textbf{Zeilen (ohne Leerzeilen)} \\
 \midrule
-Android-App Kotlin (20 Dateien)                      & $\approx$\;1.450 \\
-Android-App Ressourcen (XML-Layouts + Drawables)     & $\approx$\;650 \\
-Python-Pipeline (\code{methods/}, 13 Module)         & $\approx$\;1.150 \\
-Python-Auswertung (\code{evaluation/}, 12 Module)    & $\approx$\;2.050 \\
-Konfiguration und Orchestrator                       & $\approx$\;300 \\
+Android-App Kotlin (20 Dateien)                      & $\approx$\;2.870 \\
+Android-App Ressourcen (XML-Layouts + Drawables)     & $\approx$\;1.900 \\
+Python-Pipeline (\code{methods/}, 13 Module)         & $\approx$\;1.190 \\
+Python-Auswertung (\code{evaluation/}, 12 Module)    & $\approx$\;2.120 \\
+Konfiguration und Orchestrator                       & $\approx$\;240 \\
 \midrule
-\textbf{Summe}                                       & \textbf{$\approx$\;5.600} \\
+\textbf{Summe}                                       & \textbf{$\approx$\;8.300} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1382,7 +1392,8 @@ Konfiguration und Orchestrator                       & $\approx$\;300 \\
 \item \emph{CSV-Schema-Migration:} Header-Check beim Service-Start.
 \item \emph{TinyML auf Single-Device zeigt MAE 0,53\,h Artefakt:}
   Segment-Level-Split eingeführt, korrigiert den scheinbaren Wert
-  auf 9,96\,h.
+  auf 9,96\,h (Zwischenstand Woche~3; auf dem finalen Datensatz
+  6,53\,$\to$\,11,06\,h).
 \end{itemize}
 
 \subsection{Reproduzierbarkeit der Pipeline}
@@ -1396,8 +1407,8 @@ fertigen Auswertungs-Reports.
 # vollstaendige Pipeline: ca. 20 Minuten auf Laptop-CPU
 python run_pipeline.py
 
-# nur die ML-Schritte (ohne Eval) -- ca. 5 Minuten
-python run_pipeline.py --stage tinyml
+# einzelne Stufen gezielt ausfuehrbar, z.B. nur das Training:
+python run_pipeline.py --stage train
 \end{lstlisting}
 
 Alle Hyperparameter, Feature-Listen, Random-Seeds und Pfade liegen
@@ -1436,7 +1447,7 @@ In dieser Woche das Repo angelegt und das Android-Projekt
 aufgesetzt. Erste Version
 des \code{DataCollectorService} mit Claude geprototypt.
 Innerhalb der Woche lief die erste Messung auf dem
-Xiaomi durch. Hauptproblem in dieser Woche: die
+Xiaomi durch. Hauptproblem in dieser Woche: Die
 \code{PACKAGE\_USAGE\_STATS}-Permission ist nicht via
 Standard-Dialog vergebbar -- der Nutzer muss in den Einstellungen
 manuell ankreuzen. Ich habe deshalb einen Button in der App
@@ -1448,11 +1459,11 @@ springt.
 \textbf{Service-Robustheit -- und parallel Statistik-Grundlagen
 aufgefrischt.}
 Datensammlung bricht beim Wegwischen aus der App-Übersicht ab.
-Drei Tage gebraucht, um herauszufinden, wie man auf Xiaomi-MIUI
+Lange daran gesessen, herauszufinden, wie man auf Xiaomi-MIUI
 einen Service vor dem Aggressive-Killing schützt.
 Lösung: \code{onTaskRemoved} $\to$
 \code{AlarmManager.\allowbreak setExact\allowbreak AndAllowWhileIdle} $\to$ Service kommt
-1 Sekunde später wieder. Plus \code{BootReceiver} damit nach
+1 Sekunde später wieder. Plus \code{BootReceiver}, damit nach
 Neustart automatisch weitergesammelt wird.
 
 Parallel dazu Statistik-Grundlagen aufgefrischt, die für die
@@ -1474,13 +1485,13 @@ Segment-Level-Split -- bei dem ganze Discharge-Phasen entweder
 komplett im Trainings- oder komplett im Test-Set landen -- lag
 der MAE realistisch bei 9,96 Stunden.
 
-In dieser Phase eng mit Claude gearbeitet: jede Pipeline-Änderung
+In dieser Phase eng mit Claude gearbeitet: Jede Pipeline-Änderung
 wurde gegen die vorherigen Ergebnisse geprüft. Am 12.~April
 App-APK an ein Familienmitglied mit Pixel~7~Pro weitergegeben.
 
 \subsubsection*{Woche 4 (KW 16: 13.--19.\,April)}
 
-\textbf{Multi-Device wird real.}
+\textbf{Ausbau auf vier Geräte.}
 APK an zwei weitere Familienmitglieder verteilt (Pixel~8~Pro,
 Pixel~9~Pro~XL); damit lief die Datensammlung auf vier Geräten
 (eigener Xiaomi plus drei Familien-Pixels). Vorher jeweils
@@ -1499,15 +1510,14 @@ sicher parkt.
 \textbf{Auswertungs-Tiefe.}
 Pipeline so umgebaut, dass sie alle vier Geräte-CSVs konsolidiert
 und auswertet. Die lineare Baseline als Vergleichswert zur
-TinyML-Vorhersage implementiert -- damit zeigt der
-Genauigkeits-Tab in der App live drei Vorhersage-Quellen
-(eigenes TinyML-Modell, Google-API und lineare Baseline) im
-3-Wege-Vergleich für den letzten Discharge-Lauf.
+TinyML-Vorhersage implementiert -- damit zeigt die App live drei
+Vorhersage-Quellen (eigenes TinyML-Modell, Google-API und lineare
+Baseline) im 3-Wege-Vergleich für den letzten Discharge-Lauf.
 
 \subsubsection*{Woche 6 (KW 18: 27.\,April -- 3.\,Mai)}
 
 \textbf{Auswertungs-Infrastruktur fertig stellen.}
-Auswertungs-Skripte für Modell-Genauigkeit, Gerät-Vergleiche und
+Auswertungs-Skripte für Modell-Genauigkeit, Geräte-Vergleiche und
 Datenverteilungs-Diagnose in die Pipeline integriert.
 
 \subsubsection*{Woche 7 (KW 19--20: 4.--11.\,Mai)}
@@ -1516,14 +1526,14 @@ Datenverteilungs-Diagnose in die Pipeline integriert.
 Datensammlung beendet (10.\,Mai). Finale Datenmenge:
 66.001 Messpunkte über vier Geräte. In den letzten Tagen
 UI-Refactor: Vier-Slide-Onboarding, drei Tabs (Live / Algorithmus
-/ Genauigkeit), Infrastruktur-Buttons hinter ein Zahnrad-Icon
+/ Genauigkeit), Infrastruktur-Buttons hinter ein Settings-Icon
 ausgelagert, Confidence-Pille in Live-Tab und Notification. Rest
 der Woche: Portfolio + Pipeline-Konsistenz-Checks +
 Erfahrungsbericht.
 
 \subsubsection*{Woche 8 (KW 20: 12.--18.\,Mai)}
 
-\textbf{Polish nach Abgabe-Phase.}
+\textbf{Doku-Feinschliff und kleinere Bugfixes.}
 Die Doku am Stück gegengelesen und einige Stellen mit zu
 plakativer Sprache nüchterner umformuliert. Kleinere App-Bugfixes
 (UI-Glitches im LiveFragment, ein CSV-Header-Edge-Case beim
@@ -1611,7 +1621,7 @@ W1 & 10 Features pro Messpunkt &
   3--4 \glqq{}sichere\grqq{} oder 20+ &
   Kompromiss aus Vollständigkeit und Speicher-Overhead \\
 W5 & INT8-Quantisierung (14,4\,KB) &
-  Float32-Modell ($\sim$\,50\,KB) &
+  Unquantisiertes Float32-Modell (109\,KB) &
   TFLite-INT8 reicht in der Genauigkeit, ist deutlich kleiner \\
 W7 & Drei Tabs + Settings mit klarem Hauptfeature &
   Single-Screen mit allen Funktionen &
@@ -1631,7 +1641,7 @@ Durchgängig & KI-Modus zweigeteilt &
 \subsection{KI-Nutzung}
 
 Während des Projekts habe ich \textbf{Claude Code} (Anthropic, Modell
-Opus~4.7 mit 1M-Token-Kontext) als Programmier- und Schreibassistent
+Opus~4.7 mit 1M-Token-Kontext) als Programmier- und Schreibassistenten
 verwendet.
 
 \textbf{Wofür Claude genutzt wurde:}
@@ -1762,7 +1772,7 @@ Einstellungen:
 \item \textbf{Auto-Approve} für Datei- und Shell-Aktionen --
   die KI kann Aktions-Sequenzen direkt ausführen, ohne dass jeder
   einzelne Schritt manuell freigegeben wird.
-\item \textbf{Eingeschränkter Datei-Zugriff} -- nur auf das ins
+\item \textbf{Eingeschränkter Datei-Zugriff} -- nur auf das in den
   Container gemountete Projektverzeichnis.
 \item \textbf{Whitelist-Firewall} -- Netzwerk-Zugriff nur zu
   erlaubten Hosts (Anthropic-API, GitHub, npm\,/\,PyPI), alles
@@ -1782,7 +1792,7 @@ Genutzt wurde \textbf{Claude Pro} (Subscription), nicht der
 API-Zugang.
 
 Die Trennung erlaubt, riskante Aufgaben in einer isolierten
-Umgebung effizient ablaufen zu lassen, während sicherheits-kritischer
+Umgebung effizient ablaufen zu lassen, während sicherheitskritischer
 Code unter direkter Kontrolle bleibt.
 
 \textbf{Bilanz.}

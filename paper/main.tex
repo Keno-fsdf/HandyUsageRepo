@@ -221,7 +221,7 @@ the split, samples derived from the same underlying segment can end
 up on opposite sides of the partition, causing systematic optimism.
 They report an ``RMSE Gain'' (relative increase due to leakage) of
 up to 20.5\,\% specifically for 10-fold cross-validation at extended
-lag steps, and below 5\,\% for 2-way and 3-way holdout splits. We replicate the
+lag steps, and typically below 5\,\% for 2-way and 3-way holdout splits. We replicate the
 direction of their observation in our sliding-window setting,
 although the magnitude we observe is substantially larger than theirs
 (Section~\ref{sec:results-leakage}); we report this as a
@@ -318,15 +318,15 @@ All six methods predict the remaining time in hours.
 (32 filters, kernel 3, same-padding, ReLU) with global average
 pooling, followed by a dense layer (32 units, ReLU), dropout
 ($p{=}0.2$), a second dense layer (16 units, ReLU), and a linear
-head. Total: 5{,}697 parameters. Trained with Adam
+head. Total: 5{,}697 parameters. Trained with Adam~\cite{kingma2015adam}
 ($\eta{=}5\!\times\!10^{-4}$), MSE loss, batch size~32 and
 early-stopping on validation loss (patience~20). StandardScaler is
 fit on the training sequences and applied to all splits. After training, the Keras model is
-converted to three TFLite variants (dynamic-range, float16, full-int8).
+converted to three TFLite~\cite{abadi2016tensorflow} variants (dynamic-range, float16, full-int8).
 The full-int8 variant is the deployed artefact in the
 companion app.
 
-\item \textbf{Random Forest sanity model.} A scikit-learn
+\item \textbf{Random Forest sanity model.} A scikit-learn~\cite{pedregosa2011scikit}
 \texttt{RandomForestRegressor}~\cite{breiman2001random} (200 trees) trained
 on the flattened sliding window (a $10\times10$ tensor reshaped into a
 100-dimensional vector). The Random Forest is a fundamentally different
@@ -369,8 +369,8 @@ Following Li \emph{et al.}\cite{li2018predicting}, we treat the
 Concordance index as the primary metric, since it is invariant to
 target-bias and remains meaningful under censoring.
 
-We attach 95\% bootstrap confidence intervals to MAE, RMSE, ME and $C$
-(1{,}000 resamples; 200 for $C$, which is $O(n^2)$). Pairwise method
+We attach 95\% bootstrap~\cite{efron1979bootstrap} confidence intervals to MAE, RMSE, ME and $C$
+(1{,}000 resamples; 250 for $C$, which is $O(n^2)$). Pairwise method
 differences use two different paired tests, chosen to match each
 metric's structure. \emph{For MAE}, which is sample-additive, we use a
 paired permutation test (1{,}000 permutations): per-sample, with
@@ -385,7 +385,8 @@ $(y^{\text{true}}, \hat y_A, \hat y_B)$ triples), giving a $95\%$~CI
 for $\Delta C$ and a two-sided bootstrap $p$-value
 $2\min(\Pr[\Delta C \le 0], \Pr[\Delta C \ge 0])$.
 With six methods, 15 pairwise tests are run per metric per target.
-We report both raw $p$-values and Benjamini--Hochberg FDR-adjusted
+We report both raw $p$-values and
+Benjamini--Hochberg~\cite{benjamini1995controlling} FDR-adjusted
 $p$-values ($p_{\text{BH}}$), and base significance claims on the
 adjusted values.
 
@@ -649,7 +650,7 @@ Feature              & Pearson $r$ & Spearman $\rho$ & MI (nat) \\
 \texttt{wifi\_on}               & $+0.51$ & $+0.39$ & 0.24 \\
 \texttt{mobile\_data\_on}       & $-0.50$ & $-0.39$ & 0.24 \\
 \texttt{battery\_level}         & $+0.43$ & $+0.58$ & \textbf{1.72} \\
-\texttt{screen\_on}             & $-0.35$ & $-0.25$ & 0.16 \\
+\texttt{screen\_on}             & $-0.34$ & $-0.25$ & 0.15 \\
 \texttt{temperature}            & $-0.24$ & $-0.26$ & \textbf{2.07} \\
 \texttt{active\_app\_category}  & $-0.10$ & $-0.06$ & 0.29 \\
 \texttt{cpu\_usage}             & $-0.05$ & $+0.02$ & 0.31 \\
@@ -845,8 +846,9 @@ constrained hardware ($\leq$\SI{1}{\giga\byte} RAM, Cortex-M-class
 co-processors, sub-\SI{500}{\milli\ampere\hour} batteries), the
 form factor TinyML was originally designed for, where the 14\,KB
 INT8 model would fit even on bare microcontrollers; and
-(iv)~\textbf{IoT and embedded battery-powered devices} (sensor nodes,
-environmental monitors, asset trackers~\cite{banbury2021mlperf,alajlan2022tinyml})
+(iv)~\textbf{IoT and embedded battery-powered
+devices}~\cite{banbury2021mlperf,alajlan2022tinyml} (sensor nodes,
+environmental monitors, asset trackers)
 which both lack a privileged system predictor and have fundamentally
 different physical constraints (continuous monotonic discharge under
 known load profiles), so the data-signal limitations documented here
@@ -876,7 +878,7 @@ battery-prediction problem. Smartphones in normal use are essentially
 never discharged to 0\,\%. Li \emph{et al.}~\cite{li2018predicting},
 working at a vastly larger scale of 51 users over 21 months,
 characterise this as a ``severe data missing problem'' and adopt the
-Concordance index as their evaluation metric, since it remains
+Concordance index as an evaluation metric, since it remains
 informative when the target variable is not directly observed at
 many measurement points.
 
